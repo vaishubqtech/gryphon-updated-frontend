@@ -38,3 +38,14 @@
 .footer-list:hover{
     color: #fff;
 }
+@media screen and (max-width:1024px) {
+  .footer-container{
+    align-items: center;
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: space-between;
+  }
+  .footer-copyrights,.footer-flex{
+    padding-bottom: 8px;
+  }
+}
