@@ -1,0 +1,11 @@
+.chart-container {
+    /* width: 800px; */
+    height: 600px;
+  }
+
+  .tv-lightweight-charts{
+    /* width: 935px!important; */
+  }
+  .chart-container{
+    width: 100%;
+  }

@@ -6,9 +6,11 @@ import Silver from "../../assets/images/silver.png";
 import Bronze from "../../assets/images/bronze.png";
 import { IconContext } from "react-icons";
 import { BiSolidWalletAlt } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
 
 const data = [
   {
+    id:1,
     avatar: Avatar,
     name: "Prefrontal Cortex $CONVO",
     wallet: "0x7a5c...8f92",
@@ -19,6 +21,7 @@ const data = [
     ranking: Gold,
   },
   {
+    id:2,
     avatar: Avatar,
     name: "Trade Master AI $TADS",
     wallet: "0x7a5c...8f92",
@@ -29,6 +32,7 @@ const data = [
     ranking: Silver,
   },
   {
+    id:3,
     avatar: Avatar,
     name: "ScamURwallet AI $SUWL",
     wallet: "0x7a5c...8f92",
@@ -39,6 +43,7 @@ const data = [
     ranking: Bronze,
   },
   {
+    id:4,
     avatar: Avatar,
     name: "Bukkake AI $BLAST",
     wallet: "0x7a5c...8f92",
@@ -51,6 +56,7 @@ const data = [
 ];
 
 const AgentList = () => {
+    const navigate = useNavigate();
   const [activeSortTab, setActiveSortTab] = useState(0);
   const [copiedIndex, setCopiedIndex] = useState(null);
 
@@ -102,7 +108,7 @@ const AgentList = () => {
           </thead>
           <tbody>
             {data.map((item, index) => (
-              <tr key={index}>
+              <tr key={index} style={{cursor:"pointer"}} onClick={() => navigate(`/detail-screen/${item.id}`)}>
                 <td>
                   <div className="agent-info">
                     <img src={item.avatar} alt="avatar" className="avatar" />

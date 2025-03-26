@@ -8,10 +8,8 @@ import Footer from '../../components/Footer/Footer'
 const Dashboard = () => {
   return (
     <div className='dash-section'>
-      <Navbar/>
       <DashStatistic/>
       <AgentList/>
-      <Footer/>
     </div>
   )
 }

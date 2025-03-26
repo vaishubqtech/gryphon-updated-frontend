@@ -4,12 +4,14 @@ import LogoImage from "../../assets/images/logo-white.png"
 import { IconContext } from "react-icons";
 import { FiSearch } from "react-icons/fi";
 import ProfileImage from "../../assets/images/Frame 1394.png"
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
+    const navigate =useNavigate();
     return (
         <div className='navbar-sec'>
             <div className='nav-cont'>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center',cursor:'pointer' }} onClick={()=>navigate("/")}>
                     <img src={LogoImage} alt="logo" className='navbar-logo' />
                     <div className='logo-text'>GRYPHON</div>
                 </div>

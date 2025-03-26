@@ -52,6 +52,15 @@
   background-color: transparent;
   font-size: 14px;
 }
+.nav-search-input::placeholder {
+  color: #6B7897;
+  opacity: 1; /* Firefox */
+}
+
+.nav-search-input::-ms-input-placeholder { /* Edge 12 -18 */
+  color: #6B7897;
+}
+
 .nav-cta {
   cursor: pointer;
   background: linear-gradient(94.72deg, #f75d4e 5.58%, #f25151 101.95%);
