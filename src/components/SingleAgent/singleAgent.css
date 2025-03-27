@@ -198,16 +198,18 @@
   }
   
   .amount-button {
-    display: flex;
-    align-items: center;
-    padding: 5px 10px;
-    background:transparent;
-    border-radius: 18px;
+    background: transparent;
+    border: 1px solid #fff;
+    box-shadow: 0px 4px 16px 0px #00000033;
+    padding: 6px 10px;
+    border-radius: 25px;
     cursor: pointer;
-    border: none;
-    font-size: 16px;
+    font-size: 12px;
   }
-  
+  .amount-button:hover
+  {
+    background: #151a2e;
+  }
   .trading-fee {
     display: flex;
     align-items: center;
@@ -235,6 +237,10 @@
     font-size: 16px;
     cursor: pointer;
     margin-top: 10px;
+  }
+  .place-trade-button:hover{
+    background-color: #0000005f;
+
   }
   /* Additional Sections */
   .extra-sections {

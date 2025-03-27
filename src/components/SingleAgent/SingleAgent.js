@@ -169,9 +169,9 @@ const SingleAgent = () => {
                             </div>
                             {amountToTrade && <p className='est-amt'>You will receive<span style={{ color: '#f85d4f' }}> 0.09864 {activeTradeTab === "buy" ? "TICKER" : "GRYPHON"}</span>   </p>}
                                 <div className="amount-buttons">
-                                    <button className="amount-button"><div>25%</div><img src={GRYLogo} alt="" className='amt-logo' /> </button>
-                                    <button className="amount-button"><div>50%</div><img src={GRYLogo} alt="" className='amt-logo' /> </button>
-                                    <button className="amount-button"><div>100%</div><img src={GRYLogo} alt="" className='amt-logo' /> </button>
+                                    <button className="amount-button"><div>25%</div> </button>
+                                    <button className="amount-button"><div>50%</div> </button>
+                                    <button className="amount-button"><div>100%</div> </button>
                                 </div>
                             
                             <div className="trading-fee"><p> Trading Fee</p>
