@@ -91,30 +91,23 @@ const SingleAgent = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="metric">
+                                <div className="metric-statistic">
                                     <span>Mindshare</span>
-                                    <span>$477.89k</span>
+                                    <span>477.89k</span>
                                 </div>
-                                <div className="metric">
+                                <div className="metric-statistic">
                                     <span>Impressions</span>
-                                    <span>$559.51k</span>
+                                    <span>559.51k</span>
                                 </div>
-                                <div className="metric">
+                                <div className="metric-statistic">
                                     <span>Engagement</span>
-                                    <span>$477.89k</span>
+                                    <span>477.89k</span>
                                 </div>
-                                <div className="metric">
+                                <div className="metric-statistic">
                                     <span>Followers</span>
-                                    <span>$559.51k</span>
+                                    <span>55.51k</span>
                                 </div>
-                                <div className="metric">
-                                    <span>Smart Followers</span>
-                                    <span>$477.89k</span>
-                                </div>
-                                <div className="metric">
-                                    <span>Top Tweets</span>
-                                    <span>$559.51k</span>
-                                </div>
+
                             </div>
                             <div className="agent-tab">
                                 <div
@@ -177,9 +170,9 @@ const SingleAgent = () => {
                             {amountToTrade && <p className='est-amt'>You will receive<span style={{ color: '#f85d4f' }}> 0.09864 {activeTradeTab === "buy" ? "TICKER" : "GRYPHON"}</span>   </p>}
                             {activeTradeTab === "buy" &&
                                 <div className="amount-buttons">
-                                    <button className="amount-button"><div>10</div><img src={GRYLogo} alt="" className='amt-logo' /> </button>
-                                    <button className="amount-button"><div>100</div><img src={GRYLogo} alt="" className='amt-logo' /> </button>
-                                    <button className="amount-button"><div>1000</div><img src={GRYLogo} alt="" className='amt-logo' /> </button>
+                                    <button className="amount-button"><div>25%</div><img src={GRYLogo} alt="" className='amt-logo' /> </button>
+                                    <button className="amount-button"><div>50%</div><img src={GRYLogo} alt="" className='amt-logo' /> </button>
+                                    <button className="amount-button"><div>100%</div><img src={GRYLogo} alt="" className='amt-logo' /> </button>
                                 </div>
                             }
                             <div className="trading-fee"><p> Trading Fee</p>
@@ -227,15 +220,15 @@ const SingleAgent = () => {
                             </div>
                             <div className="time-frames">
                                 <div className="time-frame">
-                                    <span>5m</span>
-                                    <span>0.00%</span>
-                                </div>
-                                <div className="time-frame">
                                     <span>1h</span>
                                     <span>0.00%</span>
                                 </div>
                                 <div className="time-frame">
-                                    <span>1d</span>
+                                    <span>24h</span>
+                                    <span>0.00%</span>
+                                </div>
+                                <div className="time-frame">
+                                    <span>7d</span>
                                     <span>-8.63%</span>
                                 </div>
                             </div>
@@ -256,7 +249,7 @@ const SingleAgent = () => {
                                         className="avatar"
                                     />
                                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                        <span className="wallet-address">{agent?.creatorId ? getEllipsisTxt(agent?.creatorId, 6) : "Wallet Address here"}</span>
+                                        <span className="wallet-address">{agent?.creatorId ? getEllipsisTxt(agent?.creatorId, 6) : "Contract Address here"}</span>
                                         <a href="#" className="view-profile" onClick={() => navigate("/profile")}>View Profile</a>
 
                                     </div>

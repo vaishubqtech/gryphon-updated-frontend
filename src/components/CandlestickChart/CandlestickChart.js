@@ -117,7 +117,7 @@ const CandlestickChart = () => {
     
         const chart = createChart(chartContainerRef.current, {
             width: chartContainerRef.current.clientWidth,
-            height: 600,
+            height: 400,
             layout: {
                 background: { type: 'solid', color: 'transparent' }, // Ensure the format is correct
                 textColor: '#ffffff',
