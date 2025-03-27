@@ -35,13 +35,29 @@ const CandlestickChart = () => {
                     "data": {
                         "s": "ok",
                         "t": [
-                            1741350300,
-                            1741350540,
-                            1741765680,
-                            1741765860,
-                            1741766340,
-                            1741766400,
-                            1741845000
+                            1742306908,
+                            1741892469,
+                            1742676960,
+                            1741655932,
+                            1742424036,
+                            1742233538,
+                            1742654173,
+                            1742412506,
+                            1742954842,
+                            1742862053,
+                            1741580889,
+                            1742445589,
+                            1742839314,
+                            1742660200,
+                            1742106380,
+                            1741902284,
+                            1742278651,
+                            1741869495,
+                            1741687108,
+                            1742036315,
+                            1742220013
+
+
                         ],
                         "o": [
                             "1000",
@@ -50,7 +66,21 @@ const CandlestickChart = () => {
                             "50",
                             "150",
                             "150",
-                            "950"
+                            "950",
+                            "1000",
+                            "10",
+                            "100",
+                            "50",
+                            "150",
+                            "150",
+                            "950",
+                            "1000",
+                            "10",
+                            "100",
+                            "50",
+                            "150",
+                            "150",
+                            "950",
                         ],
                         "h": [
                             "1.5",
@@ -59,7 +89,21 @@ const CandlestickChart = () => {
                             "170",
                             "150",
                             "150",
-                            "150"
+                            "150",
+                            "1.5",
+                            "180",
+                            "190",
+                            "170",
+                            "150",
+                            "150",
+                            "150",
+                            "1.5",
+                            "180",
+                            "190",
+                            "170",
+                            "150",
+                            "150",
+                            "150",
                         ],
                         "l": [
                             "0.005",
@@ -68,7 +112,21 @@ const CandlestickChart = () => {
                             "150",
                             "190",
                             "150",
-                            "185"
+                            "185",
+                            "0.005",
+                            "150",
+                            "100",
+                            "150",
+                            "190",
+                            "150",
+                            "185",
+                            "0.005",
+                            "150",
+                            "100",
+                            "150",
+                            "190",
+                            "150",
+                            "185",
                         ],
                         "c": [
                             "150",
@@ -77,7 +135,21 @@ const CandlestickChart = () => {
                             "150",
                             "750",
                             "0.7",
-                            "160"
+                            "160",
+                            "150",
+                            "100",
+                            "1200",
+                            "150",
+                            "750",
+                            "0.7",
+                            "160",
+                            "150",
+                            "100",
+                            "1200",
+                            "150",
+                            "750",
+                            "0.7",
+                            "160",
                         ],
                         "v": [
                             "500",
@@ -86,20 +158,34 @@ const CandlestickChart = () => {
                             "200",
                             "100",
                             "200",
-                            "100"
+                            "100",
+                            "500",
+                            "100",
+                            "100",
+                            "200",
+                            "100",
+                            "200",
+                            "100",
+                            "500",
+                            "100",
+                            "100",
+                            "200",
+                            "100",
+                            "200",
+                            "100",
                         ]
                     }
                 };
-                
+
                 const transformed = apiResponse.data.t.map((timestamp, index) => ({
                     time: timestamp,
                     open: parseFloat(apiResponse.data.o[index]),
                     high: parseFloat(apiResponse.data.h[index]),
                     low: parseFloat(apiResponse.data.l[index]),
                     close: parseFloat(apiResponse.data.c[index])
-                })).sort((a, b) => a.time - b.time);                 
-                
-                
+                })).sort((a, b) => a.time - b.time);
+
+
                 console.log("transformed", transformed)
                 setTransformedData(transformed);
                 setLoading(false);
@@ -114,7 +200,7 @@ const CandlestickChart = () => {
 
     useEffect(() => {
         if (!chartContainerRef.current || transformedData.length === 0) return;
-    
+
         const chart = createChart(chartContainerRef.current, {
             width: chartContainerRef.current.clientWidth,
             height: 400,
@@ -133,7 +219,7 @@ const CandlestickChart = () => {
                 borderColor: '#cccccc',
             },
         });
-    
+
         const candlestickSeries = chart.addCandlestickSeries({
             upColor: '#26a69a',
             downColor: '#ef5350',
@@ -141,16 +227,16 @@ const CandlestickChart = () => {
             wickUpColor: '#26a69a',
             wickDownColor: '#ef5350',
         });
-    
+
         candlestickSeries.setData(transformedData);
         chart.timeScale().fitContent();
-    
+
         const handleResize = () => {
             chart.applyOptions({ width: chartContainerRef.current.clientWidth });
         };
-    
+
         window.addEventListener("resize", handleResize);
-    
+
         setTimeout(() => {
             chart.applyOptions({
                 layout: {
@@ -159,13 +245,13 @@ const CandlestickChart = () => {
                 },
             });
         }, 100); // Delay update to allow rendering
-    
+
         return () => {
             window.removeEventListener("resize", handleResize);
             chart.remove();
         };
     }, [transformedData]);
-    
+
 
     return <div className='chart-container' ref={chartContainerRef}></div>;
 };
