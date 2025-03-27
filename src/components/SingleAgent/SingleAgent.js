@@ -159,7 +159,7 @@ const SingleAgent = () => {
                             </div>
 
                             <div className="input-section">
-                                <p className="balance-text">{activeTradeTab === "buy" ? "0 GRYPHON" : "0 TICKER"}</p>
+                                <p className="balance-text">0 GRYPHON</p>
                                 <input
                                     type="text"
                                     className="input-box"
@@ -168,13 +168,12 @@ const SingleAgent = () => {
                                 />
                             </div>
                             {amountToTrade && <p className='est-amt'>You will receive<span style={{ color: '#f85d4f' }}> 0.09864 {activeTradeTab === "buy" ? "TICKER" : "GRYPHON"}</span>   </p>}
-                            {activeTradeTab === "buy" &&
                                 <div className="amount-buttons">
                                     <button className="amount-button"><div>25%</div><img src={GRYLogo} alt="" className='amt-logo' /> </button>
                                     <button className="amount-button"><div>50%</div><img src={GRYLogo} alt="" className='amt-logo' /> </button>
                                     <button className="amount-button"><div>100%</div><img src={GRYLogo} alt="" className='amt-logo' /> </button>
                                 </div>
-                            }
+                            
                             <div className="trading-fee"><p> Trading Fee</p>
                                 <IconContext.Provider value={{ size: '1.2em', color: "#707979" }} >
                                     <div style={{ marginLeft: 4, cursor: "pointer", marginBottom: -4 }}>
@@ -186,9 +185,9 @@ const SingleAgent = () => {
                             </div>
                             {activeTradeTab === "buy" ?
                                 <button className="place-trade-button" >
-                                    Place Trade
+                                   BUY
                                 </button> : <button className="place-trade-button">
-                                    Place Trade
+                        SELL
                                 </button>}
                         </div>
 

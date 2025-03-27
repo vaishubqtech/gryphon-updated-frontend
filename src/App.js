@@ -9,14 +9,12 @@ import AgentDetailScreen from './pages/AgentDetail/AgentDetailScreen';
 function App() {
   return (
     <div className='app-css'>
-      <Router>
         <Navbar/>
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/detail-screen/:id" element={<AgentDetailScreen />} />
         </Routes>
         <Footer/>
-      </Router>
     </div>
   );
 }
