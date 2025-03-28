@@ -166,7 +166,7 @@ const Modal = ({ isOpen, onClose }) => {
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between" }}>
                                         <div>Total</div>
                                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                                            <div className='buy-desc' style={{ marginRight: 5, padding: 0 }}>(100 Virtuals + 1000 $AGO)</div>
+                                            <div className='buy-desc' style={{ marginRight: 5, padding: 0 }}>(100 Gryphon + 1000 $AGO)</div>
                                             <div style={{ marginRight: 5 }}>200</div>
                                             <img src={LogoImage} alt="" className='buy-modal-img' />
                                         </div>
