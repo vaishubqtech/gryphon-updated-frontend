@@ -15,9 +15,10 @@
     "react-router-dom": "^7.4.0",
     "react-scripts": "5.0.1",
     "react-toastify": "^11.0.5",
-    "thirdweb": "^5.88.7",
     "recharts": "^2.15.1",
-    "web-vitals": "^2.1.4"
+    "thirdweb": "^5.88.7",
+    "web-vitals": "^2.1.4",
+    "web3": "^4.16.0"
   },
   "scripts": {
     "start": "react-scripts start",

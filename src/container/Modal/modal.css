@@ -1,0 +1,342 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgb(0 0 0 / 66%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal {
+  background: linear-gradient(
+      114.72deg,
+      rgba(255, 255, 255, 0.0936) -51.38%,
+      rgba(255, 255, 255, 0) 62.84%,
+      rgba(196, 196, 196, 0) 100.12%
+    ),
+    linear-gradient(0deg, rgb(19 24 36), rgb(19 24 36));
+  border: 1px solid #2f333c;
+  color: white;
+  /* padding: 20px; */
+  border-radius: 10px;
+  width: 45%;
+  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+}
+.body-height {
+  min-height: 73vh;
+}
+.modal h2 {
+  margin-bottom: 10px;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  font-size: 14px;
+}
+select {
+  width: 99%;
+  padding: 8px;
+  margin-top: 5px;
+  background: linear-gradient(
+    114.72deg,
+    rgba(255, 255, 255, 0.0936) -51.38%,
+    rgba(255, 255, 255, 0) 62.84%,
+    rgba(196, 196, 196, 0) 100.12%
+  );
+  border: 2px solid rgb(35, 40, 61);
+  border-image-slice: 1;
+  box-shadow: 21px 19px 24px -5px #00000014;
+  backdrop-filter: blur(40px);
+  color: white;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+.modal-body input,
+.modal-body textarea {
+  width: 96%;
+  padding: 8px;
+  margin-top: 5px;
+  background: linear-gradient(
+    114.72deg,
+    rgba(255, 255, 255, 0.0936) -51.38%,
+    rgba(255, 255, 255, 0) 62.84%,
+    rgba(196, 196, 196, 0) 100.12%
+  );
+  border: 2px solid rgb(35, 40, 61);
+  border-image-slice: 1;
+  box-shadow: 21px 19px 24px -5px #00000014;
+  backdrop-filter: blur(40px);
+  color: #6b7897;
+  border-radius: 5px;
+  margin-bottom: 8px;
+}
+input::placeholder {
+  color: #6b7897;
+  opacity: 1;
+}
+
+input::-ms-input-placeholder {
+  color: #6b7897;
+}
+textarea::placeholder {
+  color: #6b7897;
+  opacity: 1;
+}
+
+textarea::-ms-input-placeholder {
+  color: #6b7897;
+}
+#agentType {
+  color: #6b7897;
+}
+
+#agentType option {
+  color: #6b7897;
+}
+.file-upload {
+  width: 50px;
+  height: 50px;
+  background: #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  margin: 10px 0;
+}
+
+.modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  margin-top: 20px;
+}
+
+.cancel {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.next {
+  background: #ff5722;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.cancel {
+  background: #151a2e;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 15px;
+}
+.cancel:hover {
+  background: #181d32;
+}
+
+.next:hover {
+  background: #e64a19;
+}
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(
+      114.72deg,
+      rgba(255, 255, 255, 0.195) -51.38%,
+      rgba(255, 255, 255, 0) 62.84%,
+      rgba(196, 196, 196, 0) 100.12%
+    ),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)),
+    linear-gradient(0deg, rgba(19, 24, 36, 0.8), rgba(19, 24, 36, 0.8));
+  padding: 16px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.modal-body {
+  padding: 20px;
+}
+.modal-heading {
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 100%;
+  letter-spacing: 0%;
+}
+label {
+  color: #6b7897;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  padding-bottom: 5px;
+}
+.upload-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: #cbd5e1;
+  font-family: Arial, sans-serif;
+}
+
+.image-upload {
+  position: relative;
+  display: inline-block;
+}
+
+.image-upload input {
+  display: none;
+}
+
+.image-preview {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-icon {
+  font-size: 24px;
+  color: #9ca3af;
+}
+
+.upload-text {
+  font-size: 12px;
+  margin-top: 10px;
+  color: #9ca3af;
+  margin-left: 10px;
+  line-height: 20px;
+}
+.upload-input {
+}
+
+.acc-label {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #6b7897;
+}
+.red-dot {
+  background: #ff4d4f;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin: 0 10px;
+}
+.acc-red {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #ff4d4f;
+}
+.x-cta {
+  background: #151a2e;
+  border: 2px solid #1d233c;
+  width: 95%;
+  padding: 10px;
+  text-align: center;
+  border-radius: 8px;
+  margin: 8px 0px 20px;
+  color: #6b7897;
+  font-size: 14px;
+  cursor: pointer;
+}
+.setup-x {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.setup-single {
+  width: 45%;
+  background: #151a2e;
+  border: 2px solid #1d233c;
+  padding: 10px;
+  text-align: center;
+  border-radius: 8px;
+  margin: 5px 0px 20px;
+  color: #6b7897;
+  font-size: 14px;
+  cursor: pointer;
+}
+.buy-desc {
+  color: #6b7897;
+  font-size: 14px;
+  line-height: 22px;
+  padding: 15px 0 20px;
+}
+.buy-modal-input {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 95%;
+  padding: 0px 20px;
+  border-radius: 8px;
+  background-color: rgba(242, 242, 242, 0.1);
+  border: 1px solid #3a3c48;
+  margin-bottom: 15px;
+
+}
+.buy-modal-img{
+    width: 25px;
+    height: 24px;
+}
+.buy-modal-input input{
+    background: transparent;
+    border: 0;
+    width: 90%;
+    color: #fff;
+    font-size: 14px;
+    outline: 0;
+    padding: 4px;
+}
+.buy-span-img{
+    width: 25px;
+    height: auto;
+    margin-bottom: -8px;
+}
+
+
+.buy-desc span{
+    color: #6b7897;
+    font-size: 14px;
+    line-height: 22px;
+}
+.vector-info{
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+.border-line-modal{
+    border-bottom: 2px solid #FFFFFF1A;
+    width: 99%;
+    margin: 15px 0;
+}
+.border-line-modal-dash{
+    border-bottom: 2px dashed #FFFFFF1A;
+    width: 99%;
+    margin: 15px 0;
+}
