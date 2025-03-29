@@ -1,11 +1,9 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useEffect, useState } from 'react'
-// import { useState } from "react";
 import "./modal.css"
 import { MdClose } from "react-icons/md";
 import { IconContext } from "react-icons";
 import { FaCamera } from "react-icons/fa";
-import LogoImage from "../../assets/images/logo-white.png"
+import LogoImage from "../../assets/images/Frame 1397.png"
 import ProfileImage from "../../assets/images/Frame 1394.png"
 import InfoImage from "../../assets/images/info-vector.png"
 import { Tooltip } from 'antd';
@@ -39,10 +37,16 @@ const Modal = ({ isOpen, onClose }) => {
     const [youtube, setYoutube] = useState("");
     const [file, setFile] = useState(null);
     const [uploading, setUploading] = useState(false);
-
-    if (!isOpen) return null;
     const [image, setImage] = useState(null);
     const [modalStatus, setModalStatus] = useState(0);
+
+    useEffect(() => {
+        if (isOpen) {
+            console.log("Modal Opened!");
+        }
+    }, [isOpen]); 
+
+
 
     const handleFileChange = (event) => {
         setFile(event.target.files[0]);
@@ -216,8 +220,7 @@ const Modal = ({ isOpen, onClose }) => {
                         </div>
 
                         <label>Agent Type</label>
-                        <select id="agentType" value={agentType}
-                            onChange={(value) => setAgentType(value)}>
+                        <select id="agentType" value={agentType} onChange={(e) => setAgentType(e.target.value)}>
                             <option value="None" >None</option>
                             <option value="on-chain">On-chain</option>
                             <option value="informative">Informative</option>
