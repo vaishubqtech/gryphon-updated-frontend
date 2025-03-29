@@ -6,12 +6,15 @@ import { MdOutlineContentCopy } from "react-icons/md";
 import { IconContext } from "react-icons";
 import { FaExternalLinkAlt, FaTimes, FaGithub, FaPaperPlane } from "react-icons/fa";
 import CandlestickChart from '../CandlestickChart/CandlestickChart';
-import GRYLogo from "../../assets/images/logo-white.png"
 import { TiInfoOutline } from "react-icons/ti";
 import { Tooltip } from 'antd';
 import Avatar from "../../assets/images/Frame 1394.png";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { amountOutValue, buyTrade } from '../../services/gryphon-web3';
+import config from '../../config';
+import Web3 from 'web3';
+import { getAgentById } from '../../services/APIManager';
 
 const agent = [{
     id: 1,
@@ -29,15 +32,105 @@ const SingleAgent = () => {
     const walletAddress = localStorage.getItem("publicAddress")
     const navigate = useNavigate()
     const { id } = useParams();
+    const [agent, setAgent] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
     const [activeTradeTab, setActiveTradeTab] = useState("buy")
     const [amountToTrade, setAmountToTrade] = useState()
 
+    useEffect(() => {
+        if (id) {
+
+            fetchAgent();
+        }
+    }, [id]);
 
     const handleCopy = async () => {
         toast.success("ERC20Address copied!", {
             position: "top-right",
             className: "copy-toast-message",
         });
+    }
+    const fetchAgent = async () => {
+        try {
+            const token = localStorage.getItem("authToken");
+            const response = await getAgentById(id, token);
+            console.log("fetchAgent", response)
+            if (response.success) {
+                setAgent(response.data);
+            } else {
+                setError(response.message);
+            }
+        } catch (err) {
+            setError("Failed to fetch agent details");
+            console.log("error in fetchAgent", err)
+            return;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        estimatedAmountOut();
+    }, [amountToTrade])
+
+    const estimatedAmountOut = async () => {
+        try {
+            let GryphonAddrOrZerothAddr;
+            if (activeTradeTab === "buy") {
+                GryphonAddrOrZerothAddr = config.gryphon_token_address;
+            } else {
+                GryphonAddrOrZerothAddr = "0x0000000000000000000000000000000000000000";
+            }
+            const estimatedAmtResult = await amountOutValue("Agent erc20Address", GryphonAddrOrZerothAddr, Web3.utils.toWei(amountToTrade, "ether"), walletAddress)
+            console.log("----estimatedAmtResult----", estimatedAmtResult);
+            if (estimatedAmtResult) {
+                // setEstimatedAmount("some value")
+            }
+        } catch (err) {
+            console.log("error in estimatedAmountOut", err)
+            return
+        }
+    }
+    const buy_trade = async () => {
+        try {
+
+            const buyTradeResult = await buyTrade(Web3.utils.toWei(amountToTrade, "ether"), "Agent ERC20Address", walletAddress)
+            console.log("----buyTradeResult----", buyTradeResult);
+            if (buyTradeResult?.status) {
+                toast.success("Buy trade successful!", {
+                    position: "top-right",
+                    className: "copy-toast-message",
+                });
+            } else {
+                toast.error("Error in placing BUY Trade", {
+                    position: "top-right",
+                });
+            }
+        } catch (err) {
+            console.log("error in buyTradeResult", err)
+            return
+        }
+    }
+    const sell_trade = async () => {
+        try {
+
+            const sellTradeResult = await buyTrade(Web3.utils.toWei(amountToTrade, "ether"), walletAddress)
+            console.log("----sellTradeResult----", sellTradeResult);
+            if (sellTradeResult?.status) {
+                toast.success("Sell trade successful!", {
+                    position: "top-right",
+                    className: "copy-toast-message",
+                });
+            } else {
+                toast.error("Error in placing SELL Trade", {
+                    position: "top-right",
+                });
+            }
+        } catch (err) {
+            console.log("error in sellTradeResult", err)
+            return
+        }
     }
 
 
@@ -168,12 +261,12 @@ const SingleAgent = () => {
                                 />
                             </div>
                             {amountToTrade && <p className='est-amt'>You will receive<span style={{ color: '#f85d4f' }}> 0.09864 {activeTradeTab === "buy" ? "TICKER" : "GRYPHON"}</span>   </p>}
-                                <div className="amount-buttons">
-                                    <button className="amount-button"><div>25%</div> </button>
-                                    <button className="amount-button"><div>50%</div> </button>
-                                    <button className="amount-button"><div>100%</div> </button>
-                                </div>
-                            
+                            <div className="amount-buttons">
+                                <button className="amount-button"><div>25%</div> </button>
+                                <button className="amount-button"><div>50%</div> </button>
+                                <button className="amount-button"><div>100%</div> </button>
+                            </div>
+
                             <div className="trading-fee"><p> Trading Fee</p>
                                 <IconContext.Provider value={{ size: '1.2em', color: "#707979" }} >
                                     <div style={{ marginLeft: 4, cursor: "pointer", marginBottom: -4 }}>
@@ -185,9 +278,9 @@ const SingleAgent = () => {
                             </div>
                             {activeTradeTab === "buy" ?
                                 <button className="place-trade-button" >
-                                   BUY
+                                    BUY
                                 </button> : <button className="place-trade-button">
-                        SELL
+                                    SELL
                                 </button>}
                         </div>
 
