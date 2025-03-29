@@ -8,24 +8,183 @@ import { FaCamera } from "react-icons/fa";
 import LogoImage from "../../assets/images/logo-white.png"
 import ProfileImage from "../../assets/images/Frame 1394.png"
 import InfoImage from "../../assets/images/info-vector.png"
-import { TiInfoOutline } from "react-icons/ti";
 import { Tooltip } from 'antd';
+import { useNavigate } from "react-router-dom";
+import Web3 from "web3";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { createAgent } from "../../services/APIManager";
+import { approveFactory, LaunchAgent } from "../../services/gryphon-web3";
 
 
 const Modal = ({ isOpen, onClose }) => {
+    const navigate = useNavigate()
+    const walletAddress = localStorage.getItem("publicAddress")
+
+    const [name, setName] = useState("");
+    const [profileImage, setProfileImage] = useState("");
+    const [erc20Address, setErc20Address] = useState(" ");
+    const [ticker, setTicker] = useState("");
+    const [bio, setBio] = useState("");
+    const [agentType, setAgentType] = useState("");
+    const [goal, setGoal] = useState("");
+    const [personality, setPersonality] = useState("personality");
+    const [niche, setNiche] = useState("");
+    const [purchaseAmount, setPurchaseAmt] = useState()
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState("");
+    const [telegram, setTelegram] = useState("");
+    const [twitter, setTwitter] = useState("");
+    const [website, setWebsite] = useState("");
+    const [youtube, setYoutube] = useState("");
+    const [file, setFile] = useState(null);
+    const [uploading, setUploading] = useState(false);
+
     if (!isOpen) return null;
     const [image, setImage] = useState(null);
     const [modalStatus, setModalStatus] = useState(0);
 
-    const handleImageChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImage(reader.result);
-            };
-            reader.readAsDataURL(file);
+    const handleFileChange = (event) => {
+        setFile(event.target.files[0]);
+    };
+
+    const handleUpload = async () => {
+        if (!file) {
+            setMessage("Please select a file.");
+            return;
         }
+
+        const formData = new FormData();
+        formData.append("file", file);
+        console.log("image File ", file)
+        try {
+            setUploading(true);
+            setMessage("");
+
+            const response = await fetch(
+                "http://api.gryphon.finance/ai/api/v1/upload/single",
+                {
+                    method: "POST",
+                    body: formData,
+                }
+            );
+
+            const result = await response.json();
+
+            if (response.ok) {
+                return result.data.url;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            setMessage("Upload failed. Please try again.");
+            return false;
+        } finally {
+            setUploading(false);
+        }
+    };
+
+
+    const approve_Factory = async () => {
+        try {
+
+            const approveFactoryRes = await approveFactory(Web3.utils.toWei(purchaseAmount, "ether"), walletAddress);
+            console.log("-----approveFactoryRes-------", approveFactoryRes)
+            if (approveFactoryRes) {
+                await create_agent();
+            }
+        } catch (e) {
+            console.log("error in reqAmountInWei ", e)
+            return;
+        }
+    }
+
+    const create_agent = async () => {
+        try {
+            const imageUploadURL = await handleUpload();
+            if (!imageUploadURL) {
+                toast.error("Error in Uplaoading image", {
+                    position: "top-right",
+                });
+                return;
+            }
+            const createAgentRes = await LaunchAgent(name, ticker, [0, 1, 2, 3], bio, file, twitter, telegram, youtube, website, Web3.utils.toWei(purchaseAmount, "ether"), walletAddress);
+            console.log("-----createAgentRes-------", createAgentRes)
+            if (createAgentRes?.status) {
+                toast.success("Agent created successfully!", {
+                    position: "top-right",
+                    className: "copy-toast-message",
+                });
+                resetForm();
+            } else {
+                toast.error("Error in Launching agent", {
+                    position: "top-right",
+                });
+            }
+        } catch (e) {
+            console.log("error in create_agent ", e)
+            return;
+        }
+    }
+
+
+    const submitWeb3 = async () => {
+        await approve_Factory();
+    }
+
+    const handleSubmit = async () => {
+        setLoading(true);
+
+        const token = localStorage.getItem("authToken");
+        // await handleUpload();
+
+        const agentData = {
+            name,
+            profileImage,
+            erc20Address,
+            ticker,
+            bio,
+            agentType,
+            goal,
+            personality,
+            niche,
+        };
+        console.log("---agentData---", agentData)
+        try {
+            const response = await createAgent(agentData, token);
+
+            if (response.success) {
+                toast.success("Agent created successfully!", {
+                    position: "top-right",
+                    className: "copy-toast-message",
+                });
+                setMessage("Agent created successfully!");
+                navigate("/")
+                resetForm();
+            } else {
+                toast.error("Error Notification !", {
+                    position: "top-right",
+                });
+                setMessage(`Error: ${response.message}`);
+            }
+        } catch (error) {
+            setMessage(`Request failed: ${error.message}`);
+            console.error("API error:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const resetForm = () => {
+        setName("");
+        setFile("");
+        setErc20Address("");
+        setTicker("");
+        setBio("");
+        setAgentType("");
+        setGoal("");
+        setPersonality("");
+        setNiche("");
     };
 
     return (
@@ -42,12 +201,13 @@ const Modal = ({ isOpen, onClose }) => {
                     </div>
                     <div className='modal-body'>
                         <label>AI Agent Name</label>
-                        <input type="text" placeholder="Agent Name" />
+                        <input type="text" placeholder="Agent Name" value={name}
+                            onChange={(e) => setName(e.target.value)} />
 
                         <label>Agent Profile Picture</label>
                         <div className="upload-container">
                             <label className="image-upload">
-                                <input type="file" accept="image/png, image/jpeg, image/webp, image/gif" onChange={handleImageChange} className='upload-input' />
+                                <input type="file" accept="image/png, image/jpeg, image/webp, image/gif" onChange={handleFileChange} className='upload-input' />
                                 <div className="image-preview">
                                     {image ? <img src={image} alt="Profile" /> : <FaCamera className="camera-icon" />}
                                 </div>
@@ -56,18 +216,25 @@ const Modal = ({ isOpen, onClose }) => {
                         </div>
 
                         <label>Agent Type</label>
-                        <select id="agentType">
-                            <option>On Chain</option>
+                        <select id="agentType" value={agentType}
+                            onChange={(value) => setAgentType(value)}>
+                            <option value="None" >None</option>
+                            <option value="on-chain">On-chain</option>
+                            <option value="informative">Informative</option>
+                            <option value="Productivity">Productivity</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Creative">Creative</option>
                         </select>
 
                         <label>Pitch your agent</label>
-                        <textarea placeholder="Tell everyone what your agent does and how it can help the community" />
+                        <textarea placeholder="Tell everyone what your agent does and how it can help the community" value={niche} onChange={(e) => setNiche(e.target.value)} />
 
                         <label>Goals and purpose of your agent</label>
-                        <textarea placeholder="i.e. - Persona, goals, guidelines, thinking style, communication style, etc." />
+                        <textarea placeholder="i.e. - Persona, goals, guidelines, thinking style, communication style, etc." value={goal} onChange={(e) => setGoal(e.target.value)} />
 
                         <label>Team bio</label>
-                        <textarea placeholder="None" />
+                        <textarea placeholder="None" value={bio}
+                            onChange={(e) => setBio(e.target.value)} />
 
                         <div className="modal-actions">
                             <button className="cancel" onClick={onClose}>Cancel</button>
@@ -101,7 +268,7 @@ const Modal = ({ isOpen, onClose }) => {
                                 <div style={{ display: 'flex', alignItems: 'center', marginTop: 25, marginBottom: 15 }}>
                                     <div className='acc-label'>How would you like to setup the X account</div>
                                     <div className='red-dot' />
-                                    <div className='acc-red'>Please select a option</div>
+                                    <div className='acc-red'>Please select an option</div>
                                 </div>
                                 <div className='setup-x'>
                                     <div className='setup-single'>I will manage it myself</div>
@@ -129,7 +296,7 @@ const Modal = ({ isOpen, onClose }) => {
                             <div className='modal-body '>
                                 <div className='body-height'>
                                     <div className='modal-heading'>Buy $GRYPHON</div>
-                                    <div className='buy-desc'>*Purchasing a small amount of your taken is optional but can help protect your coin from snipers.</div>
+                                    <div className='buy-desc'>*Purchasing a small amount of your token is optional but can help protect your coin from snipers.</div>
                                     <div className='acc-label' style={{ marginBottom: 10 }}>GRYPHON</div>
                                     <div className='buy-modal-input'>
                                         <input placeholder='100' className='' />
@@ -175,7 +342,7 @@ const Modal = ({ isOpen, onClose }) => {
                             </div>
                             <div className="modal-actions" style={{ padding: "20px 20px" }}>
                                 <button className="cancel" onClick={onClose}>Cancel</button>
-                                <button className="next" >Create Agent</button>
+                                <button className="next" onClick={submitWeb3} >Create Agent</button>
                             </div>
                         </>}</>
                 }
