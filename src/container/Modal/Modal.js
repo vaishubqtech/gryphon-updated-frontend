@@ -39,13 +39,7 @@ const Modal = ({ isOpen, onClose }) => {
     const [uploading, setUploading] = useState(false);
     const [image, setImage] = useState(null);
     const [modalStatus, setModalStatus] = useState(0);
-
-    useEffect(() => {
-        if (isOpen) {
-            console.log("Modal Opened!");
-        }
-    }, [isOpen]); 
-
+    if (!isOpen) return null;
 
 
     const handleFileChange = (event) => {
