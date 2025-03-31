@@ -15,7 +15,7 @@ import { createAgent } from "../../services/APIManager";
 import { approveFactory, LaunchAgent } from "../../services/gryphon-web3";
 
 
-const Modal = ({ isOpen, onClose }) => {
+const CreateModal = ({ isOpen, onClose }) => {
     const navigate = useNavigate()
     const walletAddress = localStorage.getItem("publicAddress")
 
@@ -198,10 +198,18 @@ const Modal = ({ isOpen, onClose }) => {
                         </IconContext.Provider>
                     </div>
                     <div className='modal-body'>
-                        <label>AI Agent Name</label>
-                        <input type="text" placeholder="Agent Name" value={name}
-                            onChange={(e) => setName(e.target.value)} />
-
+                        <div className='agent-n-t-flex'>
+                            <div className='top-50'>
+                                <label>AI Agent Name</label>
+                                <input type="text" placeholder="Agent Name" value={name}
+                                    onChange={(e) => setName(e.target.value)} />
+                            </div>
+                            <div className='top-50'>
+                                <label>AI Agent Ticker</label>
+                                <input type="text" placeholder="$" value={ticker}
+                                    onChange={(e) => setTicker(e.target.value)} />
+                            </div>
+                        </div>
                         <label>Agent Profile Picture</label>
                         <div className="upload-container">
                             <label className="image-upload">
@@ -344,9 +352,9 @@ const Modal = ({ isOpen, onClose }) => {
                         </>}</>
                 }
             </div>
-        </div>
+        </div >
     );
 };
 
 
-export default Modal;
+export default CreateModal;

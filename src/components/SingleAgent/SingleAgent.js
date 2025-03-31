@@ -158,7 +158,7 @@ const SingleAgent = () => {
 
                                         <div className='erc20-token'>{getEllipsisTxt("0x25Bb8D9eB53eEe8b899ff9E8c9c78674Ce8b9937", 6)}</div>
 
-                                        <IconContext.Provider value={{ size: '1em', color: "#404849" }} >
+                                        <IconContext.Provider value={{ size: '1em', color: "#6B7897" }} >
                                             <div style={{ marginLeft: 7, cursor: "pointer" }}>
                                                 <MdOutlineContentCopy />
                                             </div>

@@ -3,10 +3,13 @@ body {
   font-family: 'Helvetica', sans-serif!important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
 
-*{
+}
+code{
   color: #F2F2F2;
+  
+}
+*{
   letter-spacing: 0.5px;
 }
 @font-face {
