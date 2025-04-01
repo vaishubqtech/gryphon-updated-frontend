@@ -94,6 +94,7 @@ const CreateModal = ({ isOpen, onClose }) => {
                 toast.error("Please enter valid GRYPHON amount", {
                     position: "top-right",
                 });
+                return;
             }
             const approveFactoryRes = await approveFactory(Web3.utils.toWei(purchaseAmount, "ether"), walletAddress);
             console.log("-----approveFactoryRes-------", approveFactoryRes)
@@ -121,7 +122,6 @@ const CreateModal = ({ isOpen, onClose }) => {
             console.log("-----createAgentRes-------", createAgentRes)
             if (createAgentRes?.status) {
                 console.log("||||| launched event ||||", createAgentRes?.events?.Launched)
-                console.log("||||| erc20 address for agent ||||", createAgentRes?.events?.Launched?.address)
                 toast.update(loadingToast, {
                     render: "Agent created successfully!",
                     type: "success",

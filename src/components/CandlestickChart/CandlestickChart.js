@@ -186,7 +186,6 @@ const CandlestickChart = () => {
                 })).sort((a, b) => a.time - b.time);
 
 
-                console.log("transformed", transformed)
                 setTransformedData(transformed);
                 setLoading(false);
             } catch (err) {

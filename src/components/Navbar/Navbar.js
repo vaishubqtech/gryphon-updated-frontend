@@ -13,6 +13,7 @@ import Web3 from "web3";
 import { getNonce, verifyUser } from "../../services/APIManager";
 import CreateModal from "../../container/CreateModal/CreateModal";
 import SettingsModal from "../../container/CreateModal/SettingsModal";
+import config from "../../config";
 var decimalChainId;
 var publicAddress;
 
@@ -20,7 +21,7 @@ const Navbar = () => {
   const account = useActiveAccount();
 
   const navigate = useNavigate();
-  const [getNonceData, setGetNonceData] = useState();
+  const [nonceValue, setNonceValue] = useState()
   const [verifyUserData, setVerifyUser] = useState();
   const [authToken, setAuthToken] = useState();
   const [modalOpen, setModalOpen] = useState(false);
@@ -55,18 +56,34 @@ const Navbar = () => {
       console.log("--getNonce publicAddress--", publicAddress)
       const nonceResult = await getNonce(
         publicAddress,
-        decimalChainId
+        config.chain_Id
       );
-      console.log("nonceResult", nonceResult);
-      if (nonceResult.success) {
-        setGetNonceData(nonceResult.data);
+      console.log("nonceResult", nonceResult?.data?.nonce);
+      if (nonceResult) {
+        setNonceValue(nonceResult?.data?.nonce)
+        verifyUserApi(nonceResult?.data?.nonce);
+
+
       }
-      await verifyUserApi(nonceResult.data.nonce);
     } catch (err) {
       console.log("error in getNonce API", err);
       return;
     }
   };
+
+  const getSign=async() =>{
+    publicAddress = localStorage.getItem("publicAddress")
+
+    const web3 = new Web3(window.ethereum);
+
+    const signature = await web3.eth.personal.sign(
+      web3.utils.utf8ToHex(`I am signing my one-time nonce: 6664`),
+      publicAddress,
+      ""
+    );
+    console.log("signature", signature);
+  }
+
 
   const verifyUserApi = async (nonce) => {
     try {
@@ -94,6 +111,9 @@ const Navbar = () => {
       return;
     }
   };
+  
+  
+  
 
   const client = createThirdwebClient({
     clientId: "bfb4a8901e09d80f302031db896aeec8",
@@ -128,7 +148,7 @@ const Navbar = () => {
         </div>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <div className='nav-cta' onClick={() => setModalOpen(true)}>Create Agent</div>
-          {account?.address ? <img src={ProfileImage} alt="profile" className='nav-profile'  onClick={() => setModalOpenSetting(true)}/> :
+          {account?.address ? <img src={ProfileImage} alt="profile" className='nav-profile' onClick={() => setModalOpenSetting(true)} /> :
 
             <ConnectButton
               client={client}

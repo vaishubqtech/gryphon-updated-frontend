@@ -180,6 +180,7 @@
     border-radius: 8px;
     margin-top: 20px;
     outline-style: none;
+    color: #fff;
     
   }
   .input-box::placeholder {

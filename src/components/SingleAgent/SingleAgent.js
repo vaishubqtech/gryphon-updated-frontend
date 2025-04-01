@@ -11,7 +11,7 @@ import { Tooltip } from 'antd';
 import Avatar from "../../assets/images/Frame 1394.png";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { amountOutValue, buyTrade } from '../../services/gryphon-web3';
+import { amountOutValue, buyApprove, buyTrade } from '../../services/gryphon-web3';
 import config from '../../config';
 import Web3 from 'web3';
 import { getAgentById } from '../../services/APIManager';
@@ -37,6 +37,7 @@ const SingleAgent = () => {
     const [error, setError] = useState("");
     const [activeTradeTab, setActiveTradeTab] = useState("buy")
     const [amountToTrade, setAmountToTrade] = useState()
+    const [estimatedAmount, setEstimatedAmount] = useState()
 
     useEffect(() => {
         if (id) {
@@ -71,10 +72,13 @@ const SingleAgent = () => {
     };
 
     useEffect(() => {
-        estimatedAmountOut();
-    }, [amountToTrade])
+        if (amountToTrade) {
+            estimatedAmountOut();
+        }
+    }, [amountToTrade, activeTradeTab])
 
     const estimatedAmountOut = async () => {
+        console.log("amountToTrade", Web3.utils.toWei(amountToTrade, "ether"))
         try {
             let GryphonAddrOrZerothAddr;
             if (activeTradeTab === "buy") {
@@ -82,29 +86,60 @@ const SingleAgent = () => {
             } else {
                 GryphonAddrOrZerothAddr = "0x0000000000000000000000000000000000000000";
             }
-            const estimatedAmtResult = await amountOutValue("Agent erc20Address", GryphonAddrOrZerothAddr, Web3.utils.toWei(amountToTrade, "ether"), walletAddress)
+            const estimatedAmtResult = await amountOutValue("0x03dd1056Eb24F5b6c08BE079888f7748C2F35bFE", GryphonAddrOrZerothAddr, Web3.utils.toWei(amountToTrade, "ether"), walletAddress)
             console.log("----estimatedAmtResult----", estimatedAmtResult);
             if (estimatedAmtResult) {
-                // setEstimatedAmount("some value")
+                setEstimatedAmount(estimatedAmtResult.toString())
             }
         } catch (err) {
             console.log("error in estimatedAmountOut", err)
             return
         }
     }
-    const buy_trade = async () => {
-        try {
 
-            const buyTradeResult = await buyTrade(Web3.utils.toWei(amountToTrade, "ether"), "Agent ERC20Address", walletAddress)
+    const buy_approve = async () => {
+        const toastId = toast.info("Approving your contract...", {
+            position: "top-right",
+            autoClose: false,
+        });
+        try {
+            if (!amountToTrade) {
+                toast.dismiss(toastId);
+                toast.error("Please enter valid GRYPHON amount", {
+                    position: "top-right",
+                });
+                return;
+            }
+            const approve_res = await buyApprove(Web3.utils.toWei(amountToTrade, "ether"), walletAddress)
+            console.log("approve_res", approve_res)
+            if (approve_res) {
+                toast.dismiss(toastId);
+                await buy_trade()
+            }
+        } catch (e) {
+            console.log("error in approve buyTradeResult", e)
+            return
+        }
+    }
+    const buy_trade = async () => {
+        const loadingToast = toast.loading("Placing Buy Trade");
+
+        try {
+            const buyTradeResult = await buyTrade(Web3.utils.toWei(amountToTrade, "ether"), "0x03dd1056Eb24F5b6c08BE079888f7748C2F35bFE", walletAddress)
             console.log("----buyTradeResult----", buyTradeResult);
             if (buyTradeResult?.status) {
-                toast.success("Buy trade successful!", {
-                    position: "top-right",
-                    className: "copy-toast-message",
+                toast.update(loadingToast, {
+                    render: "Bought the desired Token!",
+                    type: "success",
+                    isLoading: false,
+                    autoClose: 3000,
                 });
             } else {
-                toast.error("Error in placing BUY Trade", {
-                    position: "top-right",
+                toast.update(loadingToast, {
+                    render: "Error in placing BUY Trade",
+                    type: "error",
+                    isLoading: false,
+                    autoClose: 3000,
                 });
             }
         } catch (err) {
@@ -112,19 +147,52 @@ const SingleAgent = () => {
             return
         }
     }
+    const sell_approve = async () => {
+        const toastId = toast.info("Approving your contract...", {
+            position: "top-right",
+            autoClose: false,
+        });
+        try {
+            if (!amountToTrade) {
+                toast.dismiss(toastId);
+                toast.error("Please enter valid GRYPHON amount", {
+                    position: "top-right",
+                });
+                return;
+            }
+            const approve_res = await buyApprove(Web3.utils.toWei(amountToTrade, "ether"), walletAddress)
+            console.log("approve_res", approve_res)
+            if (approve_res) {
+                toast.dismiss(toastId);
+
+                await sell_trade()
+            }
+        } catch (e) {
+            console.log("error in approve buyTradeResult", e)
+            return
+        }
+    }
+
     const sell_trade = async () => {
+        const loadingToast = toast.loading("Placing Sell Trade");
+
         try {
 
             const sellTradeResult = await buyTrade(Web3.utils.toWei(amountToTrade, "ether"), walletAddress)
             console.log("----sellTradeResult----", sellTradeResult);
             if (sellTradeResult?.status) {
-                toast.success("Sell trade successful!", {
-                    position: "top-right",
-                    className: "copy-toast-message",
+                toast.update(loadingToast, {
+                    render: "Bought the desired Token!",
+                    type: "success",
+                    isLoading: false,
+                    autoClose: 3000,
                 });
             } else {
-                toast.error("Error in placing SELL Trade", {
-                    position: "top-right",
+                toast.update(loadingToast, {
+                    render: "Error in placing SELL Trade",
+                    type: "error",
+                    isLoading: false,
+                    autoClose: 3000,
                 });
             }
         } catch (err) {
@@ -133,239 +201,239 @@ const SingleAgent = () => {
         }
     }
 
-
-
-
     return (
-        <div className="ds-container">
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <div className='ds-flex'>
+        <>
+            <div className="ds-container">
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div className='ds-flex'>
 
-                    <div className='flex-column-left'>
-                        <div className="left-section">
-                            <div className="profile">
-                                <img
-                                    src={agent?.profileImage ? agent?.profileImage : "https://s3.ap-southeast-1.amazonaws.com/virtualprotocolcdn/name_ccf503ff79.jpeg"}
-                                    alt="Profile"
-                                    className="profile-img"
-                                />
-                                <div>
-                                    <div style={{ display: 'flex', marginTop: 4 }}>
-                                        <h2 className="profile-name">{agent?.name ? agent?.name : "Agent Name"}</h2>
-                                        <p className="profile-symbol">${agent?.ticker ? agent?.ticker : "AGT"}</p>
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', marginTop: 6, zIndex: 9 }} onClick={handleCopy}>
+                        <div className='flex-column-left'>
+                            <div className="left-section">
+                                <div className="profile">
+                                    <img
+                                        src={agent?.profileImage ? agent?.profileImage : "https://s3.ap-southeast-1.amazonaws.com/virtualprotocolcdn/name_ccf503ff79.jpeg"}
+                                        alt="Profile"
+                                        className="profile-img"
+                                    />
+                                    <div>
+                                        <div style={{ display: 'flex', marginTop: 4 }}>
+                                            <h2 className="profile-name">{agent?.name ? agent?.name : "Agent Name"}</h2>
+                                            <p className="profile-symbol">${agent?.ticker ? agent?.ticker : "AGT"}</p>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', marginTop: 6, zIndex: 9 }} onClick={handleCopy}>
 
-                                        <div className='erc20-token'>{getEllipsisTxt("0x25Bb8D9eB53eEe8b899ff9E8c9c78674Ce8b9937", 6)}</div>
+                                            <div className='erc20-token'>{getEllipsisTxt("0x25Bb8D9eB53eEe8b899ff9E8c9c78674Ce8b9937", 6)}</div>
 
-                                        <IconContext.Provider value={{ size: '1em', color: "#6B7897" }} >
-                                            <div style={{ marginLeft: 7, cursor: "pointer" }}>
-                                                <MdOutlineContentCopy />
-                                            </div>
-                                        </IconContext.Provider>
-                                        <ToastContainer />
-                                    </div>
-                                </div>
-                            </div>
-                            {/* <TradingViewChart /> */}
-                            <CandlestickChart />
-                        </div>
-                        <div className="ascension-progress">
-                            <div className='statistic-values'>
-                                <div className="agentic-container">
-                                    <div className="agentic-header">
-                                        <span className="agentic-title">Agentic Level</span>
-                                        {/* <FaInfoCircle className="info-icon" /> */}
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <span className="agentic-level">Level 1</span>
-                                        <div className="progress-bar">
-                                            <div className="progress-fill"></div>
+                                            <IconContext.Provider value={{ size: '1em', color: "#6B7897" }} >
+                                                <div style={{ marginLeft: 7, cursor: "pointer" }}>
+                                                    <MdOutlineContentCopy />
+                                                </div>
+                                            </IconContext.Provider>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="metric-statistic">
-                                    <span>Mindshare</span>
-                                    <span>477.89k</span>
-                                </div>
-                                <div className="metric-statistic">
-                                    <span>Impressions</span>
-                                    <span>559.51k</span>
-                                </div>
-                                <div className="metric-statistic">
-                                    <span>Engagement</span>
-                                    <span>477.89k</span>
-                                </div>
-                                <div className="metric-statistic">
-                                    <span>Followers</span>
-                                    <span>55.51k</span>
-                                </div>
-
+                                {/* <TradingViewChart /> */}
+                                <CandlestickChart />
                             </div>
-                            <div className="agent-tab">
-                                <div
-                                    className={activeSortTab === 0 ? "sort-tab-active" : "sort-tab"}
-                                    onClick={() => setActiveSortTab(0)}
-                                >
-                                    Summary
-                                </div>
-                                <div
-                                    className={activeSortTab === 1 ? "sort-tab-active" : "sort-tab"}
-                                    onClick={() => setActiveSortTab(1)}
-                                >
-                                    Terminal
-                                </div>
-                                <div
-                                    className={activeSortTab === 2 ? "sort-tab-active" : "sort-tab"}
-                                    onClick={() => setActiveSortTab(2)}
-                                >
-                                    Trades
-                                </div>
-                                <div
-                                    className={activeSortTab === 3 ? "sort-tab-active" : "sort-tab"}
-                                    onClick={() => setActiveSortTab(3)}
-                                >
-                                    Holders
-                                </div>
-                            </div>
-                            <div style={{ marginTop: 28 }} />
-                            <h2 className='summary-head'>About Agent Summary</h2>
-                            <p className='bio'>{agent?.bio ? agent?.bio : "Iona, the dynamic leader and main vocalist of AI-DOL, stands out with her striking pink braids and an athletic build, embodying a fusion of strength, elegance, and creativity. Assertive and deeply compassionate, she guides the group with strategic insight..."}</p>
-
-                            <h2 className='summary-head'>Framework</h2>
-                            <p className='bio'>Others</p>
-                            <h2 className='summary-head'>Capabilities</h2>
-                            <div className='cap-flex'>
-                                {capabilitesFeed?.map((item, index) => {
-                                    return (
-                                        <div className='cap-tag'> {item}</div>
-                                    )
-                                })}
-                            </div>
-                        </div>
-                    </div>
-                    <div className='flex-column-right'>
-                        <div className="right-section">
-                            <div className="swap-buttons">
-                                <button className={activeTradeTab === "buy" ? "active-button" : "tab-button"} onClick={() => setActiveTradeTab("buy")}>Buy</button>
-                                <button className={activeTradeTab === "sell" ? "active-button" : "tab-button"} onClick={() => setActiveTradeTab("sell")}>Sell</button>
-                            </div>
-
-                            <div className="input-section">
-                                <p className="balance-text">0 GRYPHON</p>
-                                <input
-                                    type="text"
-                                    className="input-box"
-                                    placeholder={activeTradeTab === "buy" ? "Enter the amount of GRYPHON" : "Enter the amount of TICKER"}
-                                    onChange={(e) => setAmountToTrade(e.target.value)}
-                                />
-                            </div>
-                            {amountToTrade && <p className='est-amt'>You will receive<span style={{ color: '#f85d4f' }}> 0.09864 {activeTradeTab === "buy" ? "TICKER" : "GRYPHON"}</span>   </p>}
-                            <div className="amount-buttons">
-                                <button className="amount-button"><div>25%</div> </button>
-                                <button className="amount-button"><div>50%</div> </button>
-                                <button className="amount-button"><div>100%</div> </button>
-                            </div>
-
-                            <div className="trading-fee"><p> Trading Fee</p>
-                                <IconContext.Provider value={{ size: '1.2em', color: "#707979" }} >
-                                    <div style={{ marginLeft: 4, cursor: "pointer", marginBottom: -4 }}>
-                                        <Tooltip placement="right" color='#666' title="Trade fee description here!">
-                                            <TiInfoOutline />
-                                        </Tooltip>
+                            <div className="ascension-progress">
+                                <div className='statistic-values'>
+                                    <div className="agentic-container">
+                                        <div className="agentic-header">
+                                            <span className="agentic-title">Agentic Level</span>
+                                            {/* <FaInfoCircle className="info-icon" /> */}
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                            <span className="agentic-level">Level 1</span>
+                                            <div className="progress-bar">
+                                                <div className="progress-fill"></div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </IconContext.Provider>
-                            </div>
-                            {activeTradeTab === "buy" ?
-                                <button className="place-trade-button" >
-                                    BUY
-                                </button> : <button className="place-trade-button">
-                                    SELL
-                                </button>}
-                        </div>
+                                    <div className="metric-statistic">
+                                        <span>Mindshare</span>
+                                        <span>477.89k</span>
+                                    </div>
+                                    <div className="metric-statistic">
+                                        <span>Impressions</span>
+                                        <span>559.51k</span>
+                                    </div>
+                                    <div className="metric-statistic">
+                                        <span>Engagement</span>
+                                        <span>477.89k</span>
+                                    </div>
+                                    <div className="metric-statistic">
+                                        <span>Followers</span>
+                                        <span>55.51k</span>
+                                    </div>
 
-                        <div className="stats-container-agent">
-                            <div className="price">$0.000474</div>
-                            <div className="metrics">
-                                <div className="metric">
-                                    <span>Market Cap</span>
-                                    <span>$477.89k</span>
                                 </div>
-                                <div className="metric">
-                                    <span>Liquidity</span>
-                                    <span>$559.51k</span>
+                                <div className="agent-tab">
+                                    <div
+                                        className={activeSortTab === 0 ? "sort-tab-active" : "sort-tab"}
+                                        onClick={() => setActiveSortTab(0)}
+                                    >
+                                        Summary
+                                    </div>
+                                    <div
+                                        className={activeSortTab === 1 ? "sort-tab-active" : "sort-tab"}
+                                        onClick={() => setActiveSortTab(1)}
+                                    >
+                                        Terminal
+                                    </div>
+                                    <div
+                                        className={activeSortTab === 2 ? "sort-tab-active" : "sort-tab"}
+                                        onClick={() => setActiveSortTab(2)}
+                                    >
+                                        Trades
+                                    </div>
+                                    <div
+                                        className={activeSortTab === 3 ? "sort-tab-active" : "sort-tab"}
+                                        onClick={() => setActiveSortTab(3)}
+                                    >
+                                        Holders
+                                    </div>
+                                </div>
+                                <div style={{ marginTop: 28 }} />
+                                <h2 className='summary-head'>About Agent Summary</h2>
+                                <p className='bio'>{agent?.bio ? agent?.bio : "Iona, the dynamic leader and main vocalist of AI-DOL, stands out with her striking pink braids and an athletic build, embodying a fusion of strength, elegance, and creativity. Assertive and deeply compassionate, she guides the group with strategic insight..."}</p>
+
+                                <h2 className='summary-head'>Framework</h2>
+                                <p className='bio'>Others</p>
+                                <h2 className='summary-head'>Capabilities</h2>
+                                <div className='cap-flex'>
+                                    {capabilitesFeed?.map((item, index) => {
+                                        return (
+                                            <div className='cap-tag'> {item}</div>
+                                        )
+                                    })}
                                 </div>
                             </div>
-                            <div className="metrics">
-                                <div className="metric">
-                                    <span>Holders</span>
-                                    <span>99,949</span>
+                        </div>
+                        <div className='flex-column-right'>
+                            <div className="right-section">
+                                <div className="swap-buttons">
+                                    <button className={activeTradeTab === "buy" ? "active-button" : "tab-button"} onClick={() => setActiveTradeTab("buy")}>Buy</button>
+                                    <button className={activeTradeTab === "sell" ? "active-button" : "tab-button"} onClick={() => setActiveTradeTab("sell")}>Sell</button>
                                 </div>
-                                <div className="metric">
-                                    <span>24h Volume</span>
+
+                                <div className="input-section">
+                                    <p className="balance-text">0 GRYPHON</p>
+                                    <input
+                                        type="number"
+                                        className="input-box"
+                                        placeholder={activeTradeTab === "buy" ? "Enter the amount of GRYPHON" : "Enter the amount of TICKER"}
+                                        onChange={(e) => setAmountToTrade(e.target.value)}
+                                    />
+                                </div>
+                                {amountToTrade && <p className='est-amt'>You will receive<span style={{ color: '#f85d4f' }}> {estimatedAmount ? parseFloat(Web3.utils.fromWei(estimatedAmount, "ether")).toFixed(8) : '0'} {activeTradeTab === "buy" ? "TICKER" : "GRYPHON"}</span>   </p>}
+                                <div className="amount-buttons">
+                                    <button className="amount-button"><div>25%</div> </button>
+                                    <button className="amount-button"><div>50%</div> </button>
+                                    <button className="amount-button"><div>100%</div> </button>
+                                </div>
+
+                                <div className="trading-fee"><p> Trading Fee</p>
+                                    <IconContext.Provider value={{ size: '1.2em', color: "#707979" }} >
+                                        <div style={{ marginLeft: 4, cursor: "pointer", marginBottom: -4 }}>
+                                            <Tooltip placement="right" color='#666' title="Trade fee description here!">
+                                                <TiInfoOutline />
+                                            </Tooltip>
+                                        </div>
+                                    </IconContext.Provider>
+                                </div>
+                                {activeTradeTab === "buy" ?
+                                    <button className="place-trade-button" onClick={buy_approve} >
+                                        BUY
+                                    </button> : <button className="place-trade-button" onClick={sell_approve}>
+                                        SELL
+                                    </button>}
+                            </div>
+
+                            <div className="stats-container-agent">
+                                <div className="price">$0.000474</div>
+                                <div className="metrics">
+                                    <div className="metric">
+                                        <span>Market Cap</span>
+                                        <span>$477.89k</span>
+                                    </div>
+                                    <div className="metric">
+                                        <span>Liquidity</span>
+                                        <span>$559.51k</span>
+                                    </div>
+                                </div>
+                                <div className="metrics">
+                                    <div className="metric">
+                                        <span>Holders</span>
+                                        <span>99,949</span>
+                                    </div>
+                                    <div className="metric">
+                                        <span>24h Volume</span>
+                                        <span>$1.9k</span>
+                                    </div>
+                                </div>
+                                <div className="top-10">
+                                    <span>Top 10</span>
+                                    <span>76.78%</span>
+                                </div>
+                                <div className="time-frames">
+                                    <div className="time-frame">
+                                        <span>1h</span>
+                                        <span>0.00%</span>
+                                    </div>
+                                    <div className="time-frame">
+                                        <span>24h</span>
+                                        <span>0.00%</span>
+                                    </div>
+                                    <div className="time-frame">
+                                        <span>7d</span>
+                                        <span>-8.63%</span>
+                                    </div>
+                                </div>
+                                <div className="volume">
+                                    <span>Volume</span>
                                     <span>$1.9k</span>
                                 </div>
                             </div>
-                            <div className="top-10">
-                                <span>Top 10</span>
-                                <span>76.78%</span>
-                            </div>
-                            <div className="time-frames">
-                                <div className="time-frame">
-                                    <span>1h</span>
-                                    <span>0.00%</span>
+                            <div className="profile-card-ds">
+                                <div className="header">
+                                    <h2>Developer</h2>
                                 </div>
-                                <div className="time-frame">
-                                    <span>24h</span>
-                                    <span>0.00%</span>
-                                </div>
-                                <div className="time-frame">
-                                    <span>7d</span>
-                                    <span>-8.63%</span>
-                                </div>
-                            </div>
-                            <div className="volume">
-                                <span>Volume</span>
-                                <span>$1.9k</span>
-                            </div>
-                        </div>
-                        <div className="profile-card-ds">
-                            <div className="header">
-                                <h2>Developer</h2>
-                            </div>
-                            <div className="profile-info">
-                                <div className='img-data'>
-                                    <img
-                                        src="https://www.gravatar.com/avatar/?d=retro"
-                                        alt="Avatar"
-                                        className="avatar"
-                                    />
-                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                        <span className="wallet-address">{agent?.creatorId ? getEllipsisTxt(agent?.creatorId, 6) : "Contract Address here"}</span>
-                                        <a href="#" className="view-profile" onClick={() => navigate("/profile")}>View Profile</a>
+                                <div className="profile-info">
+                                    <div className='img-data'>
+                                        <img
+                                            src="https://www.gravatar.com/avatar/?d=retro"
+                                            alt="Avatar"
+                                            className="avatar"
+                                        />
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <span className="wallet-address">{agent?.creatorId ? getEllipsisTxt(agent?.creatorId, 6) : "Contract Address here"}</span>
+                                            <a href="#" className="view-profile" onClick={() => navigate("/profile")}>View Profile</a>
 
+                                        </div>
                                     </div>
+                                    <a href="#" className="profile-link">
+                                        <FaExternalLinkAlt />
+                                    </a>
                                 </div>
-                                <a href="#" className="profile-link">
-                                    <FaExternalLinkAlt />
-                                </a>
-                            </div>
-                            <div className="actions">
-                                <FaTimes className="icon" />
-                                <FaGithub className="icon" />
-                                <FaPaperPlane className="icon" />
-                            </div>
-                            <div className="bio">
-                                <h3>Biography</h3>
-                                <p>Just a chill joker who's been in web3 since the ICO days circa.2017.</p>
+                                <div className="actions">
+                                    <FaTimes className="icon" />
+                                    <FaGithub className="icon" />
+                                    <FaPaperPlane className="icon" />
+                                </div>
+                                <div className="bio">
+                                    <h3>Biography</h3>
+                                    <p>Just a chill joker who's been in web3 since the ICO days circa.2017.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+
                 </div>
-
-
             </div>
-        </div>
+
+            <ToastContainer />
+        </>
     )
 }
 

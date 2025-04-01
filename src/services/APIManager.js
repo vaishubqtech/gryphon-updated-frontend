@@ -11,8 +11,8 @@ const ai_url= "https://api.gryphon.finance/ai/"
 // Marketplace API
 export async function getNonce(publicAddress, chainId) {
   const data = {
-    walletAddress: publicAddress,
-    chainId: "2525"
+    walletAddress:publicAddress,
+    chainId:chainId
   }
   const config = {
     body: JSON.stringify(data),
@@ -44,7 +44,7 @@ export async function getNonce(publicAddress, chainId) {
 export async function verifyUser(publicAddress, chainId, signature) {
   const data = {
     walletAddress: publicAddress,
-    chainId: "2525",
+    chainId:chainId ,
     signature: signature
   }
   const config = {
@@ -56,7 +56,7 @@ export async function verifyUser(publicAddress, chainId, signature) {
     
   };
   try {
-    const url = `${marketplace_url}api/v1/creators/verify-user-signature` ;
+    const url = `${marketplace_url}api/v1/creators/verify-signature` ;
     const response = await fetch(url, config);
 
     if (!response.ok) {
@@ -105,13 +105,14 @@ export async function getProfile(token) {
 
 
 // AI API
-export async function getAllAgents() {
+export async function getAllAgents(token) {
   try {
     const response = await fetch(`${ai_url}api/v1/agents`, {
       method: 'GET',
       
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
     });
 

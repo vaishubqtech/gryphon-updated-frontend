@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./agentList.css";
 import Avatar from "../../assets/images/Frame 1394.png";
 import Gold from "../../assets/images/Gold.png";
@@ -7,6 +7,7 @@ import Bronze from "../../assets/images/bronze.png";
 import { IconContext } from "react-icons";
 import { BiSolidWalletAlt } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
+import { getAllAgents } from "../../services/APIManager";
 
 const data = [
   {
@@ -59,6 +60,7 @@ const AgentList = () => {
     const navigate = useNavigate();
   const [activeSortTab, setActiveSortTab] = useState(0);
   const [copiedIndex, setCopiedIndex] = useState(null);
+  const [agents, setAgents] = useState([]);
 
   const handleCopy = (index, wallet) => {
     navigator.clipboard.writeText(wallet);
@@ -68,6 +70,28 @@ const AgentList = () => {
       setCopiedIndex(null); // Hide after 1.5 seconds
     }, 1500);
   };
+
+  
+  useEffect(() => {
+    fetchAgents();
+  }, []);
+
+
+  const fetchAgents = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+      console.log("token", token)
+      const response = await getAllAgents(token);
+      console.log("response", response)
+      if (response.success) {
+        setAgents(response.data);
+      }
+    } catch (err) {
+      console.log("error in get All agents", err)
+    } finally {
+    }
+  };
+
   return (
     <div className="agent-list-sec">
       <div className="agent-top-flex">
