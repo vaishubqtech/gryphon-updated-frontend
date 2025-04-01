@@ -23,7 +23,7 @@ export async function getNonce(publicAddress, chainId) {
     
   };
   try {
-    const url = `${marketplace_url}api/v1/creators/get-nounce`;
+    const url = `${marketplace_url}api/v1/creators/get-nonce`;
     const response = await fetch(url, config);
 
     if (!response.ok) {

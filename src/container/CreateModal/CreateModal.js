@@ -9,7 +9,7 @@ import InfoImage from "../../assets/images/info-vector.png"
 import { Tooltip } from 'antd';
 import { useNavigate } from "react-router-dom";
 import Web3 from "web3";
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { createAgent } from "../../services/APIManager";
 import { approveFactory, LaunchAgent } from "../../services/gryphon-web3";
@@ -31,10 +31,10 @@ const CreateModal = ({ isOpen, onClose }) => {
     const [purchaseAmount, setPurchaseAmt] = useState()
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
-    const [telegram, setTelegram] = useState("");
-    const [twitter, setTwitter] = useState("");
-    const [website, setWebsite] = useState("");
-    const [youtube, setYoutube] = useState("");
+    const [telegram, setTelegram] = useState("https://t.me/gryphon");
+    const [twitter, setTwitter] = useState("https://twitter.com/gryphon");
+    const [website, setWebsite] = useState("https://www.gryphon.com");
+    const [youtube, setYoutube] = useState("https://www.youtube.com/c/gryphon");
     const [file, setFile] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [image, setImage] = useState(null);
@@ -84,11 +84,21 @@ const CreateModal = ({ isOpen, onClose }) => {
 
 
     const approve_Factory = async () => {
+        const toastId = toast.info("Approving your contract...", {
+            position: "top-right",
+            autoClose: false,
+        });
         try {
-
+            if (!purchaseAmount) {
+                toast.dismiss(toastId);
+                toast.error("Please enter valid GRYPHON amount", {
+                    position: "top-right",
+                });
+            }
             const approveFactoryRes = await approveFactory(Web3.utils.toWei(purchaseAmount, "ether"), walletAddress);
             console.log("-----approveFactoryRes-------", approveFactoryRes)
             if (approveFactoryRes) {
+                toast.dismiss(toastId);
                 await create_agent();
             }
         } catch (e) {
@@ -98,27 +108,36 @@ const CreateModal = ({ isOpen, onClose }) => {
     }
 
     const create_agent = async () => {
+        const loadingToast = toast.loading("Launching agent...");
         try {
-            const imageUploadURL = await handleUpload();
-            if (!imageUploadURL) {
-                toast.error("Error in Uplaoading image", {
-                    position: "top-right",
-                });
-                return;
-            }
-            const createAgentRes = await LaunchAgent(name, ticker, [0, 1, 2, 3], bio, file, twitter, telegram, youtube, website, Web3.utils.toWei(purchaseAmount, "ether"), walletAddress);
+            // const imageUploadURL = await handleUpload();
+            // if (!imageUploadURL) {
+            //     toast.error("Error in Uplaoading image", {
+            //         position: "top-right",
+            //     });
+            //     return;
+            // }
+            const createAgentRes = await LaunchAgent(name, ticker, [0, 1, 2, 3], bio, "https://s3.ap-southeast-1.amazonaws.com/virtualprotocolcdn/name_576abaca6e.png", twitter, telegram, youtube, website, Web3.utils.toWei(purchaseAmount, "ether"), walletAddress);
             console.log("-----createAgentRes-------", createAgentRes)
             if (createAgentRes?.status) {
-                toast.success("Agent created successfully!", {
-                    position: "top-right",
-                    className: "copy-toast-message",
+                console.log("||||| launched event ||||", createAgentRes?.events?.Launched)
+                console.log("||||| erc20 address for agent ||||", createAgentRes?.events?.Launched?.address)
+                toast.update(loadingToast, {
+                    render: "Agent created successfully!",
+                    type: "success",
+                    isLoading: false,
                 });
                 resetForm();
             } else {
-                toast.error("Error in Launching agent", {
-                    position: "top-right",
+                toast.update(loadingToast, {
+                    render: "Error in launching agent",
+                    type: "error",
+                    isLoading: false,
                 });
             }
+            setTimeout(() => {
+                onClose();
+            }, 3000);
         } catch (e) {
             console.log("error in create_agent ", e)
             return;
@@ -174,6 +193,7 @@ const CreateModal = ({ isOpen, onClose }) => {
     };
 
     const resetForm = () => {
+
         setName("");
         setFile("");
         setErc20Address("");
@@ -183,70 +203,14 @@ const CreateModal = ({ isOpen, onClose }) => {
         setGoal("");
         setPersonality("");
         setNiche("");
+        setPurchaseAmt()
     };
 
     return (
-        <div className="modal-overlay">
-            <div className="modal">
-                {modalStatus === 0 ? <>
-                    <div className='modal-head'>
-                        <div className='modal-heading'>AI Agent Creation</div>
-                        <IconContext.Provider value={{ color: "#F2F2F28A", className: "global-class-name" }}>
-                            <div style={{ cursor: 'pointer' }} onClick={onClose}>
-                                <MdClose />
-                            </div>
-                        </IconContext.Provider>
-                    </div>
-                    <div className='modal-body'>
-                        <div className='agent-n-t-flex'>
-                            <div className='top-50'>
-                                <label>AI Agent Name</label>
-                                <input type="text" placeholder="Agent Name" value={name}
-                                    onChange={(e) => setName(e.target.value)} />
-                            </div>
-                            <div className='top-50'>
-                                <label>AI Agent Ticker</label>
-                                <input type="text" placeholder="$" value={ticker}
-                                    onChange={(e) => setTicker(e.target.value)} />
-                            </div>
-                        </div>
-                        <label>Agent Profile Picture</label>
-                        <div className="upload-container">
-                            <label className="image-upload">
-                                <input type="file" accept="image/png, image/jpeg, image/webp, image/gif" onChange={handleFileChange} className='upload-input' />
-                                <div className="image-preview">
-                                    {image ? <img src={image} alt="Profile" /> : <FaCamera className="camera-icon" />}
-                                </div>
-                            </label>
-                            <p className="upload-text">JPG, PNG, WEBP, and GIF files supported.<br />Max file size is 5MB</p>
-                        </div>
-
-                        <label>Agent Type</label>
-                        <select id="agentType" value={agentType} onChange={(e) => setAgentType(e.target.value)}>
-                            <option value="None" >None</option>
-                            <option value="on-chain">On-chain</option>
-                            <option value="informative">Informative</option>
-                            <option value="Productivity">Productivity</option>
-                            <option value="Entertainment">Entertainment</option>
-                            <option value="Creative">Creative</option>
-                        </select>
-
-                        <label>Pitch your agent</label>
-                        <textarea placeholder="Tell everyone what your agent does and how it can help the community" value={niche} onChange={(e) => setNiche(e.target.value)} />
-
-                        <label>Goals and purpose of your agent</label>
-                        <textarea placeholder="i.e. - Persona, goals, guidelines, thinking style, communication style, etc." value={goal} onChange={(e) => setGoal(e.target.value)} />
-
-                        <label>Team bio</label>
-                        <textarea placeholder="None" value={bio}
-                            onChange={(e) => setBio(e.target.value)} />
-
-                        <div className="modal-actions">
-                            <button className="cancel" onClick={onClose}>Cancel</button>
-                            <button className="next" onClick={() => setModalStatus(1)}>Next</button>
-                        </div>
-                    </div> </> :
-                    <>  {modalStatus === 1 ? <>
+        <>
+            <div className="modal-overlay">
+                <div className="modal">
+                    {modalStatus === 0 ? <>
                         <div className='modal-head'>
                             <div className='modal-heading'>AI Agent Creation</div>
                             <IconContext.Provider value={{ color: "#F2F2F28A", className: "global-class-name" }}>
@@ -255,43 +219,58 @@ const CreateModal = ({ isOpen, onClose }) => {
                                 </div>
                             </IconContext.Provider>
                         </div>
-                        <div className='modal-body '>
-                            <div className='body-height'>
-                                <div className='modal-heading'>Connecting Socials</div>
-                                <div style={{ display: 'flex', alignItems: 'center', marginTop: 25, marginBottom: 15 }}>
-                                    <div className='acc-label'>Agent’s X Account</div>
-                                    <div className='red-dot' />
-                                    <div className='acc-red'>Please connect your X account</div>
+                        <div className='modal-body'>
+                            <div className='agent-n-t-flex'>
+                                <div className='top-50'>
+                                    <label>AI Agent Name*</label>
+                                    <input type="text" placeholder="Agent Name" value={name}
+                                        onChange={(e) => setName(e.target.value)} />
                                 </div>
-                                <div className='x-cta'>Connect X</div>
-
-                                <div className='acc-label' style={{ marginBottom: 10 }}>How would you like to setup the X account</div>
-                                <select id="agentType">
-                                    <option>Use Gryphon's AI Stack</option>
-                                </select>
-
-                                <div style={{ display: 'flex', alignItems: 'center', marginTop: 25, marginBottom: 15 }}>
-                                    <div className='acc-label'>How would you like to setup the X account</div>
-                                    <div className='red-dot' />
-                                    <div className='acc-red'>Please select an option</div>
-                                </div>
-                                <div className='setup-x'>
-                                    <div className='setup-single'>I will manage it myself</div>
-                                    <div className='setup-single'>Use Gryphon's AI Stack</div>
+                                <div className='top-50'>
+                                    <label>AI Agent Ticker*</label>
+                                    <input type="text" placeholder="$" value={ticker}
+                                        onChange={(e) => setTicker(e.target.value)} />
                                 </div>
                             </div>
+                            <label>Agent Profile Picture</label>
+                            <div className="upload-container">
+                                <label className="image-upload">
+                                    <input type="file" accept="image/png, image/jpeg, image/webp, image/gif" onChange={handleFileChange} className='upload-input' />
+                                    <div className="image-preview">
+                                        {image ? <img src={image} alt="Profile" /> : <FaCamera className="camera-icon" />}
+                                    </div>
+                                </label>
+                                <p className="upload-text">JPG, PNG, WEBP, and GIF files supported.<br />Max file size is 5MB</p>
+                            </div>
 
-                        </div>
-                        <div className="modal-actions" style={{ padding: "20px 20px" }}>
-                            <button className="cancel" onClick={onClose}>Cancel</button>
-                            <button className="next" onClick={() => setModalStatus(2)}>Next</button>
-                        </div>
-                    </> :
+                            <label>Agent Type*</label>
+                            <select id="agentType" value={agentType} onChange={(e) => setAgentType(e.target.value)}>
+                                <option value="None" >None</option>
+                                <option value="on-chain">On-chain</option>
+                                <option value="informative">Informative</option>
+                                <option value="Productivity">Productivity</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Creative">Creative</option>
+                            </select>
 
-                        <>
+                            <label>Pitch your agent*</label>
+                            <textarea placeholder="Tell everyone what your agent does and how it can help the community" value={niche} onChange={(e) => setNiche(e.target.value)} />
 
+                            <label>Goals and purpose of your agent*</label>
+                            <textarea placeholder="i.e. - Persona, goals, guidelines, thinking style, communication style, etc." value={goal} onChange={(e) => setGoal(e.target.value)} />
+
+                            <label>Team bio*</label>
+                            <textarea placeholder="None" value={bio}
+                                onChange={(e) => setBio(e.target.value)} />
+
+                            <div className="modal-actions">
+                                <button className="cancel" onClick={onClose}>Cancel</button>
+                                <button className="next" onClick={() => setModalStatus(1)}>Next</button>
+                            </div>
+                        </div> </> :
+                        <>  {modalStatus === 1 ? <>
                             <div className='modal-head'>
-                                <div className='modal-heading'>Payment Summary</div>
+                                <div className='modal-heading'>AI Agent Creation</div>
                                 <IconContext.Provider value={{ color: "#F2F2F28A", className: "global-class-name" }}>
                                     <div style={{ cursor: 'pointer' }} onClick={onClose}>
                                         <MdClose />
@@ -300,59 +279,104 @@ const CreateModal = ({ isOpen, onClose }) => {
                             </div>
                             <div className='modal-body '>
                                 <div className='body-height'>
-                                    <div className='modal-heading'>Buy $GRYPHON</div>
-                                    <div className='buy-desc'>*Purchasing a small amount of your token is optional but can help protect your coin from snipers.</div>
-                                    <div className='acc-label' style={{ marginBottom: 10 }}>GRYPHON</div>
-                                    <div className='buy-modal-input'>
-                                        <input placeholder='100' className='' />
-                                        <img src={LogoImage} alt="" className='buy-modal-img' />
+                                    <div className='modal-heading'>Connecting Socials</div>
+                                    <div style={{ display: 'flex', alignItems: 'center', marginTop: 25, marginBottom: 15 }}>
+                                        <div className='acc-label'>Agent’s X Account</div>
+                                        <div className='red-dot' />
+                                        <div className='acc-red'>Please connect your X account</div>
                                     </div>
-                                    <div className='buy-desc' style={{ padding: "5px 0 0" }}><span>You will receive 1000</span>   <img src={ProfileImage} alt="" className='buy-span-img' /> <span>(0%)</span></div>
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <div className='buy-desc' style={{ padding: "5px 0 0" }}>Trading Fee</div>
-                                        <div style={{ marginLeft: 4, cursor: "pointer", marginBottom: -10 }}>
-                                            <Tooltip placement="right" color='#2e3844' title="Trading fees earned will be used to cover inference charges. Once the fees are fully utilized, inferences will fail until more fees are accrued.">
-                                                <img src={InfoImage} alt="" className='vector-info' />
-                                            </Tooltip>
-                                        </div>
+                                    <div className='x-cta'>Connect X</div>
 
+                                    <div className='acc-label' style={{ marginBottom: 10 }}>How would you like to setup the X account</div>
+                                    <select id="agentType">
+                                        <option>Use Gryphon's AI Stack</option>
+                                    </select>
+
+                                    <div style={{ display: 'flex', alignItems: 'center', marginTop: 25, marginBottom: 15 }}>
+                                        <div className='acc-label'>How would you like to setup the X account</div>
+                                        <div className='red-dot' />
+                                        <div className='acc-red'>Please select an option</div>
                                     </div>
-                                    <div className='border-line-modal' />
-                                    <div className='modal-heading' style={{ paddingBottom: 25 }}>Payment Summary</div>
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between" }}>
-                                        <div className='buy-desc' style={{ padding: 0 }}>Agent Creation Fee</div>
-                                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                                            <div className='buy-desc' style={{ marginRight: 5, padding: 0 }}>100</div>
+                                    <div className='setup-x'>
+                                        <div className='setup-single'>I will manage it myself</div>
+                                        <div className='setup-single'>Use Gryphon's AI Stack</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div className="modal-actions" style={{ padding: "20px 20px" }}>
+                                <button className="cancel" onClick={() => { setModalStatus(0) }}>Cancel</button>
+                                <button className="next" onClick={() => setModalStatus(2)}>Next</button>
+                            </div>
+                        </> :
+
+                            <>
+
+                                <div className='modal-head'>
+                                    <div className='modal-heading'>Payment Summary</div>
+                                    <IconContext.Provider value={{ color: "#F2F2F28A", className: "global-class-name" }}>
+                                        <div style={{ cursor: 'pointer' }} onClick={onClose}>
+                                            <MdClose />
+                                        </div>
+                                    </IconContext.Provider>
+                                </div>
+                                <div className='modal-body '>
+                                    <div className='body-height'>
+                                        <div className='modal-heading'>Buy $GRYPHON</div>
+                                        <div className='buy-desc'>*Purchasing a small amount of your token is optional but can help protect your coin from snipers.</div>
+                                        <div className='acc-label' style={{ marginBottom: 10 }}>GRYPHON</div>
+                                        <div className='buy-modal-input'>
+                                            <input placeholder='100' className='' type='number' onChange={(e) => setPurchaseAmt(e.target.value)} />
                                             <img src={LogoImage} alt="" className='buy-modal-img' />
                                         </div>
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between", marginTop: 10 }}>
-                                        <div className='buy-desc' style={{ padding: 0 }}>Your Initial Buy</div>
+                                        <div className='buy-desc' style={{ padding: "5px 0 0" }}><span>You will receive 1000</span>   <img src={ProfileImage} alt="" className='buy-span-img' /> <span>(0%)</span></div>
                                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                                            <div className='buy-desc' style={{ marginRight: 5, padding: 0 }}>1000</div>
-                                            <img src={ProfileImage} alt="" className='buy-modal-img' />
+                                            <div className='buy-desc' style={{ padding: "5px 0 0" }}>Trading Fee</div>
+                                            <div style={{ marginLeft: 4, cursor: "pointer", marginBottom: -10 }}>
+                                                <Tooltip placement="right" color='#2e3844' title="Trading fees earned will be used to cover inference charges. Once the fees are fully utilized, inferences will fail until more fees are accrued.">
+                                                    <img src={InfoImage} alt="" className='vector-info' />
+                                                </Tooltip>
+                                            </div>
 
                                         </div>
-                                    </div>
-                                    <div className='border-line-modal-dash' />
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between" }}>
-                                        <div>Total</div>
-                                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                                            <div className='buy-desc' style={{ marginRight: 5, padding: 0 }}>(100 Gryphon + 1000 $AGO)</div>
-                                            <div style={{ marginRight: 5 }}>200</div>
-                                            <img src={LogoImage} alt="" className='buy-modal-img' />
+                                        <div className='border-line-modal' />
+                                        <div className='modal-heading' style={{ paddingBottom: 25 }}>Payment Summary</div>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between" }}>
+                                            <div className='buy-desc' style={{ padding: 0 }}>Agent Creation Fee</div>
+                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div className='buy-desc' style={{ marginRight: 5, padding: 0 }}>100</div>
+                                                <img src={LogoImage} alt="" className='buy-modal-img' />
+                                            </div>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between", marginTop: 10 }}>
+                                            <div className='buy-desc' style={{ padding: 0 }}>Your Initial Buy</div>
+                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div className='buy-desc' style={{ marginRight: 5, padding: 0 }}>1000</div>
+                                                <img src={ProfileImage} alt="" className='buy-modal-img' />
+
+                                            </div>
+                                        </div>
+                                        <div className='border-line-modal-dash' />
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between" }}>
+                                            <div>Total</div>
+                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div className='buy-desc' style={{ marginRight: 5, padding: 0 }}>(100 Gryphon + 1000 $AGO)</div>
+                                                <div style={{ marginRight: 5 }}>200</div>
+                                                <img src={LogoImage} alt="" className='buy-modal-img' />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="modal-actions" style={{ padding: "20px 20px" }}>
-                                <button className="cancel" onClick={onClose}>Cancel</button>
-                                <button className="next" onClick={submitWeb3} >Create Agent</button>
-                            </div>
-                        </>}</>
-                }
-            </div>
-        </div >
+                                <div className="modal-actions" style={{ padding: "20px 20px" }}>
+                                    <button className="cancel" onClick={() => { setModalStatus(1) }}>Cancel</button>
+                                    <button className="next" onClick={submitWeb3} >Create Agent</button>
+                                </div>
+                            </>}</>
+                    }
+                </div>
+            </div >
+            <ToastContainer />
+        </>
     );
 };
 
