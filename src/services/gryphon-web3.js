@@ -74,22 +74,22 @@ export const amountOutValue = async (agentERC20Addr, GryphonAddrOrZerothAddr, tr
     }
 }
 
+//approve [bonding,gry cont addr] => foramt of gryp
 
 export const buyApprove = async (gryphonAmountInWei,walletAddress) => {
     try {
         const web3 = new Web3(window.ethereum);
         const contract = new web3.eth.Contract(ERC20ABI.abi, config.gryphon_token_address);
-        let result = await contract.methods.approve(config.bonding_contract_address, gryphonAmountInWei).send({ from: walletAddress });
+        let result = await contract.methods.approve(config.routing_contract_address, gryphonAmountInWei).send({ from: walletAddress });
         console.log("approveFactory", result);
         return result;
     } catch (e) {
-        console.log("error in approveFactory", e)
+        console.log("error in approveTrade", e)
         return;
     }
 }
 
-//approve [bonding,gry cont addr] => foramt of gryp
-export const buyTrade = async (buyAmtInwei, agentERC20Addr, walletAddress) => {
+export const buyTrade = async (buyAmtInwei, agentERC20Addr,walletAddress) => {
     try {
         const web3 = new Web3(window.ethereum);
         const contract = new web3.eth.Contract(BondingV2ABI.abi, config.bonding_contract_address);
@@ -102,12 +102,13 @@ export const buyTrade = async (buyAmtInwei, agentERC20Addr, walletAddress) => {
     }
 }
 
+// //approve [bonding,agent token addr] => foramt of gryp
 
 export const sellApprove = async (gryphonAmountInWei,walletAddress) => {
     try {
         const web3 = new Web3(window.ethereum);
-        const contract = new web3.eth.Contract(ERC20ABI.abi, config.gryphon_token_address);
-        let result = await contract.methods.approve(config.bonding_contract_address, gryphonAmountInWei).send({ from: walletAddress });
+        const contract = new web3.eth.Contract(ERC20ABI.abi, "0xcE47ea4B71BdF82E983995B0696F41Cd6bE076Ce");
+        let result = await contract.methods.approve(config.routing_contract_address, gryphonAmountInWei).send({ from: walletAddress });
         console.log("approveFactory", result);
         return result;
     } catch (e) {
@@ -115,12 +116,11 @@ export const sellApprove = async (gryphonAmountInWei,walletAddress) => {
         return;
     }
 }
-// //approve [bonding,agent token addr] => foramt of gryp
 export const sellTrade = async (sellAmtInwei, walletAddress) => {
     try {
         const web3 = new Web3(window.ethereum);
-        const contract = new web3.eth.Contract(BondingV2ABI, config.bonding_contract_address);
-        let result = await contract.methods.sell(sellAmtInwei, config.gryphon_token_address).send({ from: walletAddress });
+        const contract = new web3.eth.Contract(BondingV2ABI.abi, config.bonding_contract_address);
+        let result = await contract.methods.sell(sellAmtInwei,"0xcE47ea4B71BdF82E983995B0696F41Cd6bE076Ce").send({ from: walletAddress });
         console.log("sellTrade", result);
         return result;
     } catch (e) {

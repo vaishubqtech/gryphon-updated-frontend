@@ -80,7 +80,6 @@ const AgentList = () => {
   const fetchAgents = async () => {
     try {
       const token = localStorage.getItem("authToken");
-      console.log("token", token)
       const response = await getAllAgents(token);
       console.log("response", response)
       if (response.success) {
@@ -131,7 +130,7 @@ const AgentList = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((item, index) => (
+            {data?.map((item, index) => (
               <tr key={index} style={{cursor:"pointer"}} onClick={() => navigate(`/detail-screen/${item.id}`)}>
                 <td>
                   <div className="agent-info">
@@ -140,7 +139,7 @@ const AgentList = () => {
                   </div>
                 </td>
                 <td className="wallet">
-                  {item.wallet}{" "}
+                  {item.wallet ?  item.wallet : 'Wallet Address'}{" "}
                   <span className="copy-btn">
                     <IconContext.Provider
                       value={{
@@ -158,14 +157,17 @@ const AgentList = () => {
                   <span className="copied-popup">Copied!</span>
                 )}
                 </td>
-                <td>{item.marketCap}</td>
-                <td>{item.tvl}</td>
-                <td>{item.volume}</td>
-                <td className="change">{item.change}</td>
-                <td className={`ranking ${item.ranking.toLowerCase()}`}>
+                <td>{item.marketCap || 0}</td>
+                <td>{item.tvl || 0}</td>
+                <td>{item.volume || 0}</td>
+                <td className="change">{item.change || 0}</td>
+                {/* <td className={`ranking ${item?.ranking.toLowerCase()}`}>
                   {typeof item.ranking === "string" && item.ranking.length <= 3
                     ? item.ranking
                     : <img src={item.ranking} alt="" className="ranking-img"/>}
+                </td> */}
+                <td>
+                  Ranking
                 </td>
               </tr>
             ))}

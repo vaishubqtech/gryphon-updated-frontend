@@ -368,6 +368,7 @@ label {
 .buy-modal-img{
     width: 25px;
     height: 24px;
+    border-radius: 50%;
 }
 .buy-modal-input input{
     background: transparent;
@@ -382,6 +383,8 @@ label {
     width: 25px;
     height: auto;
     margin-bottom: -8px;
+    border-radius: 50%;
+
 }
 
 

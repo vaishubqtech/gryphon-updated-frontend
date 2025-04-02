@@ -43,34 +43,40 @@ const CreateModal = ({ isOpen, onClose }) => {
 
 
     const handleFileChange = (event) => {
-        setFile(event.target.files[0]);
+        const selectedFile = event.target.files[0];
+        if (selectedFile) {
+            setFile(selectedFile);
+            setImage(URL.createObjectURL(selectedFile));
+        }
     };
 
     const handleUpload = async () => {
+
         if (!file) {
             setMessage("Please select a file.");
             return;
         }
 
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append("image", file);
         console.log("image File ", file)
+
         try {
             setUploading(true);
             setMessage("");
 
             const response = await fetch(
-                "http://api.gryphon.finance/ai/api/v1/upload/single",
+                "https://api.gryphon.finance/ai/api/v1/upload/single",
                 {
                     method: "POST",
                     body: formData,
                 }
             );
-
             const result = await response.json();
-
-            if (response.ok) {
+            if (result) {
+                console.log("image url", result.data.url )
                 return result.data.url;
+                
             } else {
                 return false;
             }
@@ -111,14 +117,18 @@ const CreateModal = ({ isOpen, onClose }) => {
     const create_agent = async () => {
         const loadingToast = toast.loading("Launching agent...");
         try {
-            // const imageUploadURL = await handleUpload();
-            // if (!imageUploadURL) {
-            //     toast.error("Error in Uplaoading image", {
-            //         position: "top-right",
-            //     });
-            //     return;
-            // }
-            const createAgentRes = await LaunchAgent(name, ticker, [0, 1, 2, 3], bio, "https://s3.ap-southeast-1.amazonaws.com/virtualprotocolcdn/name_576abaca6e.png", twitter, telegram, youtube, website, Web3.utils.toWei(purchaseAmount, "ether"), walletAddress);
+            const imageUploadURL = await handleUpload();
+            console.log("imageUploadURL", imageUploadURL)
+            if (!imageUploadURL) {
+                toast.update(loadingToast, {
+                    render: "Error in uploading image!",
+                    type: "error",
+                    isLoading: false,
+                    autoClose: 3000,
+                });
+                return;
+            }
+            const createAgentRes = await LaunchAgent(name, ticker, [0, 1, 2, 3], bio, imageUploadURL, twitter, telegram, youtube, website, Web3.utils.toWei(purchaseAmount, "ether"), walletAddress);
             console.log("-----createAgentRes-------", createAgentRes)
             if (createAgentRes?.status) {
                 console.log("||||| launched event ||||", createAgentRes?.events?.Launched)
@@ -126,6 +136,7 @@ const CreateModal = ({ isOpen, onClose }) => {
                     render: "Agent created successfully!",
                     type: "success",
                     isLoading: false,
+                    autoClose: 3000,
                 });
                 resetForm();
             } else {
@@ -133,6 +144,7 @@ const CreateModal = ({ isOpen, onClose }) => {
                     render: "Error in launching agent",
                     type: "error",
                     isLoading: false,
+                    autoClose: 3000,
                 });
             }
             setTimeout(() => {
@@ -193,7 +205,7 @@ const CreateModal = ({ isOpen, onClose }) => {
     };
 
     const resetForm = () => {
-
+        setModalStatus(0) 
         setName("");
         setFile("");
         setErc20Address("");
@@ -205,6 +217,16 @@ const CreateModal = ({ isOpen, onClose }) => {
         setNiche("");
         setPurchaseAmt()
     };
+
+    const moveModal1=() =>{
+        if(name && ticker && bio && agentType){
+            setModalStatus(1)
+        }else{
+            toast.warning("Please fill the required fields", {
+                position: "top-right",
+              });
+        }
+    }
 
     return (
         <>
@@ -253,10 +275,10 @@ const CreateModal = ({ isOpen, onClose }) => {
                                 <option value="Creative">Creative</option>
                             </select>
 
-                            <label>Pitch your agent*</label>
+                            <label>Pitch your agent</label>
                             <textarea placeholder="Tell everyone what your agent does and how it can help the community" value={niche} onChange={(e) => setNiche(e.target.value)} />
 
-                            <label>Goals and purpose of your agent*</label>
+                            <label>Goals and purpose of your agent</label>
                             <textarea placeholder="i.e. - Persona, goals, guidelines, thinking style, communication style, etc." value={goal} onChange={(e) => setGoal(e.target.value)} />
 
                             <label>Team bio*</label>
@@ -265,7 +287,8 @@ const CreateModal = ({ isOpen, onClose }) => {
 
                             <div className="modal-actions">
                                 <button className="cancel" onClick={onClose}>Cancel</button>
-                                <button className="next" onClick={() => setModalStatus(1)}>Next</button>
+                                <button className="next" onClick={moveModal1}>Next</button>
+                                {/* <button className="next" onClick={handleUpload}>Next</button> */}
                             </div>
                         </div> </> :
                         <>  {modalStatus === 1 ? <>
@@ -322,14 +345,14 @@ const CreateModal = ({ isOpen, onClose }) => {
                                 </div>
                                 <div className='modal-body '>
                                     <div className='body-height'>
-                                        <div className='modal-heading'>Buy $GRYPHON</div>
+                                        <div className='modal-heading'>Buy ${ticker}</div>
                                         <div className='buy-desc'>*Purchasing a small amount of your token is optional but can help protect your coin from snipers.</div>
                                         <div className='acc-label' style={{ marginBottom: 10 }}>GRYPHON</div>
                                         <div className='buy-modal-input'>
                                             <input placeholder='100' className='' type='number' onChange={(e) => setPurchaseAmt(e.target.value)} />
                                             <img src={LogoImage} alt="" className='buy-modal-img' />
                                         </div>
-                                        <div className='buy-desc' style={{ padding: "5px 0 0" }}><span>You will receive 1000</span>   <img src={ProfileImage} alt="" className='buy-span-img' /> <span>(0%)</span></div>
+                                        <div className='buy-desc' style={{ padding: "5px 0 0" }}><span>You will receive 1000</span>   <img src={image ? image :'https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg'}  alt="" className='buy-span-img' /> <span>(0%)</span></div>
                                         <div style={{ display: 'flex', alignItems: 'center' }}>
                                             <div className='buy-desc' style={{ padding: "5px 0 0" }}>Trading Fee</div>
                                             <div style={{ marginLeft: 4, cursor: "pointer", marginBottom: -10 }}>
@@ -351,8 +374,8 @@ const CreateModal = ({ isOpen, onClose }) => {
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between", marginTop: 10 }}>
                                             <div className='buy-desc' style={{ padding: 0 }}>Your Initial Buy</div>
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <div className='buy-desc' style={{ marginRight: 5, padding: 0 }}>1000</div>
-                                                <img src={ProfileImage} alt="" className='buy-modal-img' />
+                                                <div className='buy-desc' style={{ marginRight: 5, padding: 0 }}> {purchaseAmount?purchaseAmount:"0"}</div>
+                                                <img src={image ? image :'https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg'} alt="" className='buy-modal-img' />
 
                                             </div>
                                         </div>
@@ -360,8 +383,8 @@ const CreateModal = ({ isOpen, onClose }) => {
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between" }}>
                                             <div>Total</div>
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <div className='buy-desc' style={{ marginRight: 5, padding: 0 }}>(100 Gryphon + 1000 $AGO)</div>
-                                                <div style={{ marginRight: 5 }}>200</div>
+                                                <div className='buy-desc' style={{ marginRight: 5, padding: 0 }}>(100 Gryphon + {purchaseAmount?purchaseAmount:"0"} ${ticker})</div>
+                                                <div style={{ marginRight: 5 }}>   {100 + (purchaseAmount ? Number(purchaseAmount) : 0)}</div>
                                                 <img src={LogoImage} alt="" className='buy-modal-img' />
                                             </div>
                                         </div>
