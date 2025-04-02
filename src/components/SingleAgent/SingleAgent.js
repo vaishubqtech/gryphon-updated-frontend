@@ -11,7 +11,7 @@ import { Tooltip } from 'antd';
 import Avatar from "../../assets/images/Frame 1394.png";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { amountOutValue, buyApprove, buyTrade, sellApprove, sellTrade } from '../../services/gryphon-web3';
+import { amountOutValue, buyApprove, buyTrade, getTokenBalance, sellApprove, sellTrade } from '../../services/gryphon-web3';
 import config from '../../config';
 import Web3 from 'web3';
 import { getAgentById } from '../../services/APIManager';
@@ -40,6 +40,7 @@ const SingleAgent = () => {
     const [estimatedAmount, setEstimatedAmount] = useState()
     const [buyHashValue, setBuyHashValue] = useState()
     const [sellHashValue, setSellHashValue] = useState()
+    const [gryphonMaxBalance, setGryphonMaxBalance] = useState()
 
     useEffect(() => {
         if (id) {
@@ -47,7 +48,9 @@ const SingleAgent = () => {
             fetchAgent();
         }
     }, [id]);
-
+    useEffect(()=>{
+        getGryphonBalance()
+    },[buyHashValue,sellHashValue])
     const handleCopy = async () => {
         toast.success("ERC20Address copied!", {
             position: "top-right",
@@ -203,6 +206,18 @@ const SingleAgent = () => {
         }
     }
 
+    const getGryphonBalance = async() =>{
+        try{
+            const GBalance_res = await getTokenBalance(walletAddress);
+            console.log("GBalance_res", GBalance_res);
+            let balanceInEth = parseFloat(Web3.utils.fromWei(GBalance_res, "ether"));
+            let formattedBalance = balanceInEth % 1 === 0 ? balanceInEth.toFixed(0) : balanceInEth.toFixed(4);
+            setGryphonMaxBalance(formattedBalance.toString())
+        }catch(e){
+            console.log("error in gryphon balance", e)
+        }
+    }
+
     const transactionRoutingBuy = () => {
         const url = `https://testnet.bscscan.com/tx/${buyHashValue}`;
         window.open(url, "_blank");
@@ -328,11 +343,11 @@ const SingleAgent = () => {
                                 </div>
 
                                 <div className="input-section">
-                                    <p className="balance-text">0 GRYPHON</p>
+                                    <p className="balance-text">{activeTradeTab === "buy" ? `${gryphonMaxBalance?gryphonMaxBalance:'0'} GRYPHON` : "0 AGENT "}</p>
                                     <input
                                         type="number"
                                         className="input-box"
-                                        placeholder={activeTradeTab === "buy" ? "Enter the amount of GRYPHON" : "Enter the amount of TICKER"}
+                                        placeholder={activeTradeTab === "buy" ? "Enter the amount of GRYPHON" : "Enter the amount of AGENT"}
                                         onChange={(e) => { setAmountToTrade(e.target.value); setBuyHashValue(); setSellHashValue() }}
                                     />
                                 </div>
@@ -350,7 +365,7 @@ const SingleAgent = () => {
                                 <div className="trading-fee"><p> Trading Fee</p>
                                     <IconContext.Provider value={{ size: '1.2em', color: "#707979" }} >
                                         <div style={{ marginLeft: 4, cursor: "pointer", marginBottom: -4 }}>
-                                            <Tooltip placement="right" color='#666' title="Trade fee description here!">
+                                            <Tooltip placement="right" color='#666' title="Trading fees earned will be used to cover inference charges. Once the fees are fully utilized, inferences will fail until more fees are accrued.">
                                                 <TiInfoOutline />
                                             </Tooltip>
                                         </div>

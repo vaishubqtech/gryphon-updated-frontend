@@ -32,28 +32,7 @@ export const createContractObject = async function (
     }
   };
 
-export const getTokenBalance = async (
-    contractABI,
-    contractAddress,
-    walletAddress
-) => {
-    try {
-         if (typeof window !== "undefined" && window.ethereum) {
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
 
-            const web3 = new Web3(window.ethereum);
-            const contract = new web3.eth.Contract(contractABI, contractAddress);
-            let result = await contract.methods.balanceOf(walletAddress).call();
-            console.log("getBalance", result);
-            return result;
-        } else {
-            throw new Error("Ethereum provider not found.");
-        }
-    } catch (error) {
-        console.log("Error in web3-utils | getTokenBalance", error);
-        return;
-    }
-};
 
 export const convertEthToWei = async function (valueInEth) {
     try {
