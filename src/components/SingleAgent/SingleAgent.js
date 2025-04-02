@@ -11,7 +11,7 @@ import { Tooltip } from 'antd';
 import Avatar from "../../assets/images/Frame 1394.png";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { amountOutValue, buyApprove, buyTrade } from '../../services/gryphon-web3';
+import { amountOutValue, buyApprove, buyTrade, sellApprove, sellTrade } from '../../services/gryphon-web3';
 import config from '../../config';
 import Web3 from 'web3';
 import { getAgentById } from '../../services/APIManager';
@@ -38,6 +38,8 @@ const SingleAgent = () => {
     const [activeTradeTab, setActiveTradeTab] = useState("buy")
     const [amountToTrade, setAmountToTrade] = useState()
     const [estimatedAmount, setEstimatedAmount] = useState()
+    const [buyHashValue, setBuyHashValue] = useState()
+    const [sellHashValue, setSellHashValue] = useState()
 
     useEffect(() => {
         if (id) {
@@ -86,7 +88,7 @@ const SingleAgent = () => {
             } else {
                 GryphonAddrOrZerothAddr = "0x0000000000000000000000000000000000000000";
             }
-            const estimatedAmtResult = await amountOutValue("0x03dd1056Eb24F5b6c08BE079888f7748C2F35bFE", GryphonAddrOrZerothAddr, Web3.utils.toWei(amountToTrade, "ether"), walletAddress)
+            const estimatedAmtResult = await amountOutValue("0xfB41E5ea0d324A83a59633E94997B34f0DCA3213", GryphonAddrOrZerothAddr, Web3.utils.toWei(amountToTrade, "ether"), walletAddress)
             console.log("----estimatedAmtResult----", estimatedAmtResult);
             if (estimatedAmtResult) {
                 setEstimatedAmount(estimatedAmtResult.toString())
@@ -125,9 +127,10 @@ const SingleAgent = () => {
         const loadingToast = toast.loading("Placing Buy Trade");
 
         try {
-            const buyTradeResult = await buyTrade(Web3.utils.toWei(amountToTrade, "ether"), "0x03dd1056Eb24F5b6c08BE079888f7748C2F35bFE", walletAddress)
+            const buyTradeResult = await buyTrade(Web3.utils.toWei(amountToTrade, "ether"), "0xfB41E5ea0d324A83a59633E94997B34f0DCA3213", walletAddress)
             console.log("----buyTradeResult----", buyTradeResult);
             if (buyTradeResult?.status) {
+                setBuyHashValue(buyTradeResult?.transactionHash)
                 toast.update(loadingToast, {
                     render: "Bought the desired Token!",
                     type: "success",
@@ -155,16 +158,15 @@ const SingleAgent = () => {
         try {
             if (!amountToTrade) {
                 toast.dismiss(toastId);
-                toast.error("Please enter valid GRYPHON amount", {
+                toast.error("Please enter valid TICKER amount", {
                     position: "top-right",
                 });
                 return;
             }
-            const approve_res = await buyApprove(Web3.utils.toWei(amountToTrade, "ether"), walletAddress)
+            const approve_res = await sellApprove(Web3.utils.toWei(amountToTrade, "ether"), walletAddress)
             console.log("approve_res", approve_res)
             if (approve_res) {
                 toast.dismiss(toastId);
-
                 await sell_trade()
             }
         } catch (e) {
@@ -175,14 +177,14 @@ const SingleAgent = () => {
 
     const sell_trade = async () => {
         const loadingToast = toast.loading("Placing Sell Trade");
-
         try {
 
-            const sellTradeResult = await buyTrade(Web3.utils.toWei(amountToTrade, "ether"), walletAddress)
+            const sellTradeResult = await sellTrade(Web3.utils.toWei(amountToTrade, "ether"), walletAddress)
             console.log("----sellTradeResult----", sellTradeResult);
             if (sellTradeResult?.status) {
+                setSellHashValue(sellTradeResult?.transactionHash)
                 toast.update(loadingToast, {
-                    render: "Bought the desired Token!",
+                    render: "SOLD the desired Token!",
                     type: "success",
                     isLoading: false,
                     autoClose: 3000,
@@ -199,6 +201,15 @@ const SingleAgent = () => {
             console.log("error in sellTradeResult", err)
             return
         }
+    }
+
+    const transactionRoutingBuy = () => {
+        const url = `https://testnet.bscscan.com/tx/${buyHashValue}`;
+        window.open(url, "_blank");
+    }
+    const transactionRoutingSell = () => {
+        const url = `https://testnet.bscscan.com/tx/${sellHashValue}`;
+        window.open(url, "_blank");
     }
 
     return (
@@ -322,10 +333,14 @@ const SingleAgent = () => {
                                         type="number"
                                         className="input-box"
                                         placeholder={activeTradeTab === "buy" ? "Enter the amount of GRYPHON" : "Enter the amount of TICKER"}
-                                        onChange={(e) => setAmountToTrade(e.target.value)}
+                                        onChange={(e) => { setAmountToTrade(e.target.value); setBuyHashValue(); setSellHashValue() }}
                                     />
                                 </div>
-                                {amountToTrade && <p className='est-amt'>You will receive<span style={{ color: '#f85d4f' }}> {estimatedAmount ? parseFloat(Web3.utils.fromWei(estimatedAmount, "ether")).toFixed(8) : '0'} {activeTradeTab === "buy" ? "TICKER" : "GRYPHON"}</span>   </p>}
+
+                                {activeTradeTab === "buy" && buyHashValue ? <div style={{ display: 'flex', alignItems: 'center', paddingTop: 10 }}>🔗<div className='tx-route' onClick={transactionRoutingBuy}> View Transaction </div></div> : <></>}
+                                {activeTradeTab === "sell" && sellHashValue ? <div style={{ display: 'flex', alignItems: 'center', paddingTop: 10 }}>🔗<div className='tx-route' onClick={transactionRoutingSell}> View Transaction </div> </div> : <></>}
+
+                                {amountToTrade && !buyHashValue && <p className='est-amt'>You will receive<span style={{ color: '#f85d4f' }}> {estimatedAmount ? parseFloat(Web3.utils.fromWei(estimatedAmount, "ether")).toFixed(8) : '0'} {activeTradeTab === "buy" ? "TICKER" : "GRYPHON"}</span>   </p>}
                                 <div className="amount-buttons">
                                     <button className="amount-button"><div>25%</div> </button>
                                     <button className="amount-button"><div>50%</div> </button>

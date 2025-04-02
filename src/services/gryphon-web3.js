@@ -107,7 +107,7 @@ export const buyTrade = async (buyAmtInwei, agentERC20Addr,walletAddress) => {
 export const sellApprove = async (gryphonAmountInWei,walletAddress) => {
     try {
         const web3 = new Web3(window.ethereum);
-        const contract = new web3.eth.Contract(ERC20ABI.abi, "0xcE47ea4B71BdF82E983995B0696F41Cd6bE076Ce");
+        const contract = new web3.eth.Contract(ERC20ABI.abi, "0xfB41E5ea0d324A83a59633E94997B34f0DCA3213");
         let result = await contract.methods.approve(config.routing_contract_address, gryphonAmountInWei).send({ from: walletAddress });
         console.log("approveFactory", result);
         return result;
@@ -120,7 +120,7 @@ export const sellTrade = async (sellAmtInwei, walletAddress) => {
     try {
         const web3 = new Web3(window.ethereum);
         const contract = new web3.eth.Contract(BondingV2ABI.abi, config.bonding_contract_address);
-        let result = await contract.methods.sell(sellAmtInwei,"0xcE47ea4B71BdF82E983995B0696F41Cd6bE076Ce").send({ from: walletAddress });
+        let result = await contract.methods.sell(sellAmtInwei,"0xfB41E5ea0d324A83a59633E94997B34f0DCA3213").send({ from: walletAddress });
         console.log("sellTrade", result);
         return result;
     } catch (e) {

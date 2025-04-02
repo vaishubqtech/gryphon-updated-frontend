@@ -74,9 +74,9 @@ const CreateModal = ({ isOpen, onClose }) => {
             );
             const result = await response.json();
             if (result) {
-                console.log("image url", result.data.url )
+                console.log("image url", result.data.url)
                 return result.data.url;
-                
+
             } else {
                 return false;
             }
@@ -128,7 +128,7 @@ const CreateModal = ({ isOpen, onClose }) => {
                 });
                 return;
             }
-            const createAgentRes = await LaunchAgent(name, ticker, [0, 1, 2, 3], bio, imageUploadURL, twitter, telegram, youtube, website, Web3.utils.toWei(purchaseAmount, "ether"), walletAddress);
+            const createAgentRes = await LaunchAgent(name, ticker, [0, 1, 2, 3], bio, imageUploadURL ? imageUploadURL : "https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg", twitter, telegram, youtube, website, Web3.utils.toWei(purchaseAmount, "ether"), walletAddress);
             console.log("-----createAgentRes-------", createAgentRes)
             if (createAgentRes?.status) {
                 console.log("||||| launched event ||||", createAgentRes?.events?.Launched)
@@ -205,7 +205,7 @@ const CreateModal = ({ isOpen, onClose }) => {
     };
 
     const resetForm = () => {
-        setModalStatus(0) 
+        setModalStatus(0)
         setName("");
         setFile("");
         setErc20Address("");
@@ -218,13 +218,13 @@ const CreateModal = ({ isOpen, onClose }) => {
         setPurchaseAmt()
     };
 
-    const moveModal1=() =>{
-        if(name && ticker && bio && agentType){
+    const moveModal1 = () => {
+        if (name && ticker && bio && agentType) {
             setModalStatus(1)
-        }else{
+        } else {
             toast.warning("Please fill the required fields", {
                 position: "top-right",
-              });
+            });
         }
     }
 
@@ -352,7 +352,7 @@ const CreateModal = ({ isOpen, onClose }) => {
                                             <input placeholder='100' className='' type='number' onChange={(e) => setPurchaseAmt(e.target.value)} />
                                             <img src={LogoImage} alt="" className='buy-modal-img' />
                                         </div>
-                                        <div className='buy-desc' style={{ padding: "5px 0 0" }}><span>You will receive 1000</span>   <img src={image ? image :'https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg'}  alt="" className='buy-span-img' /> <span>(0%)</span></div>
+                                        <div className='buy-desc' style={{ padding: "5px 0 0" }}><span>You will receive 1000</span>   <img src={image ? image : 'https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg'} alt="" className='buy-span-img' /> <span>(0%)</span></div>
                                         <div style={{ display: 'flex', alignItems: 'center' }}>
                                             <div className='buy-desc' style={{ padding: "5px 0 0" }}>Trading Fee</div>
                                             <div style={{ marginLeft: 4, cursor: "pointer", marginBottom: -10 }}>
@@ -374,8 +374,8 @@ const CreateModal = ({ isOpen, onClose }) => {
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between", marginTop: 10 }}>
                                             <div className='buy-desc' style={{ padding: 0 }}>Your Initial Buy</div>
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <div className='buy-desc' style={{ marginRight: 5, padding: 0 }}> {purchaseAmount?purchaseAmount:"0"}</div>
-                                                <img src={image ? image :'https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg'} alt="" className='buy-modal-img' />
+                                                <div className='buy-desc' style={{ marginRight: 5, padding: 0 }}> {purchaseAmount ? purchaseAmount : "0"}</div>
+                                                <img src={image ? image : 'https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg'} alt="" className='buy-modal-img' />
 
                                             </div>
                                         </div>
@@ -383,7 +383,7 @@ const CreateModal = ({ isOpen, onClose }) => {
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between" }}>
                                             <div>Total</div>
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <div className='buy-desc' style={{ marginRight: 5, padding: 0 }}>(100 Gryphon + {purchaseAmount?purchaseAmount:"0"} ${ticker})</div>
+                                                <div className='buy-desc' style={{ marginRight: 5, padding: 0 }}>(100 Gryphon + {purchaseAmount ? purchaseAmount : "0"} ${ticker})</div>
                                                 <div style={{ marginRight: 5 }}>   {100 + (purchaseAmount ? Number(purchaseAmount) : 0)}</div>
                                                 <img src={LogoImage} alt="" className='buy-modal-img' />
                                             </div>
