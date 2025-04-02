@@ -33,10 +33,14 @@ const SettingsModal = ({ isOpen, onClose }) => {
     const [modalStatus, setModalStatus] = useState(0);
     if (!isOpen) return null;
 
+
     const handleFileChange = (event) => {
-        setFile(event.target.files[0]);
+        const file = event.target.files[0];
+        if (file) {
+            const imageUrl = URL.createObjectURL(file);
+            setImage(imageUrl);
+        }
     };
-    
     return (
         <div className="modal-overlay">
             <div className="modal">
@@ -48,7 +52,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
                         </div>
                     </IconContext.Provider>
                 </div>
-                <div className='modal-body'>
+                <div className='setting-modal-body'>
                     <div className='setting-modal-flex'>
                         <div className='s-m-left'>
                             <div className={activeSetting === 0 ? 's-m-list-active' : 's-m-list'} onClick={() => setActiveSetting(0)}>
@@ -73,7 +77,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
                                             onChange={(e) => setTicker(e.target.value)} />
                                     </div>
                                 </div>
-                                <label>Agent Profile Picture</label>
+                                {/* <label>Agent Profile Picture</label>
                                 <div className="upload-container">
                                     <label className="image-upload">
                                         <div className="image-preview">
@@ -82,6 +86,15 @@ const SettingsModal = ({ isOpen, onClose }) => {
 
                                     </label>
                                     <input type="file" accept="image/png, image/jpeg, image/webp, image/gif" onChange={handleFileChange} className='upload-input' />
+                                </div> */}
+
+                                <div className="profile-picture-container">
+                                    <label className="profile-label">Agent Profile Picture</label>
+                                    <div className="image-wrapper">
+                                        <img src={image} alt="Profile" className="profile-image" />
+                                        <input type="file" accept="image/png, image/jpeg, image/webp, image/gif" onChange={handleFileChange} className="hidden-upload" id="file-input" />
+                                        <label htmlFor="file-input" className="change-image-btn">Change Image</label>
+                                    </div>
                                 </div>
 
                                 <label>Agent Type</label>
@@ -104,7 +117,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
                                 <textarea placeholder="None" value={bio}
                                     onChange={(e) => setBio(e.target.value)} />
 
-                       
+
                             </div> :
                             <>
 
@@ -124,12 +137,12 @@ const SettingsModal = ({ isOpen, onClose }) => {
                                         </div>
                                         <div className='dis-connect-cta'>Disconnect X</div>
                                     </div>
-                                    <div className='acc-label' style={{marginBottom:4}}>X Account Setup</div>
+                                    <div className='acc-label' style={{ marginBottom: 4 }}>X Account Setup</div>
                                     <div className='setup-x'>
-                                    <div className='setup-single'>Self Management</div>
-                                    <div className='setup-single-colored'> Gryphon's AI Stack</div>
-                                </div>
-                        
+                                        <div className='setup-single'>Self Management</div>
+                                        <div className='setup-single-colored'> Gryphon's AI Stack</div>
+                                    </div>
+
 
                                 </div>
 
@@ -138,10 +151,10 @@ const SettingsModal = ({ isOpen, onClose }) => {
                         }
                     </div>
                     <div className="modal-actions">
-                                    <button className="setting-cancel" onClick={onClose}>Cancel</button>
-                               {activeSetting !== 0 &&    <button className="setting-neutral">Neutral State</button>}
-                                    <button className="setting-next"    >Save Changes</button>
-                                </div>
+                        <button className="setting-cancel" onClick={onClose}>Cancel</button>
+                        {activeSetting !== 0 && <button className="setting-neutral">Neutral State</button>}
+                        <button className="setting-next"    >Save Changes</button>
+                    </div>
                 </div>
             </div>
         </div>

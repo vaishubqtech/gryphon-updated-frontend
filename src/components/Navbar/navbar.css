@@ -51,6 +51,7 @@
   width: 90%;
   background-color: transparent;
   font-size: 14px;
+  color: #fff;
 }
 .nav-search-input::placeholder {
   color: #6B7897;

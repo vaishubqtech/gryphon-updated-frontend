@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./navbar.css"
 import LogoImage from "../../assets/images/logo-white.png"
 import { IconContext } from "react-icons";
@@ -26,6 +26,19 @@ const Navbar = () => {
   const [authToken, setAuthToken] = useState();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalOpenSetting, setModalOpenSetting] = useState(false);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === '/') {
+        event.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     console.log("wallet address", account?.address);
@@ -139,12 +152,13 @@ const Navbar = () => {
           <div className='logo-text'>GRYPHON</div>
         </div>
         <div className='nav-search'>
-          <input className='nav-search-input' placeholder='Find AI Agents...' />
+          <input ref={inputRef} className='nav-search-input' placeholder='Find AI Agents...' />
           <IconContext.Provider value={{ size: "1.2em", color: "#8e9099", className: "global-class-name" }}>
             <div>
               <FiSearch />
             </div>
           </IconContext.Provider>
+        
         </div>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <div className='nav-cta' onClick={() => setModalOpen(true)}>Create Agent</div>
