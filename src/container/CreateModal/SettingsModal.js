@@ -5,12 +5,15 @@ import { MdClose } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import ProfileImage from "../../assets/images/Frame 1394.png"
 import LogoImage from "../../assets/images/Frame 1397.png"
+import { useActiveAccount } from "thirdweb/react";
 
 
 const SettingsModal = ({ isOpen, onClose }) => {
     const [activeSetting, setActiveSetting] = useState(0)
     const navigate = useNavigate()
-    const walletAddress = localStorage.getItem("publicAddress")
+          const account = useActiveAccount();
+        const walletAddress = account?.address
+    // const walletAddress = localStorage.getItem("publicAddress")
     const [name, setName] = useState("Agent Name");
     const [profileImage, setProfileImage] = useState("");
     const [erc20Address, setErc20Address] = useState(" ");

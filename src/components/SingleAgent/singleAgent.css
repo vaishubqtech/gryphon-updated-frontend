@@ -219,7 +219,7 @@
   }
   .trading-fee p{
     font-size: 14px;
-    color: #9a9595;
+    color: #6B7897;
   
   }
   .est-amt{
@@ -598,7 +598,7 @@
   
   .progress-bar {
     width: 110px;
-    height: 14px;
+    height: 13px;
     background-color: #fff;
     border-radius: 8px;
     overflow: hidden;

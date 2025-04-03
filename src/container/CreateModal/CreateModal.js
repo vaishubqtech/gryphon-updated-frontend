@@ -13,11 +13,14 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { createAgent } from "../../services/APIManager";
 import { approveFactory, LaunchAgent } from "../../services/gryphon-web3";
+import { useActiveAccount } from "thirdweb/react";
 
 
 const CreateModal = ({ isOpen, onClose }) => {
     const navigate = useNavigate()
-    const walletAddress = localStorage.getItem("publicAddress")
+      const account = useActiveAccount();
+    const walletAddress = account?.address
+    // const walletAddress = localStorage.getItem("publicAddress")
 
     const [name, setName] = useState("");
     const [profileImage, setProfileImage] = useState("");

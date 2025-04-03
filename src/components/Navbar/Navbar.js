@@ -64,7 +64,9 @@ const Navbar = () => {
   }
   const getNonceApi = async () => {
     try {
-      publicAddress = localStorage.getItem("publicAddress")
+      // publicAddress = localStorage.getItem("publicAddress")
+      publicAddress = account?.address
+
       decimalChainId = localStorage.getItem("chainId")
       console.log("--getNonce publicAddress--", publicAddress)
       const nonceResult = await getNonce(
