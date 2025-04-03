@@ -19,8 +19,8 @@ import Cookies from "js-cookie";
 const CreateModal = ({ isOpen, onClose }) => {
     const navigate = useNavigate()
       const account = useActiveAccount();
-    const walletAddress = account?.address
-    // const walletAddress = localStorage.getItem("publicAddress")
+    // const walletAddress = account?.address
+    const walletAddress = localStorage.getItem("publicAddress")
 
     const [name, setName] = useState("");
     const [profileImage, setProfileImage] = useState("");
@@ -126,7 +126,6 @@ const CreateModal = ({ isOpen, onClose }) => {
         const loadingToast = toast.loading("Launching agent...");
         try {
             const imageUploadURL = await handleUpload();
-            console.log("imageUploadURL", imageUploadURL)
             if (!imageUploadURL) {
                 toast.update(loadingToast, {
                     render: "Error in uploading image!",
@@ -157,7 +156,7 @@ const CreateModal = ({ isOpen, onClose }) => {
             }
             setTimeout(() => {
                 onClose();
-            }, 3000);
+            }, 4000);
         } catch (e) {
             console.log("error in create_agent ", e)
             return;
@@ -224,6 +223,8 @@ const CreateModal = ({ isOpen, onClose }) => {
         setPersonality("");
         setNiche("");
         setPurchaseAmt()
+        window.location.reload();
+
     };
 
     const moveModal1 = () => {

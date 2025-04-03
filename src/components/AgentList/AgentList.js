@@ -9,10 +9,13 @@ import { BiSolidWalletAlt } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import { getAllAgents } from "../../services/APIManager";
 import Cookies from "js-cookie";
+import moment from "moment";
+import { getEllipsisTxt } from '../../utils/formatter';
+
 
 const data = [
   {
-    id:1,
+    id: 1,
     avatar: Avatar,
     name: "Prefrontal Cortex $CONVO",
     wallet: "0x7a5c...8f92",
@@ -23,7 +26,7 @@ const data = [
     ranking: Gold,
   },
   {
-    id:2,
+    id: 2,
     avatar: Avatar,
     name: "Trade Master AI $TADS",
     wallet: "0x7a5c...8f92",
@@ -34,7 +37,7 @@ const data = [
     ranking: Silver,
   },
   {
-    id:3,
+    id: 3,
     avatar: Avatar,
     name: "ScamURwallet AI $SUWL",
     wallet: "0x7a5c...8f92",
@@ -45,7 +48,7 @@ const data = [
     ranking: Bronze,
   },
   {
-    id:4,
+    id: 4,
     avatar: Avatar,
     name: "Bukkake AI $BLAST",
     wallet: "0x7a5c...8f92",
@@ -58,7 +61,7 @@ const data = [
 ];
 
 const AgentList = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [activeSortTab, setActiveSortTab] = useState(0);
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [agents, setAgents] = useState([]);
@@ -72,10 +75,10 @@ const AgentList = () => {
     }, 1500);
   };
 
-  
+
   useEffect(() => {
     fetchAgents();
-  }, []);
+  }, [ ]);
 
 
   const fetchAgents = async () => {
@@ -91,7 +94,9 @@ const AgentList = () => {
     } finally {
     }
   };
-
+  const convertTimestampToRelativeTime = (timestamp) => {
+    return moment.unix(timestamp).fromNow();
+  };
   return (
     <div className="agent-list-sec">
       <div className="agent-top-flex">
@@ -127,51 +132,60 @@ const AgentList = () => {
               <th>TVL</th>
               <th>24h Volume</th>
               <th>24h Change</th>
-              <th>Ranking</th>
+              <th>Created At</th>
             </tr>
           </thead>
           <tbody>
-            {data?.map((item, index) => (
-              <tr key={index} style={{cursor:"pointer"}} onClick={() => navigate(`/detail-screen/${item.id}`)}>
-                <td>
-                  <div className="agent-info">
-                    <img src={item.avatar} alt="avatar" className="avatar" />
-                    {item.name}
-                  </div>
-                </td>
-                <td className="wallet">
-                  {item.wallet ?  item.wallet : 'Wallet Address'}{" "}
-                  <span className="copy-btn">
-                    <IconContext.Provider
-                      value={{
-                        size: "1.2em",
-                        color: "#8e9099",
-                        className: "global-class-name",
-                      }}
-                    >
-                      <div   onClick={() => handleCopy(index, item.wallet)}>
-                      <BiSolidWalletAlt />
-                      </div>
-                    </IconContext.Provider>
-                  </span>
-                  {copiedIndex === index && (
-                  <span className="copied-popup">Copied!</span>
-                )}
-                </td>
-                <td>{item.marketCap || 0}</td>
-                <td>{item.tvl || 0}</td>
-                <td>{item.volume || 0}</td>
-                <td className="change">{item.change || 0}</td>
-                {/* <td className={`ranking ${item?.ranking.toLowerCase()}`}>
+          {agents?.length > 0 ? (agents?.map((item, index) => {
+              const relativeTime = convertTimestampToRelativeTime(item?.createdTimestamp);
+              return (
+                <tr key={index} style={{ cursor: "pointer" }} onClick={() => navigate(`/detail-screen/${item._id}`)}>
+                  <td>
+                    <div className="agent-info">
+                      <img src={item.profileImage? item.profileImage : "https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg" } alt="avatar" className="avatar-dash" />
+                      {item.name}
+                    </div>
+                  </td>
+                  <td className="wallet">
+                    {item.erc20Address ? getEllipsisTxt (item.erc20Address,6) : 'Wallet Address'}{" "}
+                    <span className="copy-btn">
+                      <IconContext.Provider
+                        value={{
+                          size: "1.2em",
+                          color: "#8e9099",
+                          className: "global-class-name",
+                        }}
+                      >
+                        <div onClick={() => handleCopy(index, item.wallet)}>
+                          <BiSolidWalletAlt />
+                        </div>
+                      </IconContext.Provider>
+                    </span>
+                    {copiedIndex === index && (
+                      <span className="copied-popup">Copied!</span>
+                    )}
+                  </td>
+                  <td>{item.marketCap || 0}</td>
+                  <td>{item.tvl || 0}</td>
+                  <td>{item.volume || 0}</td>
+                  <td className="change">{item.change || 0}</td>
+                  {/* <td className={`ranking ${item?.ranking.toLowerCase()}`}>
                   {typeof item.ranking === "string" && item.ranking.length <= 3
                     ? item.ranking
                     : <img src={item.ranking} alt="" className="ranking-img"/>}
                 </td> */}
-                <td>
-                  Ranking
+                  <td>
+                    {relativeTime}
+                  </td>
+                </tr>
+              )
+            })  ) : (
+              <tr>
+                <td colSpan="7" style={{ textAlign: "center", padding: "30px" }}>
+                  No agents found
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
