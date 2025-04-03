@@ -107,9 +107,14 @@ const CreateModal = ({ isOpen, onClose }) => {
             if (approveFactoryRes) {
                 toast.dismiss(toastId);
                 await create_agent();
+            }else{
+                toast.dismiss(toastId);
+                toast.error("Something went wrong please try again", {
+                    position: "top-right",
+                });
             }
         } catch (e) {
-            console.log("error in reqAmountInWei ", e)
+            console.log("error in approve factory ", e)
             return;
         }
     }

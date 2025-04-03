@@ -146,3 +146,19 @@ export const getTokenBalance = async (
         return;
     }
 };
+export const getAgentTokenBalance = async (
+    walletAddress
+) => {
+    try {
+
+        const web3 = new Web3(window.ethereum);
+        const contract = new web3.eth.Contract(ERC20ABI.abi, "0xfB41E5ea0d324A83a59633E94997B34f0DCA3213");
+        let result = await contract.methods.balanceOf(walletAddress).call();
+        console.log("getBalance", result);
+        return result;
+
+    } catch (error) {
+        console.log("Error in web3-utils | getTokenBalance", error);
+        return;
+    }
+};
