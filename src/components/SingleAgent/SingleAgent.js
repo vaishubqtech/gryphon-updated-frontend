@@ -26,7 +26,8 @@ const agent = [{
     bio: "Evolutionary DeFi AI for Advanced Portfolio Strategies. Degen Futures Yield AI is led by Degen Freak Yeets.",
 
 }]
-const capabilitesFeed = ["Post Twitter", "Search Internet", "Search Twitters", "Intuitive Guidance", "Confidence Boosting", "Behavioral Awareness", "Emotional Clarity", "Community Engagement"]
+// const capabilitesFeed = ["Post Twitter", "Search Internet", "Search Twitters", "Intuitive Guidance", "Confidence Boosting", "Behavioral Awareness", "Emotional Clarity", "Community Engagement"]
+const capabilitesFeed = ["Post Twitter", "Search Internet", "Search Twitters", "Community Engagement"]
 
 const SingleAgent = () => {
     const account = useActiveAccount();
@@ -53,10 +54,10 @@ const SingleAgent = () => {
         }
     }, [id]);
 
-    useEffect(()=>{
+    useEffect(() => {
         getGryphonBalance()
         getAgentBalance()
-    },[])
+    }, [agent?.erc20Address])
 
     const handleCopy = async () => {
         toast.success("ERC20Address copied!", {
@@ -98,7 +99,7 @@ const SingleAgent = () => {
             } else {
                 GryphonAddrOrZerothAddr = "0x0000000000000000000000000000000000000000";
             }
-            const estimatedAmtResult = await amountOutValue("0xfB41E5ea0d324A83a59633E94997B34f0DCA3213", GryphonAddrOrZerothAddr, Web3.utils.toWei(amountToTrade, "ether"), walletAddress)
+            const estimatedAmtResult = await amountOutValue(agent.erc20Address, GryphonAddrOrZerothAddr, Web3.utils.toWei(amountToTrade, "ether"), walletAddress)
             console.log("----estimatedAmtResult----", estimatedAmtResult);
             if (estimatedAmtResult) {
                 setEstimatedAmount(estimatedAmtResult.toString())
@@ -137,7 +138,7 @@ const SingleAgent = () => {
         const loadingToast = toast.loading("Placing Buy Trade");
 
         try {
-            const buyTradeResult = await buyTrade(Web3.utils.toWei(amountToTrade, "ether"), "0xfB41E5ea0d324A83a59633E94997B34f0DCA3213", walletAddress)
+            const buyTradeResult = await buyTrade(Web3.utils.toWei(amountToTrade, "ether"), agent?.erc20Address, walletAddress)
             console.log("----buyTradeResult----", buyTradeResult);
             if (buyTradeResult?.status) {
                 setBuyHashValue(buyTradeResult?.transactionHash)
@@ -173,7 +174,7 @@ const SingleAgent = () => {
                 });
                 return;
             }
-            const approve_res = await sellApprove(Web3.utils.toWei(amountToTrade, "ether"), walletAddress)
+            const approve_res = await sellApprove(Web3.utils.toWei(amountToTrade, "ether"), agent?.erc20Address, walletAddress)
             console.log("approve_res", approve_res)
             if (approve_res) {
                 toast.dismiss(toastId);
@@ -189,7 +190,7 @@ const SingleAgent = () => {
         const loadingToast = toast.loading("Placing Sell Trade");
         try {
 
-            const sellTradeResult = await sellTrade(Web3.utils.toWei(amountToTrade, "ether"), walletAddress)
+            const sellTradeResult = await sellTrade(Web3.utils.toWei(amountToTrade, "ether"), agent?.erc20Address, walletAddress)
             console.log("----sellTradeResult----", sellTradeResult);
             if (sellTradeResult?.status) {
                 setSellHashValue(sellTradeResult?.transactionHash)
@@ -213,29 +214,30 @@ const SingleAgent = () => {
         }
     }
 
-    const getGryphonBalance = async() =>{
-        try{
+    const getGryphonBalance = async () => {
+        try {
             const GBalance_res = await getTokenBalance(walletAddress);
             console.log("GBalance_res", GBalance_res);
-            
+
             let balanceInEth = parseFloat(Web3.utils.fromWei(GBalance_res, "ether"));
             let formattedBalance = balanceInEth % 1 === 0 ? balanceInEth.toString() : balanceInEth.toFixed(4).replace(/\.?0+$/, "");
-    
+
             setGryphonMaxBalance(formattedBalance);
-        }catch(e){
+        } catch (e) {
             console.log("error in gryphon balance", e)
         }
     }
-    const getAgentBalance = async() =>{
-        try{
-            const AGTBalance_res = await getAgentTokenBalance(walletAddress);
+    const getAgentBalance = async () => {
+        try {
+            console.log("--agent?.erc20Address--", agent?.erc20Address)
+            const AGTBalance_res = await getAgentTokenBalance(agent?.erc20Address, walletAddress);
             console.log("AGTBalance_res", AGTBalance_res);
-            
+
             let balanceInEth = parseFloat(Web3.utils.fromWei(AGTBalance_res, "ether"));
             let formattedBalance = balanceInEth % 1 === 0 ? balanceInEth.toString() : balanceInEth.toFixed(4).replace(/\.?0+$/, "");
-    
+
             setAgentMaxBalance(formattedBalance);
-        }catch(e){
+        } catch (e) {
             console.log("error in agent balance", e)
         }
     }
@@ -270,7 +272,7 @@ const SingleAgent = () => {
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', marginTop: 6, zIndex: 9 }} onClick={handleCopy}>
 
-                                            <div className='erc20-token'>{getEllipsisTxt("0x25Bb8D9eB53eEe8b899ff9E8c9c78674Ce8b9937", 6)}</div>
+                                            <div className='erc20-token'>{getEllipsisTxt(agent?.erc20Address ? agent?.erc20Address : "2dGH6qTSvmtdejUYB2c8ScV8s6tbsgGfP8eMTyYNvirt", 6)}</div>
 
                                             <IconContext.Provider value={{ size: '1em', color: "#6B7897" }} >
                                                 <div style={{ marginLeft: 7, cursor: "pointer" }}>
@@ -299,19 +301,19 @@ const SingleAgent = () => {
                                     </div>
                                     <div className="metric-statistic">
                                         <span>Mindshare</span>
-                                        <span>477.89k</span>
+                                        <span>-</span>
                                     </div>
                                     <div className="metric-statistic">
                                         <span>Impressions</span>
-                                        <span>559.51k</span>
+                                        <span>-</span>
                                     </div>
                                     <div className="metric-statistic">
                                         <span>Engagement</span>
-                                        <span>477.89k</span>
+                                        <span>-</span>
                                     </div>
                                     <div className="metric-statistic">
                                         <span>Followers</span>
-                                        <span>55.51k</span>
+                                        <span>-</span>
                                     </div>
 
                                 </div>
@@ -322,24 +324,30 @@ const SingleAgent = () => {
                                     >
                                         Summary
                                     </div>
-                                    <div
-                                        className={activeSortTab === 1 ? "sort-tab-active" : "sort-tab"}
-                                        onClick={() => setActiveSortTab(1)}
-                                    >
-                                        Terminal
-                                    </div>
-                                    <div
-                                        className={activeSortTab === 2 ? "sort-tab-active" : "sort-tab"}
-                                        onClick={() => setActiveSortTab(2)}
-                                    >
-                                        Trades
-                                    </div>
-                                    <div
-                                        className={activeSortTab === 3 ? "sort-tab-active" : "sort-tab"}
-                                        onClick={() => setActiveSortTab(3)}
-                                    >
-                                        Holders
-                                    </div>
+                                    <Tooltip placement='right' title="Coming Soon !">
+                                        <div
+                                            className={activeSortTab === 1 ? "sort-tab-active" : "sort-tab"}
+                                            onClick={() => setActiveSortTab(1)}
+                                        >
+                                            Terminal
+                                        </div>
+                                    </Tooltip>
+                                    <Tooltip placement='right' title="Coming Soon !">
+                                        <div
+                                            className={activeSortTab === 2 ? "sort-tab-active" : "sort-tab"}
+                                            onClick={() => setActiveSortTab(2)}
+                                        >
+                                            Trades
+                                        </div>
+                                    </Tooltip>
+                                    <Tooltip placement='right' title="Coming Soon !">
+                                        <div
+                                            className={activeSortTab === 3 ? "sort-tab-active" : "sort-tab"}
+                                            onClick={() => setActiveSortTab(3)}
+                                        >
+                                            Holders
+                                        </div>
+                                    </Tooltip>
                                 </div>
                                 <div style={{ marginTop: 28 }} />
                                 <h2 className='summary-head'>About Agent Summary</h2>
@@ -354,6 +362,7 @@ const SingleAgent = () => {
                                             <div className='cap-tag'> {item}</div>
                                         )
                                     })}
+
                                 </div>
                             </div>
                         </div>
@@ -365,7 +374,7 @@ const SingleAgent = () => {
                                 </div>
 
                                 <div className="input-section">
-                                    <p className="balance-text">{activeTradeTab === "buy" ? `${gryphonMaxBalance?gryphonMaxBalance:'0'} GRYPHON` : `${agentMaxBalance ? agentMaxBalance :"0"} AGENT`}</p>
+                                    <p className="balance-text">{activeTradeTab === "buy" ? `${gryphonMaxBalance ? gryphonMaxBalance : '0'} GRYPHON` : `${agentMaxBalance ? agentMaxBalance : "0"} AGENT`}</p>
                                     <input
                                         type="number"
                                         className="input-box"
@@ -406,44 +415,44 @@ const SingleAgent = () => {
                                 <div className="metrics">
                                     <div className="metric">
                                         <span>Market Cap</span>
-                                        <span>$477.89k</span>
+                                        <span>${agent?.marketCap || 0}k</span>
                                     </div>
                                     <div className="metric">
                                         <span>Liquidity</span>
-                                        <span>$559.51k</span>
+                                        <span>-</span>
                                     </div>
                                 </div>
                                 <div className="metrics">
                                     <div className="metric">
                                         <span>Holders</span>
-                                        <span>99,949</span>
+                                        <span>-</span>
                                     </div>
                                     <div className="metric">
                                         <span>24h Volume</span>
-                                        <span>$1.9k</span>
+                                        <span>${agent?.volume24h || 0}k</span>
                                     </div>
                                 </div>
                                 <div className="top-10">
                                     <span>Top 10</span>
-                                    <span>76.78%</span>
+                                    <span>-</span>
                                 </div>
                                 <div className="time-frames">
                                     <div className="time-frame">
                                         <span>1h</span>
-                                        <span>0.00%</span>
+                                        <span>-</span>
                                     </div>
                                     <div className="time-frame">
                                         <span>24h</span>
-                                        <span>0.00%</span>
+                                        <span>{agent?.priceChange24h || 0}%</span>
                                     </div>
                                     <div className="time-frame">
                                         <span>7d</span>
-                                        <span>-8.63%</span>
+                                        <span>-</span>
                                     </div>
                                 </div>
                                 <div className="volume">
                                     <span>Volume</span>
-                                    <span>$1.9k</span>
+                                    <span>${agent?.tvl || 0}k</span>
                                 </div>
                             </div>
                             <div className="profile-card-ds">
@@ -458,7 +467,7 @@ const SingleAgent = () => {
                                             className="avatar"
                                         />
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                            <span className="wallet-address">{agent?.creatorId ? getEllipsisTxt(agent?.creatorId, 6) : "Contract Address here"}</span>
+                                            <span className="wallet-address">{agent?.erc20Address ? getEllipsisTxt(agent?.erc20Address, 6) : "Contract Address here"}</span>
                                             <a href="#" className="view-profile" onClick={() => navigate("/profile")}>View Profile</a>
 
                                         </div>
@@ -474,7 +483,7 @@ const SingleAgent = () => {
                                 </div>
                                 <div className="bio">
                                     <h3>Biography</h3>
-                                    <p>Just a chill joker who's been in web3 since the ICO days circa.2017.</p>
+                                    <p>Gryphon User Bio; Will update soon...</p>
                                 </div>
                             </div>
                         </div>

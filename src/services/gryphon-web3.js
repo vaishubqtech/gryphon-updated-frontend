@@ -104,10 +104,10 @@ export const buyTrade = async (buyAmtInwei, agentERC20Addr, walletAddress) => {
 
 // //approve [bonding,agent token addr] => foramt of gryp
 
-export const sellApprove = async (gryphonAmountInWei, walletAddress) => {
+export const sellApprove = async (gryphonAmountInWei,agentERC20Addr ,walletAddress) => {
     try {
         const web3 = new Web3(window.ethereum);
-        const contract = new web3.eth.Contract(ERC20ABI.abi, "0xfB41E5ea0d324A83a59633E94997B34f0DCA3213");
+        const contract = new web3.eth.Contract(ERC20ABI.abi, agentERC20Addr);
         let result = await contract.methods.approve(config.routing_contract_address, gryphonAmountInWei).send({ from: walletAddress });
         console.log("approveFactory", result);
         return result;
@@ -116,11 +116,11 @@ export const sellApprove = async (gryphonAmountInWei, walletAddress) => {
         return;
     }
 }
-export const sellTrade = async (sellAmtInwei, walletAddress) => {
+export const sellTrade = async (sellAmtInwei,agentERC20Addr ,walletAddress) => {
     try {
         const web3 = new Web3(window.ethereum);
         const contract = new web3.eth.Contract(BondingV2ABI.abi, config.bonding_contract_address);
-        let result = await contract.methods.sell(sellAmtInwei, "0xfB41E5ea0d324A83a59633E94997B34f0DCA3213").send({ from: walletAddress });
+        let result = await contract.methods.sell(sellAmtInwei,agentERC20Addr).send({ from: walletAddress });
         console.log("sellTrade", result);
         return result;
     } catch (e) {
@@ -147,12 +147,13 @@ export const getTokenBalance = async (
     }
 };
 export const getAgentTokenBalance = async (
+    agentERC20Addr,
     walletAddress
 ) => {
     try {
 
         const web3 = new Web3(window.ethereum);
-        const contract = new web3.eth.Contract(ERC20ABI.abi, "0xfB41E5ea0d324A83a59633E94997B34f0DCA3213");
+        const contract = new web3.eth.Contract(ERC20ABI.abi,agentERC20Addr);
         let result = await contract.methods.balanceOf(walletAddress).call();
         console.log("getBalance", result);
         return result;

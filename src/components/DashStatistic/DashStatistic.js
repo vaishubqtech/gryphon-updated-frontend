@@ -19,16 +19,16 @@ const DashStatistic = () => {
                 <div className='stats-container'>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div className='cont-left-text'>Total Value Locked</div>
-                        <div className='cont-right-value'>+6.4%</div>
+                        <div className='cont-right-value'>0%</div>
                     </div>
-                    <div className='stats-main-data'>$24,242,1236</div>
+                    <div className='stats-main-data'>-</div>
                 </div>
                 <div className='stats-container'>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div className='cont-left-text'>Market Cap</div>
-                        <div className='cont-right-value'>+8.6%</div>
+                        <div className='cont-right-value'>0%</div>
                     </div>
-                    <div className='stats-main-data'>$306.28K</div>
+                    <div className='stats-main-data'>-</div>
                 </div>
                 <div className='stats-container'>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -39,13 +39,13 @@ const DashStatistic = () => {
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
-                    <div className='stats-main-data' style={{paddingTop:0}}>$81.9K</div>
+                    <div className='stats-main-data' style={{paddingTop:0}}>-</div>
                 </div>
                 <div className='stats-container'>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div className='cont-left-text'>24h Change</div>
                     </div>
-                    <div className='stats-main-data-24'>+5.23%</div>
+                    <div className='stats-main-data-24'>0%</div>
                 </div>
             </div>
         </div>

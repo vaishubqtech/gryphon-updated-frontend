@@ -156,7 +156,7 @@ const AgentList = () => {
                           className: "global-class-name",
                         }}
                       >
-                        <div onClick={() => handleCopy(index, item.wallet)}>
+                        <div onClick={() => handleCopy(index, item.erc20Address)}>
                           <BiSolidWalletAlt />
                         </div>
                       </IconContext.Provider>
