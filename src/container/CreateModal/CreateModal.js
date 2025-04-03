@@ -14,7 +14,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { createAgent } from "../../services/APIManager";
 import { approveFactory, LaunchAgent } from "../../services/gryphon-web3";
 import { useActiveAccount } from "thirdweb/react";
-
+import Cookies from "js-cookie";
 
 const CreateModal = ({ isOpen, onClose }) => {
     const navigate = useNavigate()
@@ -172,7 +172,7 @@ const CreateModal = ({ isOpen, onClose }) => {
     const handleSubmit = async () => {
         setLoading(true);
 
-        const token = localStorage.getItem("authToken");
+        const token = Cookies.get("authToken");
         // await handleUpload();
 
         const agentData = {

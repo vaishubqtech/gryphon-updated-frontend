@@ -14,6 +14,7 @@ import { getNonce, verifyUser } from "../../services/APIManager";
 import CreateModal from "../../container/CreateModal/CreateModal";
 import SettingsModal from "../../container/CreateModal/SettingsModal";
 import config from "../../config";
+import Cookies from "js-cookie";
 var decimalChainId;
 var publicAddress;
 
@@ -57,7 +58,8 @@ const Navbar = () => {
     let currentChain = await window.ethereum.request({ method: "eth_chainId" });
     let decimal_chainId = parseInt(currentChain, 16);
     localStorage.setItem("chainId", decimal_chainId);
-    if (localStorage.getItem("authToken")) {
+    const token = Cookies.get("authToken");
+    if (token) {
       return;
     }
     await getNonceApi()
@@ -119,7 +121,11 @@ const Navbar = () => {
       if (verifyUserResult?.data) {
         setVerifyUser(verifyUserResult?.data);
         setAuthToken(verifyUserResult?.data?.token);
-        localStorage.setItem("authToken", verifyUserResult?.data?.token);
+        // localStorage.setItem("authToken", verifyUserResult?.data?.token);
+        Cookies.set("authToken", verifyUserResult?.data?.token, { 
+          sameSite: "Strict", // Prevents CSRF attacks
+          path: "/" // Makes the cookie available across the entire site
+        });
       }
     } catch (err) {
       console.log("error in verifyUserApi API", err);

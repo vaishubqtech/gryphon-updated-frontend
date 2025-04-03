@@ -16,7 +16,7 @@ import config from '../../config';
 import Web3 from 'web3';
 import { getAgentById } from '../../services/APIManager';
 import { useActiveAccount } from "thirdweb/react";
-
+import Cookies from "js-cookie";
 const agent = [{
     id: 1,
     profileImage: Avatar,
@@ -66,7 +66,7 @@ const SingleAgent = () => {
     }
     const fetchAgent = async () => {
         try {
-            const token = localStorage.getItem("authToken");
+            const token = Cookies.get("authToken");
             const response = await getAgentById(id, token);
             console.log("fetchAgent", response)
             if (response.success) {

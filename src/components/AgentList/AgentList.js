@@ -8,6 +8,7 @@ import { IconContext } from "react-icons";
 import { BiSolidWalletAlt } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import { getAllAgents } from "../../services/APIManager";
+import Cookies from "js-cookie";
 
 const data = [
   {
@@ -79,7 +80,7 @@ const AgentList = () => {
 
   const fetchAgents = async () => {
     try {
-      const token = localStorage.getItem("authToken");
+      const token = Cookies.get("authToken");
       const response = await getAllAgents(token);
       console.log("response", response)
       if (response.success) {
