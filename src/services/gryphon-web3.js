@@ -163,3 +163,28 @@ export const getAgentTokenBalance = async (
         return;
     }
 };
+
+export const tokenInfo = async (erc20Addr ) => {
+    try {
+        const web3 = new Web3(window.ethereum);
+        const contract = new web3.eth.Contract(BondingV2ABI.abi, config.bonding_contract_address);
+        let result = await contract.methods.tokenInfo(erc20Addr).call();
+        console.log("tokenInfo", result);
+        return result;
+    } catch (e) {
+        console.log("error in tokenInfo", e)
+        return;
+    }
+}
+export const userTokenList = async (walletAddress ) => {
+    try {
+        const web3 = new Web3(window.ethereum);
+        const contract = new web3.eth.Contract(BondingV2ABI.abi, config.bonding_contract_address);
+        let result = await contract.methods.getUserTokens(walletAddress).call();
+        console.log("walletAddress", result);
+        return result;
+    } catch (e) {
+        console.log("error in walletAddress", e)
+        return;
+    }
+}

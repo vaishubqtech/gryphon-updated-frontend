@@ -11,6 +11,7 @@ import { getAllAgents } from "../../services/APIManager";
 import Cookies from "js-cookie";
 import moment from "moment";
 import { getEllipsisTxt } from '../../utils/formatter';
+import Web3 from 'web3';
 
 
 const data = [
@@ -127,7 +128,7 @@ const AgentList = () => {
           <thead>
             <tr>
               <th>AI Agent</th>
-              <th>Wallet</th>
+              <th>Address</th>
               <th>Market Cap</th>
               <th>TVL</th>
               <th>24h Volume</th>
@@ -165,10 +166,10 @@ const AgentList = () => {
                       <span className="copied-popup">Copied!</span>
                     )}
                   </td>
-                  <td>{item.marketCap || 0}</td>
-                  <td>{item.tvl || 0}</td>
-                  <td>{item.volume || 0}</td>
-                  <td className="change">{item.change || 0}</td>
+                  <td>{item.marketCap? parseFloat(Web3.utils.fromWei(item.marketCap, "ether"))  : 0}</td>
+                  <td>{item.tvl ? parseFloat(Web3.utils.fromWei(item.tvl, "ether")) : 0}</td>
+                  <td>{item.volume ?parseFloat(Web3.utils.fromWei(item.volume , "ether")) : 0}</td>
+                  <td className="change">{item.change ?  parseFloat(Web3.utils.fromWei(item.change , "ether")) : 0}</td>
                   {/* <td className={`ranking ${item?.ranking.toLowerCase()}`}>
                   {typeof item.ranking === "string" && item.ranking.length <= 3
                     ? item.ranking

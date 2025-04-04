@@ -27,7 +27,7 @@
   box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
 }
 .body-height {
-  min-height: 73vh;
+  min-height: 70vh;
 }
 .modal h2 {
   margin-bottom: 10px;
@@ -35,7 +35,7 @@
 
 label {
   display: block;
-  margin-top: 10px;
+  margin-top: 5px;
   font-size: 14px;
 }
 
@@ -55,7 +55,7 @@ select {
   backdrop-filter: blur(40px);
   color: white;
   border-radius: 5px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 .modal-body input,
 .modal-body textarea {
@@ -74,7 +74,7 @@ select {
   backdrop-filter: blur(40px);
   color: #fff;
   border-radius: 5px;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
 }
 .setting-modal-body input,
 .setting-modal-body textarea {
@@ -88,7 +88,7 @@ select {
   backdrop-filter: blur(40px);
   color: #fff;
   border-radius: 5px;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
 }
 .setting-modal-body select{
   background:#F2F2F21A;
@@ -163,13 +163,13 @@ textarea::-ms-input-placeholder {
 }
 .setting-next {
   width: 30%;
-  background: #F75D4E;
+  background: #f75c4e73;
   border: 2px solid #FF776A;
   border: none;
   color: white;
   padding: 10px 20px;
   border-radius: 5px;
-  cursor: pointer;
+  cursor: not-allowed;
 }
 .cancel {
   background: #151a2e;
@@ -433,7 +433,7 @@ label {
 }
 .setting-modal-flex{
   display: flex;
-  min-height: 78vh;
+  min-height: 70vh;
   
 }
 .s-m-left{

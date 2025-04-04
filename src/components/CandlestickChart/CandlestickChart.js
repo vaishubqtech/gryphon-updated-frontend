@@ -196,15 +196,14 @@ const CandlestickChart = () => {
 
         fetchData();
     }, []);
-
     useEffect(() => {
-        if (!chartContainerRef.current || transformedData.length === 0) return;
-
+        if (!chartContainerRef.current) return;
+    
         const chart = createChart(chartContainerRef.current, {
             width: chartContainerRef.current.clientWidth,
             height: 400,
             layout: {
-                background: { type: 'solid', color: 'transparent' }, // Ensure the format is correct
+                background: { type: 'solid', color: 'transparent' },
                 textColor: '#ffffff',
             },
             grid: {
@@ -218,7 +217,7 @@ const CandlestickChart = () => {
                 borderColor: '#cccccc',
             },
         });
-
+    
         const candlestickSeries = chart.addCandlestickSeries({
             upColor: '#26a69a',
             downColor: '#ef5350',
@@ -226,30 +225,35 @@ const CandlestickChart = () => {
             wickUpColor: '#26a69a',
             wickDownColor: '#ef5350',
         });
-
-        candlestickSeries.setData(transformedData);
-        chart.timeScale().fitContent();
-
+    
+        // if (transformedData.length > 0) {
+        //     // ✅ Show actual data if available
+        //     candlestickSeries.setData(transformedData);
+        //     chart.timeScale().fitContent();
+        // } else {}
+            const now = Math.floor(Date.now() / 1000);
+            candlestickSeries.setData([
+                {
+                    time: now, 
+                    open: 0,
+                    high: 0,
+                    low: 0,
+                    close: 0,
+                },
+            ]);
+    
         const handleResize = () => {
             chart.applyOptions({ width: chartContainerRef.current.clientWidth });
         };
-
+    
         window.addEventListener("resize", handleResize);
-
-        setTimeout(() => {
-            chart.applyOptions({
-                layout: {
-                    background: { type: 'solid', color: 'transparent' },
-                    textColor: '#ffffff',
-                },
-            });
-        }, 100); // Delay update to allow rendering
-
+    
         return () => {
             window.removeEventListener("resize", handleResize);
             chart.remove();
         };
     }, [transformedData]);
+    
 
 
     return <div className='chart-container' ref={chartContainerRef}></div>;

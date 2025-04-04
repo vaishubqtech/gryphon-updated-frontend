@@ -11,7 +11,7 @@ import { Tooltip } from 'antd';
 import Avatar from "../../assets/images/Frame 1394.png";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { amountOutValue, buyApprove, buyTrade, getAgentTokenBalance, getTokenBalance, sellApprove, sellTrade } from '../../services/gryphon-web3';
+import { amountOutValue, buyApprove, buyTrade, getAgentTokenBalance, getTokenBalance, sellApprove, sellTrade, tokenInfo } from '../../services/gryphon-web3';
 import config from '../../config';
 import Web3 from 'web3';
 import { getAgentById } from '../../services/APIManager';
@@ -46,15 +46,20 @@ const SingleAgent = () => {
     const [sellHashValue, setSellHashValue] = useState()
     const [gryphonMaxBalance, setGryphonMaxBalance] = useState()
     const [agentMaxBalance, setAgentMaxBalance] = useState()
+    const [tokenInfoRes, setTokenInfoRes] = useState()
+    const [priceChange1h, set1hPriceChange]  = useState()
 
     useEffect(() => {
         if (id) {
 
             fetchAgent();
+            
         }
     }, [id]);
 
+
     useEffect(() => {
+        getTokenInfo()
         getGryphonBalance()
         getAgentBalance()
     }, [agent?.erc20Address])
@@ -242,6 +247,19 @@ const SingleAgent = () => {
         }
     }
 
+
+    const getTokenInfo = async() =>{
+        try{
+            const infoRes = await tokenInfo(agent?.erc20Address )
+            console.log("infoRes", infoRes)
+            setTokenInfoRes(infoRes)
+           
+
+        }catch(e){
+            console.log("error in getTokenInfo" , e)
+            return
+        }
+    }
     const transactionRoutingBuy = () => {
         const url = `https://testnet.bscscan.com/tx/${buyHashValue}`;
         window.open(url, "_blank");
@@ -444,15 +462,17 @@ const SingleAgent = () => {
                             </div>
 
                             <div className="stats-container-agent">
-                                <div className="price">$0.000474</div>
+                                {/* <div className="price">${agent?.price || 0}</div> */}
+                                <div className="price">${ tokenInfoRes?.data[5] || 0 }</div>
                                 <div className="metrics">
                                     <div className="metric">
                                         <span>Market Cap</span>
-                                        <span>${agent?.marketCap || 0}k</span>
+                                        {/* <span>${agent?.marketCap? parseFloat(Web3.utils.fromWei(agent?.marketCap, "ether"))   :  0}k</span> */}
+                                        <span>${tokenInfoRes?.data ? parseFloat(Web3.utils.fromWei(tokenInfoRes?.data[6], "ether")).toFixed(3)   :  0}k</span>
                                     </div>
                                     <div className="metric">
                                         <span>Liquidity</span>
-                                        <span>${agent?.tvl || 0}k</span>
+                                        <span>${tokenInfoRes?.data[7]  ? parseFloat(Web3.utils.fromWei(tokenInfoRes?.data[7] , "ether"))  : 0}k</span>
                                     </div>
                                 </div>
                                 <div className="metrics">
@@ -462,21 +482,22 @@ const SingleAgent = () => {
                                     </div>
                                     <div className="metric">
                                         <span>24h Volume</span>
-                                        <span>${agent?.volume24h || 0}k</span>
+                                        <span>${agent?.volume24h? parseFloat(Web3.utils.fromWei(agent?.volume24h, "ether")) : 0}k</span>
                                     </div>
                                 </div>
                                 <div className="top-10">
-                                    <span>Top 10</span>
-                                    <span>-</span>
+                                    <span>Supply</span>
+                                    <span>{tokenInfoRes?.data?.supply ? parseFloat(Web3.utils.fromWei(tokenInfoRes?.data?.supply , "ether"))  : 0}</span>
                                 </div>
                                 <div className="time-frames">
                                     <div className="time-frame">
                                         <span>1h</span>
-                                        <span>-</span>
+                                        <span>{priceChange1h ? priceChange1h : '-'}</span>
                                     </div>
                                     <div className="time-frame">
                                         <span>24h</span>
-                                        <span>{agent?.priceChange24h || 0}%</span>
+                                        {/* <span>{agent?.priceChange24h ? parseFloat(Web3.utils.fromWei(agent?.priceChange24h, "ether"))  : 0}%</span> */}
+                                        <span>{tokenInfoRes?.data?.volume24H ? parseFloat(Web3.utils.fromWei(tokenInfoRes?.data?.volume24H , "ether"))  : 0}%</span>
                                     </div>
                                     <div className="time-frame">
                                         <span>7d</span>
@@ -485,7 +506,8 @@ const SingleAgent = () => {
                                 </div>
                                 <div className="volume">
                                     <span>Volume</span>
-                                    <span>-</span>
+                                    {/* <span>{agent?.supply ? parseFloat(Web3.utils.fromWei(agent?.supply, "ether"))  : 0}</span> */}
+                                    <span>{tokenInfoRes?.data?.volume ? parseFloat(Web3.utils.fromWei(tokenInfoRes?.data?.volume, "ether"))  : 0}</span>
                                 </div>
                             </div>
                             <div className="profile-card-ds">

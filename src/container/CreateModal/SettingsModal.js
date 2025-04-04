@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import "./modal.css"
 import { IconContext } from "react-icons";
 import { MdClose } from "react-icons/md";
@@ -6,21 +6,23 @@ import { useNavigate } from "react-router-dom";
 import ProfileImage from "../../assets/images/Frame 1394.png"
 import LogoImage from "../../assets/images/Frame 1397.png"
 import { useActiveAccount } from "thirdweb/react";
+import { tokenInfo, userTokenList } from '../../services/gryphon-web3';
 
 
 const SettingsModal = ({ isOpen, onClose }) => {
+
     const [activeSetting, setActiveSetting] = useState(0)
     const navigate = useNavigate()
-          const account = useActiveAccount();
-        const walletAddress = account?.address
+    const account = useActiveAccount();
+    const walletAddress = account?.address
     // const walletAddress = localStorage.getItem("publicAddress")
-    const [name, setName] = useState("Agent Name");
+    const [name, setName] = useState("Your agent name");
     const [profileImage, setProfileImage] = useState("");
     const [erc20Address, setErc20Address] = useState(" ");
-    const [ticker, setTicker] = useState("AG1");
-    const [bio, setBio] = useState("Just a chill joker who's been in web3 since the ICO days circa.2017.");
-    const [agentType, setAgentType] = useState("informative");
-    const [goal, setGoal] = useState("About Goal");
+    const [ticker, setTicker] = useState("Your agent Ticker");
+    const [bio, setBio] = useState("Bio about your team");
+    const [agentType, setAgentType] = useState("none");
+    const [goal, setGoal] = useState("Some Goal");
     const [personality, setPersonality] = useState("personality");
     const [niche, setNiche] = useState("Some Niche");
     const [purchaseAmount, setPurchaseAmt] = useState()
@@ -34,8 +36,9 @@ const SettingsModal = ({ isOpen, onClose }) => {
     const [uploading, setUploading] = useState(false);
     const [image, setImage] = useState("https://s3.ap-southeast-1.amazonaws.com/virtualprotocolcdn/name_6f5a14da0e.png");
     const [modalStatus, setModalStatus] = useState(0);
-    if (!isOpen) return null;
-
+    const [getUserTokenArray, setGetUserTokenArray] = useState([])
+    const [selectedToken, setSelectedToken] = useState("");
+    const [initialFetch, setInitialFetch] = useState()
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -44,6 +47,54 @@ const SettingsModal = ({ isOpen, onClose }) => {
             setImage(imageUrl);
         }
     };
+
+    useEffect(() => {
+        if (isOpen) {
+            getUserTokenList();
+        }
+    }, [isOpen])
+    useEffect(() => {
+        if (initialFetch) {
+            getTokenInfo();
+        }
+    }, [initialFetch])
+
+    const getUserTokenList = async () => {
+        try {
+            if (!walletAddress) return;
+            const infoRes = await userTokenList(walletAddress);
+            console.log("Fetched Tokens:", infoRes);
+            setInitialFetch(infoRes[0])
+            setGetUserTokenArray(infoRes || []);
+        } catch (e) {
+            console.error("Error in getUserTokenList:", e);
+        }
+    };
+
+    const getTokenInfo = async (erc20Address) => {
+        try {
+            const infoRes = await tokenInfo(erc20Address ? erc20Address : initialFetch);
+            console.log("Token Info:", infoRes.image);
+            setName(infoRes.data[2])
+            setTicker(infoRes.data[3])
+            setImage(infoRes.image)
+            setBio(infoRes.description)
+            setGoal("-")
+            setNiche("-")
+         
+        } catch (e) {
+            console.error("Error in getTokenInfo:", e);
+        }
+    };
+
+    const handleTokenSelect = (event) => {
+        const selectedValue = event.target.value;
+        setSelectedToken(selectedValue);
+        getTokenInfo(selectedValue);
+    };
+
+    if (!isOpen) return null;
+
     return (
         <div className="modal-overlay">
             <div className="modal">
@@ -68,11 +119,20 @@ const SettingsModal = ({ isOpen, onClose }) => {
                         <div className='s-m-break' />
                         {activeSetting === 0 ?
                             <div className='s-m-right'>
+                                <label>Select Agent Address</label>
+                                        <select id="agentType" value={selectedToken} onChange={handleTokenSelect}>
+                                            {getUserTokenArray?.map((token, index) => (
+                                                <option key={index} value={token}>
+                                                    {token}
+                                                </option>
+                                            ))}
+                                        </select>
                                 <div className='agent-n-t-flex'>
                                     <div className='top-50'>
                                         <label>AI Agent Name</label>
                                         <input type="text" placeholder="Agent Name" value={name}
                                             onChange={(e) => setName(e.target.value)} />
+                                
                                     </div>
                                     <div className='top-50'>
                                         <label>AI Agent Ticker</label>
