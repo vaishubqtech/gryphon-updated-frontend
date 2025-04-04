@@ -18,7 +18,7 @@ import Cookies from "js-cookie";
 
 const CreateModal = ({ isOpen, onClose }) => {
     const navigate = useNavigate()
-      const account = useActiveAccount();
+    const account = useActiveAccount();
     // const walletAddress = account?.address
     const walletAddress = localStorage.getItem("publicAddress")
 
@@ -110,7 +110,7 @@ const CreateModal = ({ isOpen, onClose }) => {
             if (approveFactoryRes) {
                 toast.dismiss(toastId);
                 await create_agent();
-            }else{
+            } else {
                 toast.dismiss(toastId);
                 toast.error("Something went wrong please try again", {
                     position: "top-right",
@@ -154,9 +154,13 @@ const CreateModal = ({ isOpen, onClose }) => {
                     autoClose: 3000,
                 });
             }
+            // setTimeout(() => {
+            //     onClose();
+            // }, 4000);
             setTimeout(() => {
                 onClose();
-            }, 4000);
+                window.location.reload();
+            }, 5000);
         } catch (e) {
             console.log("error in create_agent ", e)
             return;
@@ -223,7 +227,7 @@ const CreateModal = ({ isOpen, onClose }) => {
         setPersonality("");
         setNiche("");
         setPurchaseAmt()
-        window.location.reload();
+ 
 
     };
 

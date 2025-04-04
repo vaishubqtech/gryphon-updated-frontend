@@ -251,6 +251,38 @@ const SingleAgent = () => {
         window.open(url, "_blank");
     }
 
+    const percentage25 = () => {
+        let resValue;
+        if (activeTradeTab === "buy") {
+            resValue = (25 / 100) * gryphonMaxBalance;
+        } else {
+            resValue = (25 / 100) * agentMaxBalance;
+
+        }
+        setAmountToTrade(resValue)
+
+    }
+    const percentage50 = () => {
+        let resValue;
+        if (activeTradeTab === "buy") {
+            resValue = (50 / 100) * gryphonMaxBalance;
+        } else {
+            resValue = (50 / 100) * agentMaxBalance;
+
+        }
+        setAmountToTrade(resValue)
+    }
+    const percentage100 = () => {
+        let resValue;
+        if (activeTradeTab === "buy") {
+            resValue =  gryphonMaxBalance;
+        } else {
+            resValue = agentMaxBalance;
+
+        }
+        setAmountToTrade(resValue)
+    }
+
     return (
         <>
             <div className="ds-container">
@@ -379,6 +411,7 @@ const SingleAgent = () => {
                                         type="number"
                                         className="input-box"
                                         placeholder={activeTradeTab === "buy" ? "Enter the amount of GRYPHON" : "Enter the amount of AGENT"}
+                                        value={amountToTrade}
                                         onChange={(e) => { setAmountToTrade(e.target.value); setBuyHashValue(); setSellHashValue() }}
                                     />
                                 </div>
@@ -388,9 +421,9 @@ const SingleAgent = () => {
 
                                 {amountToTrade && !buyHashValue && <p className='est-amt'>You will receive<span style={{ color: '#f85d4f' }}> {estimatedAmount ? parseFloat(Web3.utils.fromWei(estimatedAmount, "ether")).toFixed(8) : '0'} {activeTradeTab === "buy" ? "TICKER" : "GRYPHON"}</span>   </p>}
                                 <div className="amount-buttons">
-                                    <button className="amount-button"><div>25%</div> </button>
-                                    <button className="amount-button"><div>50%</div> </button>
-                                    <button className="amount-button"><div>100%</div> </button>
+                                    <button className="amount-button" onClick={percentage25}><div>25%</div> </button>
+                                    <button className="amount-button" onClick={percentage50}><div>50%</div> </button>
+                                    <button className="amount-button" onClick={percentage100}><div>100%</div> </button>
                                 </div>
 
                                 <div className="trading-fee"><p> Trading Fee</p>
@@ -419,7 +452,7 @@ const SingleAgent = () => {
                                     </div>
                                     <div className="metric">
                                         <span>Liquidity</span>
-                                        <span>-</span>
+                                        <span>${agent?.tvl || 0}k</span>
                                     </div>
                                 </div>
                                 <div className="metrics">
@@ -452,7 +485,7 @@ const SingleAgent = () => {
                                 </div>
                                 <div className="volume">
                                     <span>Volume</span>
-                                    <span>${agent?.tvl || 0}k</span>
+                                    <span>-</span>
                                 </div>
                             </div>
                             <div className="profile-card-ds">
