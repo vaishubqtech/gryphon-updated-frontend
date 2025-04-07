@@ -15,8 +15,8 @@ const SettingsModal = ({ isOpen, onClose }) => {
     const [activeSetting, setActiveSetting] = useState(0)
     const navigate = useNavigate()
     const account = useActiveAccount();
-    const walletAddress = account?.address
-    // const walletAddress = localStorage.getItem("publicAddress")
+    // const walletAddress = account?.address
+    const walletAddress = localStorage.getItem("publicAddress")
     const [name, setName] = useState("Your agent name");
     const [profileImage, setProfileImage] = useState("");
     const [erc20Address, setErc20Address] = useState(" ");

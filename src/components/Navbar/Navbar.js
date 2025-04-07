@@ -42,10 +42,9 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    console.log("wallet address", account?.address);
-    if (account?.address) {
+    // if (account?.address) {}
       getAccount()
-    }
+    
   }, [account]);
 
   async function getAccount() {
@@ -55,6 +54,8 @@ const Navbar = () => {
     });
     let public_address = accounts[0].toLowerCase();
     localStorage.setItem("publicAddress", web3.utils.toChecksumAddress(public_address));
+    console.log("wallet address",public_address);
+
     let currentChain = await window.ethereum.request({ method: "eth_chainId" });
     let decimal_chainId = parseInt(currentChain, 16);
     localStorage.setItem("chainId", decimal_chainId);
@@ -64,9 +65,10 @@ const Navbar = () => {
     }
     await getNonceApi()
   }
+
   const getNonceApi = async () => {
     try {
-      // publicAddress = localStorage.getItem("publicAddress")
+      publicAddress = localStorage.getItem("publicAddress")
       publicAddress = account?.address
 
       decimalChainId = localStorage.getItem("chainId")
