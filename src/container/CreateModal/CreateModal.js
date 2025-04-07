@@ -232,7 +232,7 @@ const CreateModal = ({ isOpen, onClose }) => {
     };
 
     const moveModal1 = () => {
-        if (name && ticker && bio && agentType) {
+        if (name && ticker && bio && agentType && image) {
             setModalStatus(1)
         } else {
             toast.warning("Please fill the required fields", {
