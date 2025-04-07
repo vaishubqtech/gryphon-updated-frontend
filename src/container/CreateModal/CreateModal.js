@@ -159,7 +159,7 @@ const CreateModal = ({ isOpen, onClose }) => {
             // }, 4000);
             setTimeout(() => {
                 onClose();
-                window.location.reload();
+                // window.location.reload();
             }, 5000);
         } catch (e) {
             console.log("error in create_agent ", e)
