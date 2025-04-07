@@ -48,6 +48,7 @@ const SingleAgent = () => {
     const [agentMaxBalance, setAgentMaxBalance] = useState()
     const [tokenInfoRes, setTokenInfoRes] = useState()
     const [priceChange1h, set1hPriceChange]  = useState()
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -64,11 +65,19 @@ const SingleAgent = () => {
         getAgentBalance()
     }, [agent?.erc20Address])
 
-    const handleCopy = async () => {
-        toast.success("ERC20Address copied!", {
-            position: "top-right",
-            className: "copy-toast-message",
-        });
+    const handleCopy = async (textToCopy ) => {
+        try {
+            toast.success("ERC20Address copied!", {
+                position: "top-right",
+                className: "copy-toast-message",
+            });
+            await navigator.clipboard.writeText(textToCopy);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+        } catch (err) {
+            console.error("Failed to copy!", err);
+        }
+ 
     }
     const fetchAgent = async () => {
         try {
@@ -128,6 +137,13 @@ const SingleAgent = () => {
                 });
                 return;
             }
+            if(amountToTrade > estimatedAmount) {
+                toast.dismiss(toastId);
+                toast.error("Amount exceeds balance. Try again!", {
+                    position: "top-right",
+                });
+                return;
+            }
             const approve_res = await buyApprove(Web3.utils.toWei(amountToTrade, "ether"), walletAddress)
             console.log("approve_res", approve_res)
             if (approve_res) {
@@ -174,7 +190,14 @@ const SingleAgent = () => {
         try {
             if (!amountToTrade) {
                 toast.dismiss(toastId);
-                toast.error("Please enter valid TICKER amount", {
+                toast.error("Please enter valid amount", {
+                    position: "top-right",
+                });
+                return;
+            }
+            if(amountToTrade > estimatedAmount) {
+                toast.dismiss(toastId);
+                toast.error("Amount exceeds balance. Try again!", {
                     position: "top-right",
                 });
                 return;
@@ -311,18 +334,18 @@ const SingleAgent = () => {
                             <div className="left-section">
                                 <div className="profile">
                                     <img
-                                        src={agent?.profileImage ? agent?.profileImage : "https://s3.ap-southeast-1.amazonaws.com/virtualprotocolcdn/name_ccf503ff79.jpeg"}
+                                        src={agent?.profileImage ? agent?.profileImage : "https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg"}
                                         alt="Profile"
                                         className="profile-img"
                                     />
                                     <div>
                                         <div style={{ display: 'flex', marginTop: 4 }}>
-                                            <h2 className="profile-name">{agent?.name ? agent?.name : "Agent Name"}</h2>
-                                            <p className="profile-symbol">${agent?.ticker ? agent?.ticker : "AGT"}</p>
+                                            <h2 className="profile-name">{agent?.name}</h2>
+                                            <p className="profile-symbol">${agent?.ticker }</p>
                                         </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', marginTop: 6, zIndex: 9 }} onClick={handleCopy}>
+                                        <div style={{ display: 'flex', alignItems: 'center', marginTop: 6, zIndex: 9 }} onClick={()=>handleCopy(agent?.erc20Address )}>
 
-                                            <div className='erc20-token'>{getEllipsisTxt(agent?.erc20Address ? agent?.erc20Address : "2dGH6qTSvmtdejUYB2c8ScV8s6tbsgGfP8eMTyYNvirt", 6)}</div>
+                                            <div className='erc20-token'>{getEllipsisTxt(agent?.erc20Address , 6)}</div>
 
                                             <IconContext.Provider value={{ size: '1em', color: "#6B7897" }} >
                                                 <div style={{ marginLeft: 7, cursor: "pointer" }}>
@@ -424,7 +447,7 @@ const SingleAgent = () => {
                                 </div>
 
                                 <div className="input-section">
-                                    <p className="balance-text">{activeTradeTab === "buy" ? `${gryphonMaxBalance ? gryphonMaxBalance : '0'} GRYPHON` : `${agentMaxBalance ? agentMaxBalance : "0"} AGENT`}</p>
+                                    <p className="balance-text">{activeTradeTab === "buy" ? `${gryphonMaxBalance ? gryphonMaxBalance : '0'} GRYPHON` : `${agentMaxBalance ? agentMaxBalance : "0"} ${agent?.ticker} `}</p>
                                     <input
                                         type="number"
                                         className="input-box"
@@ -437,7 +460,7 @@ const SingleAgent = () => {
                                 {activeTradeTab === "buy" && buyHashValue ? <div style={{ display: 'flex', alignItems: 'center', paddingTop: 10 }}>🔗<div className='tx-route' onClick={transactionRoutingBuy}> View Transaction </div></div> : <></>}
                                 {activeTradeTab === "sell" && sellHashValue ? <div style={{ display: 'flex', alignItems: 'center', paddingTop: 10 }}>🔗<div className='tx-route' onClick={transactionRoutingSell}> View Transaction </div> </div> : <></>}
 
-                                {amountToTrade && !buyHashValue && <p className='est-amt'>You will receive<span style={{ color: '#f85d4f' }}> {estimatedAmount ? parseFloat(Web3.utils.fromWei(estimatedAmount, "ether")).toFixed(8) : '0'} {activeTradeTab === "buy" ? "TICKER" : "GRYPHON"}</span>   </p>}
+                                {amountToTrade && !buyHashValue && <p className='est-amt'>You will receive<span style={{ color: '#f85d4f' }}> {estimatedAmount ? parseFloat(Web3.utils.fromWei(estimatedAmount , "ether")).toFixed(8) : '0'} {activeTradeTab === "buy" ? agent?.ticker : "GRYPHON"}</span>   </p>}
                                 <div className="amount-buttons">
                                     <button className="amount-button" onClick={percentage25}><div>25%</div> </button>
                                     <button className="amount-button" onClick={percentage50}><div>50%</div> </button>
