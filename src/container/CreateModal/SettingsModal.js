@@ -7,6 +7,7 @@ import ProfileImage from "../../assets/images/Frame 1394.png"
 import LogoImage from "../../assets/images/Frame 1397.png"
 import { useActiveAccount } from "thirdweb/react";
 import { tokenInfo, userTokenList } from '../../services/gryphon-web3';
+import { updateTokenInfo } from '../../services/APIManager';
 
 
 const SettingsModal = ({ isOpen, onClose }) => {
@@ -92,6 +93,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
         setSelectedToken(selectedValue);
         getTokenInfo(selectedValue);
     };
+
 
     if (!isOpen) return null;
 

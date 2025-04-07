@@ -74,6 +74,41 @@ export async function verifyUser(publicAddress, chainId, signature) {
     return { success: false, message: err.message };
   }
 };
+export async function updateTokenInfo(agentAddress, tradeType,volume) {
+  console.log("agentAddress, tradeType,volume", agentAddress, tradeType,volume)
+  const data = {
+    agentAddress: agentAddress,
+    tradeType:tradeType ,
+    volume: volume
+  }
+  const config = {
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    
+  };
+  try {
+    const url = `${ai_url}api/v1/contract/update-token-info`;
+    const response = await fetch(url, config);
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    let result = await response.json();
+    console.log("updateTokenInfo result", result);
+    return {
+      data: result.data,
+      message: result.message
+    };
+  } catch (err) {
+    console.log(err, "error");
+    return { success: false, message: err.message };
+  }
+};
+
 export async function getProfile(token) {
 
   try {
@@ -194,4 +229,5 @@ export async function createAgent(agentData, token) {
     return { success: false, message: err.message };
   }
 }
+
 

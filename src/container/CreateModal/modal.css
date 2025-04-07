@@ -54,7 +54,7 @@
   background-color: #666;    
 }
 .body-height {
-  /* min-height: 70vh; */
+  min-height: 65vh;
 }
 .modal h2 {
   margin-bottom: 10px;

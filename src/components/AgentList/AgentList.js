@@ -140,7 +140,7 @@ const AgentList = () => {
           {agents?.length > 0 ? (agents?.map((item, index) => {
               const relativeTime = convertTimestampToRelativeTime(item?.createdTimestamp);
               return (
-                <tr key={index} style={{ cursor: "pointer" }} onClick={() => navigate(`/detail-screen/${item._id}`)}>
+                <tr key={index} style={{ cursor: "pointer" }} onClick={() => navigate(`/detail-screen/${item.agentId}`)}>
                   <td>
                     <div className="agent-info">
                       <img src={item.profileImage? item.profileImage : "https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg" } alt="avatar" className="avatar-dash" />
@@ -167,9 +167,9 @@ const AgentList = () => {
                     )}
                   </td>
                   <td>{item.marketCap? parseFloat(Web3.utils.fromWei(item.marketCap, "ether"))  : 0}</td>
-                  <td>{item.tvl ? parseFloat(Web3.utils.fromWei(item.tvl, "ether")) : 0}</td>
-                  <td>{item.volume ?parseFloat(Web3.utils.fromWei(item.volume , "ether")) : 0}</td>
-                  <td className="change">{item.change ?  parseFloat(Web3.utils.fromWei(item.change , "ether")) : 0}</td>
+                  <td>{item.liquidity ? parseFloat(Web3.utils.fromWei(item.liquidity, "ether")) : 0}</td>
+                  <td>{item.volume24h ?parseFloat(Web3.utils.fromWei(item.volume24h , "ether")) : 0}</td>
+                  <td className="change">{item.priceChange24h ?  parseFloat(Web3.utils.fromWei(item.priceChange24h , "ether")) : 0}</td>
                   {/* <td className={`ranking ${item?.ranking.toLowerCase()}`}>
                   {typeof item.ranking === "string" && item.ranking.length <= 3
                     ? item.ranking
