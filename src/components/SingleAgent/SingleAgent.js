@@ -292,6 +292,11 @@ const SingleAgent = () => {
         window.open(url, "_blank");
     }
 
+
+    const viewContractAddress = () => {
+        const url = `https://testnet.bscscan.com/address/${agent?.erc20Address}`;
+        window.open(url, "_blank");
+    }
     const percentage25 = () => {
         let resValue;
         if (activeTradeTab === "buy") {
@@ -546,13 +551,13 @@ const SingleAgent = () => {
                                         />
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
                                             <span className="wallet-address">{agent?.erc20Address ? getEllipsisTxt(agent?.erc20Address, 6) : "Contract Address here"}</span>
-                                            <a href="#" className="view-profile" onClick={() => navigate("/profile")}>View Profile</a>
+                                            <div className="view-profile" onClick={()=>navigate("/")}>View Profile</div>
 
                                         </div>
                                     </div>
-                                    <a href="#" className="profile-link">
+                                    <div style={{cursor:"pointer"}} className="profile-link" onClick={viewContractAddress}>
                                         <FaExternalLinkAlt />
-                                    </a>
+                                    </div>
                                 </div>
                                 <div className="actions">
                                     <FaTimes className="icon" />
