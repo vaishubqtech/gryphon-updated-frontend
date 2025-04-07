@@ -31,9 +31,9 @@ const capabilitesFeed = ["Post Twitter", "Search Internet", "Search Twitters", "
 
 const SingleAgent = () => {
     const account = useActiveAccount();
-    const walletAddress = account?.address
+    // const walletAddress = account?.address
     const [activeSortTab, setActiveSortTab] = useState(0);
-    // const walletAddress = localStorage.getItem("publicAddress")
+    const walletAddress = localStorage.getItem("publicAddress")
     const navigate = useNavigate()
     const { id } = useParams();
     const [agent, setAgent] = useState(null);
