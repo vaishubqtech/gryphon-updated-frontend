@@ -507,22 +507,22 @@ const SingleAgent = () => {
 
                             <div className="stats-container-agent">
                                 {/* <div className="price">${agent?.price || 0}</div> */}
-                                <div className="price">${tokenInfoRes?.data[5] || 0}</div>
+                                <div className="price">${agent?.price || 0}</div>
                                 <div className="metrics">
                                     <div className="metric">
                                         <span>Market Cap</span>
                                         {/* <span>${agent?.marketCap? parseFloat(Web3.utils.fromWei(agent?.marketCap, "ether"))   :  0}k</span> */}
-                                        <span>${tokenInfoRes?.data ? parseFloat(Web3.utils.fromWei(tokenInfoRes?.data[6], "ether")).toFixed(3) : 0}k</span>
+                                        <span>${agent?.marketCap ? parseFloat(Web3.utils.fromWei(agent?.marketCap, "ether")).toFixed(3) : 0}k</span>
                                     </div>
                                     <div className="metric">
                                         <span>Liquidity</span>
-                                        <span>${tokenInfoRes?.data[7] ? parseFloat(Web3.utils.fromWei(tokenInfoRes?.data[7], "ether")).toFixed(3) : 0}k</span>
+                                        <span>${agent?.liquidity ? parseFloat(Web3.utils.fromWei(agent?.liquidity, "ether")).toFixed(3) : 0}k</span>
                                     </div>
                                 </div>
                                 <div className="metrics">
                                     <div className="metric">
                                         <span>Holders</span>
-                                        <span>-</span>
+                                        <span>{agent?.stats ? agent?.stats?.top10HolderPercentage : 0}%</span>
                                     </div>
                                     <div className="metric">
                                         <span>24h Volume</span>
@@ -531,7 +531,7 @@ const SingleAgent = () => {
                                 </div>
                                 <div className="top-10">
                                     <span>Supply</span>
-                                    <span>{tokenInfoRes?.data?.supply ? parseFloat(Web3.utils.fromWei(tokenInfoRes?.data?.supply, "ether")) : 0}</span>
+                                    <span>{agent?.supply ? parseFloat(Web3.utils.fromWei(agent?.supply, "ether")) : 0}</span>
                                 </div>
                                 <div className="time-frames">
                                     <div className="time-frame">
@@ -541,7 +541,7 @@ const SingleAgent = () => {
                                     <div className="time-frame">
                                         <span>24h</span>
                                         {/* <span>{agent?.priceChange24h ? parseFloat(Web3.utils.fromWei(agent?.priceChange24h, "ether"))  : 0}%</span> */}
-                                        <span>{tokenInfoRes?.data?.volume24H ? parseFloat(Web3.utils.fromWei(tokenInfoRes?.data?.volume24H, "ether")).toFixed(3) : 0}%</span>
+                                        <span>{agent?.volume24h ? parseFloat(Web3.utils.fromWei(agent?.volume24h , "ether")).toFixed(3) : 0}%</span>
                                     </div>
                                     <div className="time-frame">
                                         <span>7d</span>
