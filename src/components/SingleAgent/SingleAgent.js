@@ -67,7 +67,7 @@ const SingleAgent = () => {
 
     function formatNumberStr(numStr) {
         const num = parseFloat(numStr);
-        return Number.isInteger(num) ? num : Number(num.toFixed(6));
+        return Number.isInteger(num) ? num : Number(num.toFixed(3));
       }
       
     const handleCopy = async (textToCopy) => {
@@ -184,7 +184,7 @@ const SingleAgent = () => {
                 });
             }
             setTimeout(() => {
-                // window.location.reload();
+                window.location.reload();
             }, 3000);
         } catch (err) {
             console.log("error in buyTradeResult", err)
@@ -247,7 +247,7 @@ const SingleAgent = () => {
                 });
             }
             setTimeout(() => {
-                // window.location.reload();
+                window.location.reload();
             }, 3000);
         } catch (err) {
             console.log("error in sellTradeResult", err)

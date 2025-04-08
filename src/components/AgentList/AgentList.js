@@ -14,53 +14,6 @@ import { getEllipsisTxt } from '../../utils/formatter';
 import Web3 from 'web3';
 
 
-const data = [
-  {
-    id: 1,
-    avatar: Avatar,
-    name: "Prefrontal Cortex $CONVO",
-    wallet: "0x7a5c...8f92",
-    marketCap: "$99.9b",
-    tvl: "$12.0m",
-    volume: "$1.5m",
-    change: "+16.4%",
-    ranking: Gold,
-  },
-  {
-    id: 2,
-    avatar: Avatar,
-    name: "Trade Master AI $TADS",
-    wallet: "0x7a5c...8f92",
-    marketCap: "$99.9b",
-    tvl: "$12.0m",
-    volume: "$1.5m",
-    change: "+16.4%",
-    ranking: Silver,
-  },
-  {
-    id: 3,
-    avatar: Avatar,
-    name: "ScamURwallet AI $SUWL",
-    wallet: "0x7a5c...8f92",
-    marketCap: "$99.9b",
-    tvl: "$12.0m",
-    volume: "$1.5m",
-    change: "+16.4%",
-    ranking: Bronze,
-  },
-  {
-    id: 4,
-    avatar: Avatar,
-    name: "Bukkake AI $BLAST",
-    wallet: "0x7a5c...8f92",
-    marketCap: "$99.9b",
-    tvl: "$12.0m",
-    volume: "$1.5m",
-    change: "+16.4%",
-    ranking: "4th",
-  },
-];
-
 const AgentList = () => {
   const navigate = useNavigate();
   const [activeSortTab, setActiveSortTab] = useState(0);
@@ -79,8 +32,12 @@ const AgentList = () => {
 
   useEffect(() => {
     fetchAgents();
-  }, [ ]);
+  }, []);
 
+  function formatNumberStr(numStr) {
+    const num = parseFloat(numStr);
+    return Number.isInteger(num) ? num : Number(num.toFixed(3));
+  }
 
   const fetchAgents = async () => {
     try {
@@ -137,18 +94,18 @@ const AgentList = () => {
             </tr>
           </thead>
           <tbody>
-          {agents?.length > 0 ? (agents?.map((item, index) => {
+            {agents?.length > 0 ? (agents?.map((item, index) => {
               const relativeTime = convertTimestampToRelativeTime(item?.createdTimestamp);
               return (
                 <tr key={index} style={{ cursor: "pointer" }} onClick={() => navigate(`/detail-screen/${item.agentId}`)}>
                   <td>
                     <div className="agent-info">
-                      <img src={item.profileImage? item.profileImage : "https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg" } alt="avatar" className="avatar-dash" />
+                      <img src={item.profileImage ? item.profileImage : "https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg"} alt="avatar" className="avatar-dash" />
                       {item.name}
                     </div>
                   </td>
                   <td className="wallet">
-                    {item.erc20Address ? getEllipsisTxt (item.erc20Address,6) : 'Wallet Address'}{" "}
+                    {item.erc20Address ? getEllipsisTxt(item.erc20Address, 6) : 'Wallet Address'}{" "}
                     <span className="copy-btn">
                       <IconContext.Provider
                         value={{
@@ -166,10 +123,23 @@ const AgentList = () => {
                       <span className="copied-popup">Copied!</span>
                     )}
                   </td>
-                  <td>{item?.stats?.marketCap? parseFloat(Web3.utils.fromWei(item?.stats?.marketCap, "ether"))  : 0}</td>
-                  <td>{item?.stats?.liquidity ? parseFloat(Web3.utils.fromWei(item?.stats?.liquidity, "ether")) : 0}</td>
-                  <td>{item?.stats?.volume24h ?parseFloat(Web3.utils.fromWei(item?.stats?.volume24h , "ether")) : 0}</td>
-                  <td className="change">{item?.stats?.priceChange24h ?  parseFloat(Web3.utils.fromWei(item?.stats?.priceChange24h , "ether")) : 0}</td>
+                  <td>{item?.stats?.marketCap ? formatNumberStr(Web3.utils.fromWei(item?.stats?.marketCap, "ether")) : 0}</td>
+                  <td>{item?.stats?.liquidity ? formatNumberStr(Web3.utils.fromWei(item?.stats?.liquidity, "ether")) : 0}</td>
+                  <td>{item?.stats?.volume24h ? formatNumberStr(Web3.utils.fromWei(item?.stats?.volume24h, "ether")) : 0}</td>
+                  <td
+                    className={`change ${formatNumberStr(item?.stats?.priceChange24h) > 0
+                        ? 'text-green-500'
+                        : formatNumberStr(item?.stats?.priceChange24h) < 0
+                          ? 'text-red-500'
+                          : ''
+                      }`}
+                  >
+                    {item?.stats?.priceChange24h
+                      ? Number.isInteger(formatNumberStr(item.stats.priceChange24h))
+                        ? parseInt(item.stats.priceChange24h)
+                        : formatNumberStr(item.stats.priceChange24h)
+                      : 0}
+                  </td>
                   {/* <td className={`ranking ${item?.ranking.toLowerCase()}`}>
                   {typeof item.ranking === "string" && item.ranking.length <= 3
                     ? item.ranking
@@ -180,7 +150,7 @@ const AgentList = () => {
                   </td>
                 </tr>
               )
-            })  ) : (
+            })) : (
               <tr>
                 <td colSpan="7" style={{ textAlign: "center", padding: "30px" }}>
                   No agents found
