@@ -154,9 +154,6 @@ const CreateModal = ({ isOpen, onClose }) => {
                     autoClose: 3000,
                 });
             }
-            // setTimeout(() => {
-            //     onClose();
-            // }, 4000);
             setTimeout(() => {
                 onClose();
                 window.location.reload();
@@ -321,8 +318,10 @@ const CreateModal = ({ isOpen, onClose }) => {
                                         <div className='red-dot' />
                                         <div className='acc-red'>Please connect your X account</div>
                                     </div>
-                                    <div className='x-cta'>Connect X</div>
+                                    <Tooltip placement="bottom" color='#2e3844' title="Coming soon! Click NEXT to complete your agent creation.">
 
+                                        <div className='x-cta'>Connect X</div>
+                                    </Tooltip>
                                     <div className='acc-label' style={{ marginBottom: 10 }}>How would you like to setup the X account</div>
                                     <select id="agentType">
                                         <option>Use Gryphon's AI Stack</option>
@@ -333,10 +332,12 @@ const CreateModal = ({ isOpen, onClose }) => {
                                         <div className='red-dot' />
                                         <div className='acc-red'>Please select an option</div>
                                     </div>
-                                    <div className='setup-x'>
-                                        <div className='setup-single'>I will manage it myself</div>
-                                        <div className='setup-single'>Use Gryphon's AI Stack</div>
-                                    </div>
+                                    <Tooltip placement="bottom" color='#2e3844' title="Coming soon! Click NEXT to complete your agent creation.">
+                                        <div className='setup-x'>
+                                            <div className='setup-single'>I will manage it myself</div>
+                                            <div className='setup-single'>Use Gryphon's AI Stack</div>
+                                        </div>
+                                    </Tooltip>
                                 </div>
 
                             </div>

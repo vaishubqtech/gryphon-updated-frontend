@@ -17,16 +17,7 @@ import Web3 from 'web3';
 import { getAgentById, updateTokenInfo } from '../../services/APIManager';
 import { useActiveAccount } from "thirdweb/react";
 import Cookies from "js-cookie";
-const agent = [{
-    id: 1,
-    profileImage: Avatar,
-    name: 'Agent 1',
-    ticker: "$AGT1",
-    erc20Address: "0x25Bb8D9eB53eEe8b899ff9E8c9c78674Ce8b9937",
-    bio: "Evolutionary DeFi AI for Advanced Portfolio Strategies. Degen Futures Yield AI is led by Degen Freak Yeets.",
 
-}]
-// const capabilitesFeed = ["Post Twitter", "Search Internet", "Search Twitters", "Intuitive Guidance", "Confidence Boosting", "Behavioral Awareness", "Emotional Clarity", "Community Engagement"]
 const capabilitesFeed = ["Post Twitter", "Search Internet", "Search Twitters", "Community Engagement"]
 
 const SingleAgent = () => {
