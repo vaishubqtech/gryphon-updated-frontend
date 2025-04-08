@@ -140,9 +140,9 @@ export async function getProfile(token) {
 
 
 // AI API
-export async function getAllAgents(token) {
+export async function getAllAgents(sortType,token) {
   try {
-    const response = await fetch(`${ai_url}api/v1/agents`, {
+    const response = await fetch(`${ai_url}api/v1/agents?sortBy=${sortType}`, {
       method: 'GET',
       
       headers: {

@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./agentList.css";
-import Avatar from "../../assets/images/Frame 1394.png";
-import Gold from "../../assets/images/Gold.png";
-import Silver from "../../assets/images/silver.png";
-import Bronze from "../../assets/images/bronze.png";
+import { FaSortDown } from "react-icons/fa6";
 import { IconContext } from "react-icons";
 import { BiSolidWalletAlt } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +13,7 @@ import Web3 from 'web3';
 
 const AgentList = () => {
   const navigate = useNavigate();
-  const [activeSortTab, setActiveSortTab] = useState(0);
+  const [activeSortTab, setActiveSortTab] = useState("performance");
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [agents, setAgents] = useState([]);
 
@@ -32,7 +29,7 @@ const AgentList = () => {
 
   useEffect(() => {
     fetchAgents();
-  }, []);
+  }, [activeSortTab]);
 
   function formatNumberStr(numStr) {
     const num = parseFloat(numStr);
@@ -42,7 +39,7 @@ const AgentList = () => {
   const fetchAgents = async () => {
     try {
       const token = Cookies.get("authToken");
-      const response = await getAllAgents(token);
+      const response = await getAllAgents(activeSortTab, token);
       console.log("response", response)
       if (response.success) {
         setAgents(response.data);
@@ -61,20 +58,20 @@ const AgentList = () => {
         <div className="agent-flex-head">Top AI Agent</div>
         <div className="agent-tab">
           <div
-            className={activeSortTab === 0 ? "sort-tab-active" : "sort-tab"}
-            onClick={() => setActiveSortTab(0)}
+            className={activeSortTab === "performance" ? "sort-tab-active" : "sort-tab"}
+            onClick={() => setActiveSortTab("performance")}
           >
             Performance
           </div>
           <div
-            className={activeSortTab === 1 ? "sort-tab-active" : "sort-tab"}
-            onClick={() => setActiveSortTab(1)}
+            className={activeSortTab === "new" ? "sort-tab-active" : "sort-tab"}
+            onClick={() => setActiveSortTab("new")}
           >
             New
           </div>
           <div
-            className={activeSortTab === 2 ? "sort-tab-active" : "sort-tab"}
-            onClick={() => setActiveSortTab(2)}
+            className={activeSortTab === "popular" ? "sort-tab-active" : "sort-tab"}
+            onClick={() => setActiveSortTab("popular")}
           >
             Popular
           </div>
@@ -86,11 +83,41 @@ const AgentList = () => {
             <tr>
               <th>AI Agent</th>
               <th>Address</th>
-              <th>Market Cap</th>
-              <th>TVL</th>
+              <th><div style={{ display: 'flex', alignItems: 'center',justifyContent:'center' }}> <div>Market Cap</div> <div> {activeSortTab === "performance" && <IconContext.Provider
+                value={{
+                  size: "0.8em",
+                  color: "#fff",
+                  className: "global-class-name",
+                }}
+              >
+                <div style={{ marginLeft: 5 }}>
+                  <FaSortDown />
+                </div>
+              </IconContext.Provider>} </div></div></th>
+              <th><div style={{ display: 'flex', alignItems: 'center',justifyContent:'center' }}> <div>TVL</div> <div> {activeSortTab === "popular" && <IconContext.Provider
+                value={{
+                  size: "0.8em",
+                  color: "#fff",
+                  className: "global-class-name",
+                }}
+              >
+                <div style={{ marginLeft: 5 }}>
+                  <FaSortDown />
+                </div>
+              </IconContext.Provider>} </div></div></th>
               <th>24h Volume</th>
               <th>24h Change</th>
-              <th>Created At</th>
+              <th><div style={{ display: 'flex', alignItems: 'center',justifyContent:'center' }}> <div>Created At</div> <div> {activeSortTab === "new" && <IconContext.Provider
+                value={{
+                  size: "0.8em",
+                  color: "#fff",
+                  className: "global-class-name",
+                }}
+              >
+                <div style={{ marginLeft: 5 }}>
+                  <FaSortDown />
+                </div>
+              </IconContext.Provider>} </div></div></th>
             </tr>
           </thead>
           <tbody>
@@ -128,10 +155,10 @@ const AgentList = () => {
                   <td>{item?.stats?.volume24h ? formatNumberStr(Web3.utils.fromWei(item?.stats?.volume24h, "ether")) : 0}</td>
                   <td
                     className={`change ${formatNumberStr(item?.stats?.priceChange24h) > 0
-                        ? 'text-green-500'
-                        : formatNumberStr(item?.stats?.priceChange24h) < 0
-                          ? 'text-red-500'
-                          : ''
+                      ? 'text-green-500'
+                      : formatNumberStr(item?.stats?.priceChange24h) < 0
+                        ? 'text-red-500'
+                        : ''
                       }`}
                   >
                     {item?.stats?.priceChange24h

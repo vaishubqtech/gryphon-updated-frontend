@@ -175,6 +175,9 @@ const SingleAgent = () => {
                     isLoading: false,
                     autoClose: 3000,
                 });
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000);
             } else {
                 toast.update(loadingToast, {
                     render: "Error in placing BUY Trade",
@@ -183,9 +186,7 @@ const SingleAgent = () => {
                     autoClose: 3000,
                 });
             }
-            setTimeout(() => {
-                window.location.reload();
-            }, 3000);
+         
         } catch (err) {
             console.log("error in buyTradeResult", err)
             return
@@ -238,6 +239,9 @@ const SingleAgent = () => {
                     isLoading: false,
                     autoClose: 3000,
                 });
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000);
             } else {
                 toast.update(loadingToast, {
                     render: "Error in placing SELL Trade",
@@ -246,9 +250,7 @@ const SingleAgent = () => {
                     autoClose: 3000,
                 });
             }
-            setTimeout(() => {
-                window.location.reload();
-            }, 3000);
+         
         } catch (err) {
             console.log("error in sellTradeResult", err)
             return
