@@ -65,6 +65,11 @@ const SingleAgent = () => {
         getAgentBalance()
     }, [agent?.erc20Address])
 
+    function formatNumberStr(numStr) {
+        const num = parseFloat(numStr);
+        return Number.isInteger(num) ? num : Number(num.toFixed(6));
+      }
+      
     const handleCopy = async (textToCopy) => {
         try {
             toast.success("ERC20Address copied!", {
@@ -178,6 +183,9 @@ const SingleAgent = () => {
                     autoClose: 3000,
                 });
             }
+            setTimeout(() => {
+                // window.location.reload();
+            }, 3000);
         } catch (err) {
             console.log("error in buyTradeResult", err)
             return
@@ -238,6 +246,9 @@ const SingleAgent = () => {
                     autoClose: 3000,
                 });
             }
+            setTimeout(() => {
+                // window.location.reload();
+            }, 3000);
         } catch (err) {
             console.log("error in sellTradeResult", err)
             return
@@ -295,7 +306,7 @@ const SingleAgent = () => {
 
 
     const viewContractAddress = () => {
-        const url = `https://testnet.bscscan.com/address/${agent?.erc20Address}`;
+        const url = `https://testnet.bscscan.com/address/${agent?.blockchainData?.creator}`;
         window.open(url, "_blank");
     }
     const percentage25 = () => {
@@ -507,16 +518,16 @@ const SingleAgent = () => {
 
                             <div className="stats-container-agent">
                                 {/* <div className="price">${agent?.price || 0}</div> */}
-                                <div className="price">${agent?.price || 0}</div>
+                                <div className="price">${agent?.stats?.price || 0}</div>
                                 <div className="metrics">
                                     <div className="metric">
                                         <span>Market Cap</span>
                                         {/* <span>${agent?.marketCap? parseFloat(Web3.utils.fromWei(agent?.marketCap, "ether"))   :  0}k</span> */}
-                                        <span>${agent?.marketCap ? parseFloat(Web3.utils.fromWei(agent?.marketCap, "ether")).toFixed(3) : 0}k</span>
+                                        <span>${agent?.stats?.marketCap ? formatNumberStr(Web3.utils.fromWei(agent?.stats?.marketCap, "ether")) : 0}k</span>
                                     </div>
                                     <div className="metric">
                                         <span>Liquidity</span>
-                                        <span>${agent?.liquidity ? parseFloat(Web3.utils.fromWei(agent?.liquidity, "ether")).toFixed(3) : 0}k</span>
+                                        <span>${agent?.stats?.liquidity ? formatNumberStr(Web3.utils.fromWei(agent?.stats?.liquidity, "ether")) : 0}k</span>
                                     </div>
                                 </div>
                                 <div className="metrics">
@@ -526,12 +537,12 @@ const SingleAgent = () => {
                                     </div>
                                     <div className="metric">
                                         <span>24h Volume</span>
-                                        <span>${agent?.volume24h ? parseFloat(Web3.utils.fromWei(agent?.volume24h, "ether")) : 0}k</span>
+                                        <span>${agent?.volume24h ? formatNumberStr(Web3.utils.fromWei(agent?.volume24h, "ether")) : 0}k</span>
                                     </div>
                                 </div>
                                 <div className="top-10">
                                     <span>Supply</span>
-                                    <span>{agent?.supply ? parseFloat(Web3.utils.fromWei(agent?.supply, "ether")) : 0}</span>
+                                    <span>{agent?.stats?.supply ? formatNumberStr(Web3.utils.fromWei(agent?.stats?.supply, "ether")) : 0}</span>
                                 </div>
                                 <div className="time-frames">
                                     <div className="time-frame">
@@ -540,8 +551,7 @@ const SingleAgent = () => {
                                     </div>
                                     <div className="time-frame">
                                         <span>24h</span>
-                                        {/* <span>{agent?.priceChange24h ? parseFloat(Web3.utils.fromWei(agent?.priceChange24h, "ether"))  : 0}%</span> */}
-                                        <span>{agent?.volume24h ? parseFloat(Web3.utils.fromWei(agent?.volume24h , "ether")).toFixed(3) : 0}%</span>
+                                        <span>{agent?.stats?.volume24h ? formatNumberStr(Web3.utils.fromWei(agent?.stats?.volume24h , "ether")) : 0}%</span>
                                     </div>
                                     <div className="time-frame">
                                         <span>7d</span>
@@ -550,8 +560,7 @@ const SingleAgent = () => {
                                 </div>
                                 <div className="volume">
                                     <span>Volume</span>
-                                    {/* <span>{agent?.supply ? parseFloat(Web3.utils.fromWei(agent?.supply, "ether"))  : 0}</span> */}
-                                    <span>{tokenInfoRes?.data?.volume ? parseFloat(Web3.utils.fromWei(tokenInfoRes?.data?.volume, "ether")).toFixed(3) : 0}</span>
+                                    <span>{tokenInfoRes?.data?.volume ? formatNumberStr(Web3.utils.fromWei(tokenInfoRes?.data?.volume, "ether")) : 0}%</span>
                                 </div>
                             </div>
                             <div className="profile-card-ds">
@@ -566,7 +575,7 @@ const SingleAgent = () => {
                                             className="avatar"
                                         />
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                            <span className="wallet-address">{agent?.erc20Address ? getEllipsisTxt(agent?.erc20Address, 6) : "Contract Address here"}</span>
+                                            <span className="wallet-address">{agent?.blockchainData?.creator ? getEllipsisTxt(agent?.blockchainData?.creator, 6) : "Contract Address here"}</span>
                                             <div className="view-profile" onClick={() => navigate("/")}>View Profile</div>
 
                                         </div>

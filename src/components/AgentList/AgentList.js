@@ -166,10 +166,10 @@ const AgentList = () => {
                       <span className="copied-popup">Copied!</span>
                     )}
                   </td>
-                  <td>{item.marketCap? parseFloat(Web3.utils.fromWei(item.marketCap, "ether"))  : 0}</td>
-                  <td>{item.liquidity ? parseFloat(Web3.utils.fromWei(item.liquidity, "ether")) : 0}</td>
-                  <td>{item.volume24h ?parseFloat(Web3.utils.fromWei(item.volume24h , "ether")) : 0}</td>
-                  <td className="change">{item.priceChange24h ?  parseFloat(Web3.utils.fromWei(item.priceChange24h , "ether")) : 0}</td>
+                  <td>{item?.stats?.marketCap? parseFloat(Web3.utils.fromWei(item?.stats?.marketCap, "ether"))  : 0}</td>
+                  <td>{item?.stats?.liquidity ? parseFloat(Web3.utils.fromWei(item?.stats?.liquidity, "ether")) : 0}</td>
+                  <td>{item?.stats?.volume24h ?parseFloat(Web3.utils.fromWei(item?.stats?.volume24h , "ether")) : 0}</td>
+                  <td className="change">{item?.stats?.priceChange24h ?  parseFloat(Web3.utils.fromWei(item?.stats?.priceChange24h , "ether")) : 0}</td>
                   {/* <td className={`ranking ${item?.ranking.toLowerCase()}`}>
                   {typeof item.ranking === "string" && item.ranking.length <= 3
                     ? item.ranking
