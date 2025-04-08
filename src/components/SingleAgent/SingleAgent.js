@@ -168,7 +168,7 @@ const SingleAgent = () => {
                 });
                 setTimeout(() => {
                     window.location.reload();
-                }, 3000);
+                }, 5000);
             } else {
                 toast.update(loadingToast, {
                     render: "Error in placing BUY Trade",
@@ -232,7 +232,7 @@ const SingleAgent = () => {
                 });
                 setTimeout(() => {
                     window.location.reload();
-                }, 3000);
+                }, 5000);
             } else {
                 toast.update(loadingToast, {
                     render: "Error in placing SELL Trade",
