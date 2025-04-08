@@ -90,7 +90,7 @@ export async function updateTokenInfo(agentAddress, tradeType,volume) {
     
   };
   try {
-    const url = `${ai_url}api/v1/contract/update-token-info`;
+    const url = `${ai_url}api/v1/contract/update-trade-info`;
     const response = await fetch(url, config);
 
     if (!response.ok) {
