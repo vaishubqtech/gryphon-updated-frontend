@@ -59,8 +59,8 @@ const SingleAgent = () => {
     function formatNumberStr(numStr) {
         const num = parseFloat(numStr);
         return Number.isInteger(num) ? num : Number(num.toFixed(3));
-      }
-      
+    }
+
     const handleCopy = async (textToCopy) => {
         try {
             toast.success("ERC20Address copied!", {
@@ -133,7 +133,16 @@ const SingleAgent = () => {
                 });
                 return;
             }
-            if (amountToTrade > estimatedAmount) {
+             
+            let maxBalance;
+            if(activeTradeTab === "buy"){
+                maxBalance = gryphonMaxBalance ;
+            }else{
+                maxBalance = agentMaxBalance;
+
+            }
+            if (amountToTrade > maxBalance) {
+                console.log("amountToTrade > estimatedAmount" , amountToTrade , maxBalance)
                 toast.dismiss(toastId);
                 toast.error("Amount exceeds balance. Try again!", {
                     position: "top-right",
@@ -159,15 +168,17 @@ const SingleAgent = () => {
             console.log("----buyTradeResult----", buyTradeResult);
             if (buyTradeResult?.status) {
                 setBuyHashValue(buyTradeResult?.transactionHash)
-                await tokenInfoAPI()
                 toast.update(loadingToast, {
                     render: "Bought the desired Token!",
                     type: "success",
                     isLoading: false,
                     autoClose: 3000,
-                });
+                }); 
+                let tokenInfoRes = await getTokenInfo();
+                await tokenInfoAPI(tokenInfoRes?.data?.volume)
+                await   fetchAgent();
                 setTimeout(() => {
-                    window.location.reload();
+                    // window.location.reload();
                 }, 5000);
             } else {
                 toast.update(loadingToast, {
@@ -177,7 +188,7 @@ const SingleAgent = () => {
                     autoClose: 3000,
                 });
             }
-         
+
         } catch (err) {
             console.log("error in buyTradeResult", err)
             return
@@ -196,7 +207,14 @@ const SingleAgent = () => {
                 });
                 return;
             }
-            if (amountToTrade > estimatedAmount) {
+            let maxBalance;
+            if(activeTradeTab === "buy"){
+                maxBalance = gryphonMaxBalance ;
+            }else{
+                maxBalance = agentMaxBalance;
+
+            }
+            if (amountToTrade > maxBalance) {
                 toast.dismiss(toastId);
                 toast.error("Amount exceeds balance. Try again!", {
                     position: "top-right",
@@ -223,15 +241,18 @@ const SingleAgent = () => {
             console.log("----sellTradeResult----", sellTradeResult);
             if (sellTradeResult?.status) {
                 setSellHashValue(sellTradeResult?.transactionHash)
-                await tokenInfoAPI()
                 toast.update(loadingToast, {
                     render: "SOLD the desired Token!",
                     type: "success",
                     isLoading: false,
                     autoClose: 3000,
                 });
+                let tokenInfoRes = await getTokenInfo();
+                await tokenInfoAPI(tokenInfoRes?.data?.volume)
+                await   fetchAgent();
+
                 setTimeout(() => {
-                    window.location.reload();
+                    // window.location.reload();
                 }, 5000);
             } else {
                 toast.update(loadingToast, {
@@ -241,7 +262,7 @@ const SingleAgent = () => {
                     autoClose: 3000,
                 });
             }
-         
+
         } catch (err) {
             console.log("error in sellTradeResult", err)
             return
@@ -282,7 +303,7 @@ const SingleAgent = () => {
             const infoRes = await tokenInfo(agent?.erc20Address)
             console.log("infoRes", infoRes)
             setTokenInfoRes(infoRes)
-
+            return infoRes;
         } catch (e) {
             console.log("error in getTokenInfo", e)
             return
@@ -335,9 +356,9 @@ const SingleAgent = () => {
     }
 
 
-    const tokenInfoAPI = async () => {
+    const tokenInfoAPI = async (volume) => {
         try {
-            const infoRes = await updateTokenInfo(agent?.erc20Address, activeTradeTab === "buy" ? "BUY" : "SELL", Web3.utils.fromWei(tokenInfoRes?.data?.volume, "ether"));
+            const infoRes = await updateTokenInfo(agent?.erc20Address, activeTradeTab === "buy" ? "BUY" : "SELL", Web3.utils.fromWei(volume, "ether"));
             console.log("tokenInfoAPI", infoRes)
             // setTokenInfoRes(infoRes)
 
@@ -380,8 +401,8 @@ const SingleAgent = () => {
                                     </div>
                                 </div>
                                 {/* <TradingViewChart /> */}
-                                {agent?.agentId && 
-                                <CandlestickChart  agentID={agent?.agentId}/> }
+                                {agent?.agentId &&
+                                    <CandlestickChart agentID={agent?.agentId} />}
                             </div>
                             <div className="ascension-progress">
                                 <div className='statistic-values'>
@@ -544,7 +565,7 @@ const SingleAgent = () => {
                                     </div>
                                     <div className="time-frame">
                                         <span>24h</span>
-                                        <span>{agent?.stats?.volume24h ? formatNumberStr(Web3.utils.fromWei(agent?.stats?.volume24h , "ether")) : 0}%</span>
+                                        <span>{agent?.stats?.volume24h ? formatNumberStr(Web3.utils.fromWei(agent?.stats?.volume24h, "ether")) : 0}%</span>
                                     </div>
                                     <div className="time-frame">
                                         <span>7d</span>

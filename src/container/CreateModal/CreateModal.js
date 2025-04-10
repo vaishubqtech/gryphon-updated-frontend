@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import Web3 from "web3";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { createAgent } from "../../services/APIManager";
+import { createAgent, getAllAgents } from "../../services/APIManager";
 import { approveFactory, LaunchAgent } from "../../services/gryphon-web3";
 import { useActiveAccount } from "thirdweb/react";
 import Cookies from "js-cookie";
@@ -139,6 +139,7 @@ const CreateModal = ({ isOpen, onClose }) => {
             console.log("-----createAgentRes-------", createAgentRes)
             if (createAgentRes?.status) {
                 console.log("||||| launched event ||||", createAgentRes?.events?.Launched)
+                // navigate(`/detail-screen/${item.agentId}`)
                 toast.update(loadingToast, {
                     render: "Agent created successfully!",
                     type: "success",
@@ -169,48 +170,6 @@ const CreateModal = ({ isOpen, onClose }) => {
         await approve_Factory();
     }
 
-    const handleSubmit = async () => {
-        setLoading(true);
-
-        const token = Cookies.get("authToken");
-        // await handleUpload();
-
-        const agentData = {
-            name,
-            profileImage,
-            erc20Address,
-            ticker,
-            bio,
-            agentType,
-            goal,
-            personality,
-            niche,
-        };
-        console.log("---agentData---", agentData)
-        try {
-            const response = await createAgent(agentData, token);
-
-            if (response.success) {
-                toast.success("Agent created successfully!", {
-                    position: "top-right",
-                    className: "copy-toast-message",
-                });
-                setMessage("Agent created successfully!");
-                navigate("/")
-                resetForm();
-            } else {
-                toast.error("Error Notification !", {
-                    position: "top-right",
-                });
-                setMessage(`Error: ${response.message}`);
-            }
-        } catch (error) {
-            setMessage(`Request failed: ${error.message}`);
-            console.error("API error:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const resetForm = () => {
         setModalStatus(0)
@@ -366,7 +325,7 @@ const CreateModal = ({ isOpen, onClose }) => {
                                             <input placeholder='100' className='' type='number' onChange={(e) => setPurchaseAmt(e.target.value)} />
                                             <img src={LogoImage} alt="" className='buy-modal-img' />
                                         </div>
-                                        <div className='buy-desc' style={{ padding: "5px 0 0" }}><span>You will receive 1000</span>   <img src={image ? image : 'https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg'} alt="" className='buy-span-img' /> <span>(0%)</span></div>
+                                        <div className='buy-desc' style={{ padding: "5px 0 0" }}><span>You will receive {purchaseAmount ? purchaseAmount : "0"}</span>   <img src={image ? image : 'https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg'} alt="" className='buy-span-img' /> <span>(0%)</span></div>
                                         <div style={{ display: 'flex', alignItems: 'center' }}>
                                             <div className='buy-desc' style={{ padding: "5px 0 0" }}>Trading Fee</div>
                                             <div style={{ marginLeft: 4, cursor: "pointer", marginBottom: -10 }}>
