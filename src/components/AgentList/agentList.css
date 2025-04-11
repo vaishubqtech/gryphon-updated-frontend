@@ -46,8 +46,10 @@
 /* Table CSS */
 
 .table-container {
-  display: flex;
-  justify-content: center;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
+  display: block;
+  width: 100%;
   background: linear-gradient(
     114.72deg,
     rgba(255, 255, 255, 0.0936) -51.38%,
@@ -55,14 +57,15 @@
     rgba(196, 196, 196, 0) 100.12%
   );
   border: 2px solid rgb(35, 40, 61);
-  border-image-slice: 1;
   box-shadow: 21px 19px 24px -5px #00000014;
   backdrop-filter: blur(40px);
   border-radius: 10px;
   margin-top: 30px;
 }
 
+
 .custom-table {
+  /* min-width: 900px; */
   width: 100%;
   border-collapse: collapse;
   color: #ffffff;
@@ -165,3 +168,27 @@ color: tomato;
     height: 48px;
     width: auto;
 }
+@media screen and (max-width:1024px) {
+  .agent-top-flex{
+    display: flex
+    ;
+        flex-direction: column;
+  }
+  .agent-tab{
+    margin: 20px 0 10px;
+  }
+  .custom-table thead th {
+    position: sticky;
+    top: 0;
+    background: #1c1f2b;
+    z-index: 1;
+  }
+  .agent-info{
+    display: flex
+;
+    align-items: center;
+    width: 175px;
+  }
+}
+
+

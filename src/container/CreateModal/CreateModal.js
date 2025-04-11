@@ -12,7 +12,7 @@ import Web3 from "web3";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { createAgent, getAllAgents } from "../../services/APIManager";
-import { approveFactory, LaunchAgent } from "../../services/gryphon-web3";
+import { amountOutValue, approveFactory, LaunchAgent } from "../../services/gryphon-web3";
 import { useActiveAccount } from "thirdweb/react";
 import Cookies from "js-cookie";
 
@@ -42,7 +42,6 @@ const CreateModal = ({ isOpen, onClose }) => {
     const [uploading, setUploading] = useState(false);
     const [image, setImage] = useState(null);
     const [modalStatus, setModalStatus] = useState(0);
-    if (!isOpen) return null;
 
 
     const handleFileChange = (event) => {
@@ -91,6 +90,31 @@ const CreateModal = ({ isOpen, onClose }) => {
         }
     };
 
+
+        // useEffect(() => {
+        //     if (purchaseAmount) {
+        //         estimatedAmountOut();
+        //     }
+        // }, [purchaseAmount])
+    
+        // const estimatedAmountOut = async () => {
+        //     try {
+        //         let GryphonAddrOrZerothAddr;
+        //         if (activeTradeTab === "buy") {
+        //             GryphonAddrOrZerothAddr = config.gryphon_token_address;
+        //         } else {
+        //             GryphonAddrOrZerothAddr = "0x0000000000000000000000000000000000000000";
+        //         }
+        //         const estimatedAmtResult = await amountOutValue(agent.erc20Address, GryphonAddrOrZerothAddr, Web3.utils.toWei(purchaseAmount, "ether"), walletAddress)
+        //         console.log("----estimatedAmtResult----", estimatedAmtResult);
+        //         if (estimatedAmtResult) {
+        //             setEstimatedAmount(estimatedAmtResult.toString())
+        //         }
+        //     } catch (err) {
+        //         console.log("error in estimatedAmountOut", err)
+        //         return
+        //     }
+        // }
 
     const approve_Factory = async () => {
         const toastId = toast.info("Approving your contract...", {
@@ -196,6 +220,7 @@ const CreateModal = ({ isOpen, onClose }) => {
             });
         }
     }
+    if (!isOpen) return null;
 
     return (
         <>
@@ -356,7 +381,7 @@ const CreateModal = ({ isOpen, onClose }) => {
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between" }}>
                                             <div>Total</div>
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <div className='buy-desc' style={{ marginRight: 5, padding: 0 }}>(100 Gryphon + {purchaseAmount ? purchaseAmount : "0"} ${ticker})</div>
+                                                {/* <div className='buy-desc' style={{ marginRight: 5, padding: 0 }}>(100 Gryphon + {purchaseAmount ? purchaseAmount : "0"} ${ticker})</div> */}
                                                 <div style={{ marginRight: 5 }}>   {100 + (purchaseAmount ? Number(purchaseAmount) : 0)}</div>
                                                 <img src={LogoImage} alt="" className='buy-modal-img' />
                                             </div>

@@ -14,7 +14,7 @@ const CandlestickChart = (agentID) => {
         const fetchData = async () => {
             try {
                 const response = await fetch(
-                    `https://api.gryphon.finance/ai/api/v1/agents/${agentID.agentID}/ohlcv`
+                    `https://api.gryphon.finance/ai/api/v1/agents/${agentID.agentID}/ohlcv?granularity=1h`
                 );
 
                 if (!response.ok) {
@@ -27,10 +27,10 @@ const CandlestickChart = (agentID) => {
      
                 const tradeData = data?.data?.map((kline) => ({
                     time: kline.startTimeMilliseconds/ 1000,
-                    open: parseFloat(kline.openPrice)*1000,
-                    high: parseFloat(kline.highestPrice)*1000,
-                    low: parseFloat(kline.lowestPrice)*1000,
-                    close: parseFloat(kline.closePrice)*1000,
+                    open: parseFloat(kline.openPrice)*100,
+                    high: parseFloat(kline.highestPrice)*100,
+                    low: parseFloat(kline.lowestPrice)*100,
+                    close: parseFloat(kline.closePrice)*100,
                     volume:Number(Web3.utils.fromWei(kline.tradingVolume,"ether"))
                 })).sort((a, b) => a.time - b.time);
 
@@ -45,7 +45,55 @@ const CandlestickChart = (agentID) => {
                 //     { time: '2018-12-28', open: 111.51, high: 142.83, low: 103.34, close: 131.25 },
                 //     { time: '2018-12-29', open: 131.33, high: 151.17, low: 77.68, close: 96.43 },
                 //     { time: '2018-12-30', open: 106.33, high: 110.20, low: 90.39, close: 98.10 },
-                //     { time: '2018-12-31', open: 109.87, high: 114.69, low: 85.66, close: 111.26 },
+                //     { time: '2018-12-31', open: 109.87, high: 114.69, low: 85.66, close: 110.26 },
+                // ]
+
+
+                // const tradeData =  [
+                //     {
+                //         "granularity": 60,
+                //         "tokenAddress": "0x25bb8d9eb53eee8b899ff9e8c9c78674ce8b9937",
+                //         "open": "0.0002184573712852",
+                //         "high": "0.0002183122101129",
+                //         "low": "0.0002183122101129",
+                //         "close": "0.0002183122101129",
+                //         "volume": "25.0467415540401137",
+                //         "startInMilli": 1744130580000,
+                //         "endInMilli": 1744130639999
+                //     },
+                //     {
+                //         "granularity": 60,
+                //         "tokenAddress": "0x25bb8d9eb53eee8b899ff9e8c9c78674ce8b9937",
+                //         "open": "0.0002182916710645",
+                //         "high": "0.0002184573712852",
+                //         "low": "0.0002184573712852",
+                //         "close": "0.0002184573712852",
+                //         "volume": "0.99",
+                //         "startInMilli": 1744100520000,
+                //         "endInMilli": 1744100579999
+                //     },
+                //     {
+                //         "granularity": 60,
+                //         "tokenAddress": "0x25bb8d9eb53eee8b899ff9e8c9c78674ce8b9937",
+                //         "open": "0.0002181314643194",
+                //         "high": "0.0002182916710645",
+                //         "low": "0.0002182916710645",
+                //         "close": "0.0002182916710645",
+                //         "volume": "26.471313",
+                //         "startInMilli": 1743867060000,
+                //         "endInMilli": 1743867119999
+                //     },
+                //     {
+                //         "granularity": 60,
+                //         "tokenAddress": "0x25bb8d9eb53eee8b899ff9e8c9c78674ce8b9937",
+                //         "open": "0.0002193864243005",
+                //         "high": "0.0002181314643194",
+                //         "low": "0.0002181314643194",
+                //         "close": "0.0002181314643194",
+                //         "volume": "0.099",
+                //         "startInMilli": 1743857760000,
+                //         "endInMilli": 1743857819999
+                //     }
                 // ]
                 
 

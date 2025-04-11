@@ -63,3 +63,22 @@ letter-spacing: 0%;
 color: #00E4A1CC;
 padding-top:20px ;
 }
+
+@media screen and (max-width:1024px) {
+  .stats-flex {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+   }
+   .stats-container{
+    width: 80%;
+    margin: 10px auto;
+
+   }
+   .stats-dash {
+    max-width: 1400px;
+    width: 90%;
+    margin: 40px 0;
+    padding: 10px 15px;
+}
+}

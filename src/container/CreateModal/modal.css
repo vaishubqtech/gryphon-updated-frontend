@@ -436,7 +436,7 @@ label {
 }
 .buy-span-img{
     width: 25px;
-    height: auto;
+    height: 24px;
     margin-bottom: -8px;
     border-radius: 50%;
 
@@ -577,4 +577,41 @@ background: #292F38;
 }
 .change-image-btn:hover {
   background-color: #444;
+}
+
+@media screen and (max-width:1024px) {
+  .modal{
+    width: 95%;
+    margin: auto;
+    height: max-content;
+  }
+  .acc-label, .acc-red {
+    line-height: 161%;
+  }
+  .body-height{
+    min-height: auto;
+  }
+  .buy-modal-input{
+    width: 88%;
+  }
+  .modal-body, .setting-modal-body{
+    padding: 5px;
+  }
+
+  .setting-modal-flex{
+    display: flex    ;
+        flex-direction: column;
+  }
+  .s-m-left {
+    display: flex    ;
+    width: 100%;
+    margin: 20px auto;
+}
+.s-m-right {
+  width: 97%;
+  margin:10px auto;
+}
+.setting-next{
+  width: auto;
+}
 }

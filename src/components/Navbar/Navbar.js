@@ -170,7 +170,7 @@ const Navbar = () => {
           </IconContext.Provider>
         
         </div>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div className="wallet-address-flex">
           <div className='nav-cta' onClick={() => setModalOpen(true)}>Create Agent</div>
           {account?.address ? <img src={ProfileImage} alt="profile" className='nav-profile' onClick={() => setModalOpenSetting(true)} /> :
 

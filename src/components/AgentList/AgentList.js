@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { getAllAgents } from "../../services/APIManager";
 import Cookies from "js-cookie";
 import moment from "moment";
-import { getEllipsisTxt } from '../../utils/formatter';
+import { getEllipsisTxt, truncateString } from '../../utils/formatter';
 import Web3 from 'web3';
 
 
@@ -128,7 +128,7 @@ const AgentList = () => {
                   <td>
                     <div className="agent-info">
                       <img src={item.profileImage ? item.profileImage : "https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg"} alt="avatar" className="avatar-dash" />
-                      {item.name}
+                     <span style={{textAlign:'left'}} >{ truncateString(item.name) } </span> 
                     </div>
                   </td>
                   <td className="wallet">
@@ -167,11 +167,7 @@ const AgentList = () => {
                         : formatNumberStr(item.stats.priceChange24h)
                       : 0}
                   </td>
-                  {/* <td className={`ranking ${item?.ranking.toLowerCase()}`}>
-                  {typeof item.ranking === "string" && item.ranking.length <= 3
-                    ? item.ranking
-                    : <img src={item.ranking} alt="" className="ranking-img"/>}
-                </td> */}
+              
                   <td>
                     {relativeTime}
                   </td>
