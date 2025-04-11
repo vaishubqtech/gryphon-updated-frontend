@@ -178,7 +178,7 @@ const SingleAgent = () => {
                 await tokenInfoAPI(tokenInfoRes?.data?.volume)
                 await   fetchAgent();
                 setTimeout(() => {
-                    // window.location.reload();
+                    window.location.reload();
                 }, 5000);
             } else {
                 toast.update(loadingToast, {
@@ -252,7 +252,7 @@ const SingleAgent = () => {
                 await   fetchAgent();
 
                 setTimeout(() => {
-                    // window.location.reload();
+                    window.location.reload();
                 }, 5000);
             } else {
                 toast.update(loadingToast, {
