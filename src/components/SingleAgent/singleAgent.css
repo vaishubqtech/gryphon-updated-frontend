@@ -625,5 +625,26 @@
     .ascension-progress {
       display: none;
     }
+    .time-frames{
+      display: flex
+;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 0;
+    }
+    .time-frame{
+      width: 93%;
+      margin-bottom: 15px;
+    }
+    .metric span:last-child , .time-frame span:last-child{
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .stats-container-agent{
+      padding: 15px 5px;
+    }
+    .metric{
+      width: 42%;
+    }
   }
   
