@@ -58,7 +58,7 @@ const SingleAgent = () => {
 
     function formatNumberStr(numStr) {
         const num = parseFloat(numStr);
-        return Number.isInteger(num) ? num : Number(num.toFixed(3));
+        return Number.isInteger(num) ? num : Number(num.toFixed(0));
     }
 
     const handleCopy = async (textToCopy) => {
@@ -178,7 +178,7 @@ const SingleAgent = () => {
                 await tokenInfoAPI(tokenInfoRes?.data?.volume)
                 await   fetchAgent();
                 setTimeout(() => {
-                    window.location.reload();
+                    // window.location.reload();
                 }, 5000);
             } else {
                 toast.update(loadingToast, {
@@ -252,7 +252,7 @@ const SingleAgent = () => {
                 await   fetchAgent();
 
                 setTimeout(() => {
-                    window.location.reload();
+                    // window.location.reload();
                 }, 5000);
             } else {
                 toast.update(loadingToast, {
@@ -506,7 +506,7 @@ const SingleAgent = () => {
                                 {activeTradeTab === "buy" && buyHashValue ? <div style={{ display: 'flex', alignItems: 'center', paddingTop: 10 }}>🔗<div className='tx-route' onClick={transactionRoutingBuy}> View Transaction </div></div> : <></>}
                                 {activeTradeTab === "sell" && sellHashValue ? <div style={{ display: 'flex', alignItems: 'center', paddingTop: 10 }}>🔗<div className='tx-route' onClick={transactionRoutingSell}> View Transaction </div> </div> : <></>}
 
-                                {amountToTrade && !buyHashValue && <p className='est-amt'>You will receive<span style={{ color: '#f85d4f' }}> {estimatedAmount ? parseFloat(Web3.utils.fromWei(estimatedAmount, "ether")).toFixed(8) : '0'} {activeTradeTab === "buy" ? agent?.ticker : "GRYPHON"}</span>   </p>}
+                                {amountToTrade && !buyHashValue && <p className='est-amt'>You will receive approx.<span style={{ color: '#f85d4f' }}> {estimatedAmount ? parseFloat(Web3.utils.fromWei(estimatedAmount, "ether")).toFixed(3) : '0'} {activeTradeTab === "buy" ? agent?.ticker : "GRYPHON"}</span>   </p>}
                                 <div className="amount-buttons">
                                     <button className="amount-button" onClick={percentage25}><div>25%</div> </button>
                                     <button className="amount-button" onClick={percentage50}><div>50%</div> </button>
@@ -537,21 +537,21 @@ const SingleAgent = () => {
                                     <div className="metric">
                                         <span>Market Cap</span>
                                         {/* <span>${agent?.marketCap? parseFloat(Web3.utils.fromWei(agent?.marketCap, "ether"))   :  0}k</span> */}
-                                        <span>${agent?.stats?.marketCap ? formatNumberStr(Web3.utils.fromWei(agent?.stats?.marketCap, "ether")) : 0}k</span>
+                                        <span>${agent?.stats?.marketCap ? formatNumberStr(Web3.utils.fromWei(agent?.stats?.marketCap, "ether")).toLocaleString() : 0}</span>
                                     </div>
                                     <div className="metric">
                                         <span>Liquidity</span>
-                                        <span>${agent?.stats?.liquidity ? formatNumberStr(Web3.utils.fromWei(agent?.stats?.liquidity, "ether")) : 0}k</span>
+                                        <span>${agent?.stats?.liquidity ? formatNumberStr(Web3.utils.fromWei(agent?.stats?.liquidity, "ether")).toLocaleString() : 0}</span>
                                     </div>
                                 </div>
                                 <div className="metrics">
                                     <div className="metric">
                                         <span>Holders</span>
-                                        <span>{agent?.stats ? agent?.stats?.top10HolderPercentage : 0}%</span>
+                                        <span>{agent?.stats ? agent?.stats?.top10HolderPercentage : 0}</span>
                                     </div>
                                     <div className="metric">
                                         <span>24h Volume</span>
-                                        <span>${agent?.volume24h ? formatNumberStr(Web3.utils.fromWei(agent?.volume24h, "ether")) : 0}k</span>
+                                        <span>${agent?.volume24h ? formatNumberStr(Web3.utils.fromWei(agent?.volume24h, "ether")) : 0}</span>
                                     </div>
                                 </div>
                                 <div className="top-10">
@@ -561,20 +561,20 @@ const SingleAgent = () => {
                                 <div className="time-frames">
                                     <div className="time-frame">
                                         <span>1h</span>
-                                        <span>{priceChange1h ? priceChange1h : '-'}</span>
+                                        <span>${priceChange1h ? priceChange1h : '-'}</span>
                                     </div>
                                     <div className="time-frame">
                                         <span>24h</span>
-                                        <span>{agent?.stats?.volume24h ? formatNumberStr(Web3.utils.fromWei(agent?.stats?.volume24h, "ether")) : 0}%</span>
+                                        <span>${agent?.stats?.volume24h ? formatNumberStr(Web3.utils.fromWei(Math.floor(Number(agent?.stats?.volume24h)), "ether")).toLocaleString() : 0}</span>
                                     </div>
                                     <div className="time-frame">
                                         <span>7d</span>
-                                        <span>-</span>
+                                        <span>$-</span>
                                     </div>
                                 </div>
                                 <div className="volume">
                                     <span>Volume</span>
-                                    <span>{tokenInfoRes?.data?.volume ? formatNumberStr(Web3.utils.fromWei(tokenInfoRes?.data?.volume, "ether")) : 0}%</span>
+                                    <span>${tokenInfoRes?.data?.volume ? formatNumberStr(Web3.utils.fromWei(tokenInfoRes?.data?.volume, "ether")).toLocaleString() : 0}</span>
                                 </div>
                             </div>
                             <div className="profile-card-ds">

@@ -9,6 +9,7 @@ import Cookies from "js-cookie";
 import moment from "moment";
 import { getEllipsisTxt, truncateString } from '../../utils/formatter';
 import Web3 from 'web3';
+import { bondingAssetRate } from "../../services/gryphon-web3";
 
 
 const AgentList = () => {
@@ -29,11 +30,12 @@ const AgentList = () => {
 
   useEffect(() => {
     fetchAgents();
+    // fetchAssetRate()
   }, [activeSortTab]);
 
   function formatNumberStr(numStr) {
     const num = parseFloat(numStr);
-    return Number.isInteger(num) ? num : Number(num.toFixed(3));
+    return Number.isInteger(num) ? num : Number(num.toFixed(0));
   }
 
   const fetchAgents = async () => {
@@ -49,6 +51,20 @@ const AgentList = () => {
     } finally {
     }
   };
+  const fetchAssetRate = async () => {
+    try {
+      const response = await bondingAssetRate();
+      console.log("fetchAssetRate", Web3.utils.fromWei(response, "ether"))
+
+    } catch (err) {
+      console.log("error in fetchAssetRate", err)
+      return
+    } 
+  };
+
+
+
+
   const convertTimestampToRelativeTime = (timestamp) => {
     return moment.unix(timestamp).fromNow();
   };
@@ -150,21 +166,21 @@ const AgentList = () => {
                       <span className="copied-popup">Copied!</span>
                     )}
                   </td>
-                  <td>{item?.stats?.marketCap ? formatNumberStr(Web3.utils.fromWei(item?.stats?.marketCap, "ether")) : 0}</td>
-                  <td>{item?.stats?.liquidity ? formatNumberStr(Web3.utils.fromWei(item?.stats?.liquidity, "ether")) : 0}</td>
-                  <td>{item?.stats?.volume24h ? formatNumberStr(Web3.utils.fromWei(item?.stats?.volume24h, "ether")) : 0}</td>
+                  <td>${item?.stats?.marketCap ? formatNumberStr(item?.stats?.marketCap).toLocaleString() : 0}</td>
+                  <td>${item?.stats?.liquidity ? formatNumberStr(Web3.utils.fromWei(Math.floor(Number(item?.stats?.liquidity)), "ether")).toLocaleString() : 0}</td>
+                  <td>${item?.stats?.volume24h ? formatNumberStr(Web3.utils.fromWei(Math.floor(Number(item?.stats?.volume24h)), "ether")).toLocaleString() : 0}</td>
                   <td
-                    className={`change ${formatNumberStr(item?.stats?.priceChange24h) > 0
+                    className={`change ${(item?.stats?.priceChange24h) > 0
                       ? 'text-green-500'
-                      : formatNumberStr(item?.stats?.priceChange24h) < 0
+                      : (item?.stats?.priceChange24h) < 0
                         ? 'text-red-500'
                         : ''
                       }`}
                   >
                     {item?.stats?.priceChange24h
-                      ? Number.isInteger(formatNumberStr(item.stats.priceChange24h))
+                      ? Number.isInteger((item.stats.priceChange24h))
                         ? parseInt(item.stats.priceChange24h)
-                        : formatNumberStr(item.stats.priceChange24h)
+                        : (item.stats.priceChange24h)
                       : 0}
                   </td>
               
