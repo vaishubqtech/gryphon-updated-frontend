@@ -175,7 +175,7 @@ const SingleAgent = () => {
                     autoClose: 3000,
                 }); 
                 let tokenInfoRes = await getTokenInfo();
-                await tokenInfoAPI(tokenInfoRes?.data?.volume)
+                await tokenInfoAPI(tokenInfoRes?.data?.volume, buyTradeResult?.transactionHash)
                 await   fetchAgent();
                 setTimeout(() => {
                     // window.location.reload();
@@ -248,7 +248,7 @@ const SingleAgent = () => {
                     autoClose: 3000,
                 });
                 let tokenInfoRes = await getTokenInfo();
-                await tokenInfoAPI(tokenInfoRes?.data?.volume)
+                await tokenInfoAPI(tokenInfoRes?.data?.volume, sellTradeResult?.transactionHash)
                 await   fetchAgent();
 
                 setTimeout(() => {
@@ -356,9 +356,9 @@ const SingleAgent = () => {
     }
 
 
-    const tokenInfoAPI = async (volume) => {
+    const tokenInfoAPI = async (volume, transactionHash) => {
         try {
-            const infoRes = await updateTokenInfo(agent?.erc20Address, activeTradeTab === "buy" ? "BUY" : "SELL", Web3.utils.fromWei(volume, "ether"));
+            const infoRes = await updateTokenInfo(agent?.erc20Address, activeTradeTab === "buy" ? "BUY" : "SELL", Web3.utils.fromWei(volume, "ether"),transactionHash );
             console.log("tokenInfoAPI", infoRes)
             // setTokenInfoRes(infoRes)
 

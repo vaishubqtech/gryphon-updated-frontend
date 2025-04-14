@@ -74,12 +74,13 @@ export async function verifyUser(publicAddress, chainId, signature) {
     return { success: false, message: err.message };
   }
 };
-export async function updateTokenInfo(agentAddress, tradeType,volume) {
+export async function updateTokenInfo(agentAddress, tradeType,volume,transactionHash) {
   console.log("agentAddress, tradeType,volume", agentAddress, tradeType,volume)
   const data = {
     agentAddress: agentAddress,
     tradeType:tradeType ,
-    volume: volume
+    volume: volume,
+    transactionHash:transactionHash
   }
   const config = {
     body: JSON.stringify(data),

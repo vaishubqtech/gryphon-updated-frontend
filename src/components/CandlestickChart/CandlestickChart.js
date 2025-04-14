@@ -11,17 +11,21 @@ const CandlestickChart = (agentID) => {
   const [transformedData, setTransformedData] = useState([]);
 
   useEffect(() => {
+    let intervalId;
+  
     const fetchData = async () => {
       try {
         const response = await fetch(
           `https://api.gryphon.finance/ai/api/v1/agents/${agentID.agentID}/ohlcv?granularity=1m`
         );
-
+  
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
+  
         const data = await response.json();
         console.log("chart data", data.data);
+  
         const tradeData = data?.data
           ?.map((kline) => ({
             time: kline.startTimeMilliseconds / 1000,
@@ -32,6 +36,7 @@ const CandlestickChart = (agentID) => {
             volume: Number(Web3.utils.fromWei(kline.tradingVolume, "ether")),
           }))
           .sort((a, b) => a.time - b.time);
+  
         console.log("transformed", tradeData);
         setTransformedData(tradeData);
         setLoading(false);
@@ -40,9 +45,13 @@ const CandlestickChart = (agentID) => {
         setLoading(false);
       }
     };
-
-    fetchData();
+  
+    fetchData(); 
+    intervalId = setInterval(fetchData, 5000); 
+  
+    return () => clearInterval(intervalId); 
   }, [agentID]);
+  
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
