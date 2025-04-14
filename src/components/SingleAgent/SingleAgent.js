@@ -57,8 +57,10 @@ const SingleAgent = () => {
         getTokenInfo()
         getGryphonBalance()
         getAgentBalance()
-        volumeInfo()
     }, [agent?.erc20Address])
+
+
+
 
     function formatNumberStr(numStr) {
         const num = parseFloat(numStr);
@@ -86,6 +88,8 @@ const SingleAgent = () => {
             console.log("fetchAgent", response)
             if (response.success) {
                 setAgent(response.data);
+          await  volumeInfo(response?.data?.agentId)
+
             } else {
                 setError(response.message);
             }
@@ -137,16 +141,16 @@ const SingleAgent = () => {
                 });
                 return;
             }
-             
+
             let maxBalance;
-            if(activeTradeTab === "buy"){
-                maxBalance = gryphonMaxBalance ;
-            }else{
+            if (activeTradeTab === "buy") {
+                maxBalance = gryphonMaxBalance;
+            } else {
                 maxBalance = agentMaxBalance;
 
             }
             if (amountToTrade > maxBalance) {
-                console.log("amountToTrade > estimatedAmount" , amountToTrade , maxBalance)
+                console.log("amountToTrade > estimatedAmount", amountToTrade, maxBalance)
                 toast.dismiss(toastId);
                 toast.error("Amount exceeds balance. Try again!", {
                     position: "top-right",
@@ -177,13 +181,11 @@ const SingleAgent = () => {
                     type: "success",
                     isLoading: false,
                     autoClose: 3000,
-                }); 
+                });
                 let tokenInfoRes = await getTokenInfo();
                 await tokenInfoAPI(tokenInfoRes?.data?.volume, buyTradeResult?.transactionHash)
-                await   fetchAgent();
-                setTimeout(() => {
-                    // window.location.reload();
-                }, 5000);
+                await fetchAgent();
+                await volumeInfo(agent?.agentId)
             } else {
                 toast.update(loadingToast, {
                     render: "Error in placing BUY Trade",
@@ -212,9 +214,9 @@ const SingleAgent = () => {
                 return;
             }
             let maxBalance;
-            if(activeTradeTab === "buy"){
-                maxBalance = gryphonMaxBalance ;
-            }else{
+            if (activeTradeTab === "buy") {
+                maxBalance = gryphonMaxBalance;
+            } else {
                 maxBalance = agentMaxBalance;
 
             }
@@ -253,14 +255,12 @@ const SingleAgent = () => {
                 });
                 let tokenInfoRes = await getTokenInfo();
                 await tokenInfoAPI(tokenInfoRes?.data?.volume, sellTradeResult?.transactionHash)
-                await   fetchAgent();
-
-                setTimeout(() => {
-                    // window.location.reload();
-                }, 5000);
+                await fetchAgent();
+                await  volumeInfo(agent?.agentId)
+         
             } else {
                 toast.update(loadingToast, {
-                    render: "Agent moved to POST BONDING; Cannot sell !",
+                    render: "Error in Selling the token!",
                     type: "error",
                     isLoading: false,
                     autoClose: 3000,
@@ -362,7 +362,7 @@ const SingleAgent = () => {
 
     const tokenInfoAPI = async (volume, transactionHash) => {
         try {
-            const infoRes = await updateTokenInfo(agent?.erc20Address, activeTradeTab === "buy" ? "BUY" : "SELL", Web3.utils.fromWei(volume, "ether"),transactionHash );
+            const infoRes = await updateTokenInfo(agent?.erc20Address, activeTradeTab === "buy" ? "BUY" : "SELL", Web3.utils.fromWei(volume, "ether"), transactionHash);
             console.log("tokenInfoAPI", infoRes)
             // setTokenInfoRes(infoRes)
 
@@ -371,17 +371,12 @@ const SingleAgent = () => {
             return;
         }
     }
-    const volumeInfo = async () => {
+    const volumeInfo = async (id) => {
         try {
-            const volRes1h = await getVolumeInfo("1h");
-            console.log("volRes 1h", volRes1h?.data?.volume)
-            setVolume1Hour(volRes1h?.data?.volume)
-            const volRes7d = await getVolumeInfo("7d");
-            console.log("volRes 7d", volRes7d?.data?.volume)
-            setVolume7Days(volRes7d?.data?.volume)
-            const volRes24h = await getVolumeInfo("24h");
-            console.log("volRes 24h", volRes24h)
-            setVolume24Hour(volRes24h?.data?.volume)
+            const volRes1h = await getVolumeInfo(id);
+            setVolume1Hour(volRes1h?.data?.['1h'])
+            setVolume24Hour(volRes1h?.data?.['24h'])
+            setVolume7Days(volRes1h?.data?.['7d'])
 
         } catch (e) {
             console.log("error in tokenInfo", e)
@@ -571,7 +566,7 @@ const SingleAgent = () => {
                                     </div>
                                     <div className="metric">
                                         <span>24h Volume</span>
-                                        <span>${agent?.volume24h ? formatNumberStr(Web3.utils.fromWei(agent?.volume24h, "ether")) : 0}</span>
+                                        <span>${agent?.stats?.volume24h ? formatNumberStr(agent?.stats?.volume24h).toLocaleString() : 0}</span>
                                     </div>
                                 </div>
                                 <div className="top-10">

@@ -189,7 +189,7 @@ const CreateModal = ({ isOpen, onClose }) => {
     };
 
     const moveModal1 = () => {
-        if (name && ticker && bio && agentType && image) {
+        if (name && ticker && bio && agentType && image && niche && goal) {
             setModalStatus(1)
         } else {
             toast.warning("Please fill the required fields", {
@@ -246,10 +246,10 @@ const CreateModal = ({ isOpen, onClose }) => {
                                 <option value="Creative">Creative</option>
                             </select>
 
-                            <label>Pitch your agent</label>
+                            <label>Pitch your agent*</label>
                             <textarea placeholder="Tell everyone what your agent does and how it can help the community" value={niche} onChange={(e) => setNiche(e.target.value)} />
 
-                            <label>Goals and purpose of your agent</label>
+                            <label>Goals and purpose of your agent*</label>
                             <textarea placeholder="i.e. - Persona, goals, guidelines, thinking style, communication style, etc." value={goal} onChange={(e) => setGoal(e.target.value)} />
 
                             <label>Team bio*</label>

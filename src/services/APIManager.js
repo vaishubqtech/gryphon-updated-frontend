@@ -109,7 +109,7 @@ export async function updateTokenInfo(agentAddress, tradeType,volume,transaction
     return { success: false, message: err.message };
   }
 };
-export async function getVolumeInfo (period) {
+export async function getVolumeInfo (id) {
 
   const config = {
     headers: {
@@ -119,7 +119,7 @@ export async function getVolumeInfo (period) {
     
   };
   try {
-    const url = `${ai_url}api/v1/market/volume?period=${period}`;
+    const url = `${ai_url}api/v1/agents/${id}/volume`;
     const response = await fetch(url, config);
 
     if (!response.ok) {

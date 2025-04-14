@@ -15,6 +15,7 @@ import { bondingAssetRate } from "../../services/gryphon-web3";
 const AgentList = () => {
   const navigate = useNavigate();
   const [activeSortTab, setActiveSortTab] = useState("performance");
+  const [activeListTab, setActiveListTab] = useState("prototype");
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [agents, setAgents] = useState([]);
 
@@ -70,8 +71,24 @@ const AgentList = () => {
   };
   return (
     <div className="agent-list-sec">
+        <div className="agent-flex-head" style={{marginBottom:25}}>Top AI Agent</div>
+
       <div className="agent-top-flex">
-        <div className="agent-flex-head">Top AI Agent</div>
+        <div className="agent-tab">
+          <div
+            className={activeListTab === "prototype" ? "sort-tab-active" : "sort-tab"}
+            onClick={() => setActiveListTab("prototype")}
+          >
+            Prototype
+          </div>
+          <div
+            className={activeListTab === "sentient" ? "sort-tab-active" : "sort-tab"}
+            onClick={() => setActiveListTab("sentient")}
+          >
+            Sentient
+          </div>
+
+        </div>
         <div className="agent-tab">
           <div
             className={activeSortTab === "performance" ? "sort-tab-active" : "sort-tab"}
