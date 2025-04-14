@@ -109,6 +109,36 @@ export async function updateTokenInfo(agentAddress, tradeType,volume,transaction
     return { success: false, message: err.message };
   }
 };
+export async function getVolumeInfo (period) {
+
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "GET",
+    
+  };
+  try {
+    const url = `${ai_url}api/v1/market/volume?period=${period}`;
+    const response = await fetch(url, config);
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    let result = await response.json();
+    console.log("getVolumeInfo result", result);
+    return {
+      data: result.data,
+      message: result.message
+    };
+  } catch (err) {
+    console.log(err, "error");
+    return { success: false, message: err.message };
+  }
+};
+
+
 
 export async function getProfile(token) {
 

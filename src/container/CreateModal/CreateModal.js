@@ -91,31 +91,6 @@ const CreateModal = ({ isOpen, onClose }) => {
     };
 
 
-        // useEffect(() => {
-        //     if (purchaseAmount) {
-        //         estimatedAmountOut();
-        //     }
-        // }, [purchaseAmount])
-    
-        // const estimatedAmountOut = async () => {
-        //     try {
-        //         let GryphonAddrOrZerothAddr;
-        //         if (activeTradeTab === "buy") {
-        //             GryphonAddrOrZerothAddr = config.gryphon_token_address;
-        //         } else {
-        //             GryphonAddrOrZerothAddr = "0x0000000000000000000000000000000000000000";
-        //         }
-        //         const estimatedAmtResult = await amountOutValue(agent.erc20Address, GryphonAddrOrZerothAddr, Web3.utils.toWei(purchaseAmount, "ether"), walletAddress)
-        //         console.log("----estimatedAmtResult----", estimatedAmtResult);
-        //         if (estimatedAmtResult) {
-        //             setEstimatedAmount(estimatedAmtResult.toString())
-        //         }
-        //     } catch (err) {
-        //         console.log("error in estimatedAmountOut", err)
-        //         return
-        //     }
-        // }
-
     const approve_Factory = async () => {
         const toastId = toast.info("Approving your contract...", {
             position: "top-right",
@@ -129,7 +104,9 @@ const CreateModal = ({ isOpen, onClose }) => {
                 });
                 return;
             }
-            const approveFactoryRes = await approveFactory(Web3.utils.toWei(purchaseAmount, "ether"), walletAddress);
+            const adjustedAmount = (parseFloat(purchaseAmount) + 100).toString();
+            const approveFactoryRes = await approveFactory(Web3.utils.toWei(adjustedAmount, "ether"), walletAddress);
+
             console.log("-----approveFactoryRes-------", approveFactoryRes)
             if (approveFactoryRes) {
                 toast.dismiss(toastId);
@@ -159,13 +136,13 @@ const CreateModal = ({ isOpen, onClose }) => {
                 });
                 return;
             }
-            const createAgentRes = await LaunchAgent(name, ticker, [0, 1, 2, 3], bio, imageUploadURL ? imageUploadURL : "https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg", twitter, telegram, youtube, website, Web3.utils.toWei(purchaseAmount, "ether"), walletAddress);
+            const adjustedAmount = (parseFloat(purchaseAmount) + 100).toString();
+            const createAgentRes = await LaunchAgent(name, ticker, [0, 1, 2, 3], bio, imageUploadURL ? imageUploadURL : "https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg", twitter, telegram, youtube, website, Web3.utils.toWei(adjustedAmount, "ether"), walletAddress);
             console.log("-----createAgentRes-------", createAgentRes)
             if (createAgentRes?.status) {
                 console.log("||||| launched event ||||", createAgentRes?.events?.Launched)
-                // navigate(`/detail-screen/${item.agentId}`)
                 toast.update(loadingToast, {
-                    render: "Agent created successfully!",
+                    render: "Agent created successfully! View on New AI Agent ",
                     type: "success",
                     isLoading: false,
                     autoClose: 3000,
@@ -347,7 +324,7 @@ const CreateModal = ({ isOpen, onClose }) => {
                                         <div className='buy-desc'>*Purchasing a small amount of your token is optional but can help protect your coin from snipers.</div>
                                         <div className='acc-label' style={{ marginBottom: 10 }}>GRYPHON</div>
                                         <div className='buy-modal-input'>
-                                            <input placeholder='100' className='' type='number' onChange={(e) => setPurchaseAmt(e.target.value)} />
+                                            <input placeholder='200' className='' type='number' onChange={(e) => setPurchaseAmt(e.target.value)} />
                                             <img src={LogoImage} alt="" className='buy-modal-img' />
                                         </div>
                                         <div className='buy-desc' style={{ padding: "5px 0 0" }}><span>You will receive {purchaseAmount ? purchaseAmount : "0"}</span>   <img src={image ? image : 'https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg'} alt="" className='buy-span-img' /> <span>(0%)</span></div>

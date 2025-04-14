@@ -24,7 +24,6 @@ const CandlestickChart = (agentID) => {
         }
   
         const data = await response.json();
-        console.log("chart data", data.data);
   
         const tradeData = data?.data
           ?.map((kline) => ({
@@ -37,7 +36,6 @@ const CandlestickChart = (agentID) => {
           }))
           .sort((a, b) => a.time - b.time);
   
-        console.log("transformed", tradeData);
         setTransformedData(tradeData);
         setLoading(false);
       } catch (err) {
@@ -146,7 +144,7 @@ const CandlestickChart = (agentID) => {
     // Set data for candlestick chart
     candlestickSeries.setData(transformedData);
 
-    // chart.timeScale().fitContent();
+    chart.timeScale().fitContent();
 
     // Resize handler for responsiveness
     const handleResize = () => {

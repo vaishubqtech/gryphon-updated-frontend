@@ -14,7 +14,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { amountOutValue, buyApprove, buyTrade, getAgentTokenBalance, getTokenBalance, sellApprove, sellTrade, tokenInfo } from '../../services/gryphon-web3';
 import config from '../../config';
 import Web3 from 'web3';
-import { getAgentById, updateTokenInfo } from '../../services/APIManager';
+import { getAgentById, getVolumeInfo, updateTokenInfo } from '../../services/APIManager';
 import { useActiveAccount } from "thirdweb/react";
 import Cookies from "js-cookie";
 
@@ -40,6 +40,9 @@ const SingleAgent = () => {
     const [tokenInfoRes, setTokenInfoRes] = useState()
     const [priceChange1h, set1hPriceChange] = useState()
     const [copied, setCopied] = useState(false);
+    const [volume1Hour, setVolume1Hour] = useState();
+    const [volume24Hour, setVolume24Hour] = useState();
+    const [volume7Days, setVolume7Days] = useState();
 
     useEffect(() => {
         if (id) {
@@ -54,6 +57,7 @@ const SingleAgent = () => {
         getTokenInfo()
         getGryphonBalance()
         getAgentBalance()
+        volumeInfo()
     }, [agent?.erc20Address])
 
     function formatNumberStr(numStr) {
@@ -256,7 +260,7 @@ const SingleAgent = () => {
                 }, 5000);
             } else {
                 toast.update(loadingToast, {
-                    render: "Error in placing SELL Trade",
+                    render: "Agent moved to POST BONDING; Cannot sell !",
                     type: "error",
                     isLoading: false,
                     autoClose: 3000,
@@ -272,7 +276,7 @@ const SingleAgent = () => {
     const getGryphonBalance = async () => {
         try {
             const GBalance_res = await getTokenBalance(walletAddress);
-            console.log("GBalance_res", GBalance_res);
+            // console.log("GBalance_res", GBalance_res);
 
             let balanceInEth = parseFloat(Web3.utils.fromWei(GBalance_res, "ether"));
             let formattedBalance = balanceInEth % 1 === 0 ? balanceInEth.toString() : balanceInEth.toFixed(4).replace(/\.?0+$/, "");
@@ -286,7 +290,7 @@ const SingleAgent = () => {
         try {
             console.log("--agent?.erc20Address--", agent?.erc20Address)
             const AGTBalance_res = await getAgentTokenBalance(agent?.erc20Address, walletAddress);
-            console.log("AGTBalance_res", AGTBalance_res);
+            // console.log("AGTBalance_res", AGTBalance_res);
 
             let balanceInEth = parseFloat(Web3.utils.fromWei(AGTBalance_res, "ether"));
             let formattedBalance = balanceInEth % 1 === 0 ? balanceInEth.toString() : balanceInEth.toFixed(4).replace(/\.?0+$/, "");
@@ -301,7 +305,7 @@ const SingleAgent = () => {
     const getTokenInfo = async () => {
         try {
             const infoRes = await tokenInfo(agent?.erc20Address)
-            console.log("infoRes", infoRes)
+            // console.log("infoRes", infoRes)
             setTokenInfoRes(infoRes)
             return infoRes;
         } catch (e) {
@@ -362,6 +366,22 @@ const SingleAgent = () => {
             console.log("tokenInfoAPI", infoRes)
             // setTokenInfoRes(infoRes)
 
+        } catch (e) {
+            console.log("error in tokenInfo", e)
+            return;
+        }
+    }
+    const volumeInfo = async () => {
+        try {
+            const volRes1h = await getVolumeInfo("1h");
+            console.log("volRes 1h", volRes1h?.data?.volume)
+            setVolume1Hour(volRes1h?.data?.volume)
+            const volRes7d = await getVolumeInfo("7d");
+            console.log("volRes 7d", volRes7d?.data?.volume)
+            setVolume7Days(volRes7d?.data?.volume)
+            const volRes24h = await getVolumeInfo("24h");
+            console.log("volRes 24h", volRes24h)
+            setVolume24Hour(volRes24h?.data?.volume)
 
         } catch (e) {
             console.log("error in tokenInfo", e)
@@ -561,15 +581,15 @@ const SingleAgent = () => {
                                 <div className="time-frames">
                                     <div className="time-frame">
                                         <span>1h</span>
-                                        <span>${priceChange1h ? priceChange1h : '-'}</span>
+                                        <span>${volume1Hour ? formatNumberStr(volume1Hour).toLocaleString() : '0'}</span>
                                     </div>
                                     <div className="time-frame">
                                         <span>24h</span>
-                                        <span>${agent?.stats?.volume24h ? formatNumberStr(Web3.utils.fromWei(Math.floor(Number(agent?.stats?.volume24h)), "ether")).toLocaleString() : 0}</span>
+                                        <span>${volume24Hour ? formatNumberStr(volume24Hour).toLocaleString() : '0'}</span>
                                     </div>
                                     <div className="time-frame">
                                         <span>7d</span>
-                                        <span>$-</span>
+                                        <span>${volume7Days ? formatNumberStr(volume7Days).toLocaleString() : '0'}</span>
                                     </div>
                                 </div>
                                 <div className="volume">
