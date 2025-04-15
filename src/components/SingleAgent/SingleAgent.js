@@ -289,6 +289,7 @@ const SingleAgent = () => {
             console.log("error in gryphon balance", e)
         }
     }
+    
     const getAgentBalance = async () => {
         try {
             console.log("--agent?.erc20Address--", agent?.erc20Address)

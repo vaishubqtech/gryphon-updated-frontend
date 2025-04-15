@@ -232,6 +232,8 @@ export const getTokenTransferAmount = async (txHash, targetAddress) => {
 
       const receipt = await web3.eth.getTransactionReceipt(txHash);
   
+        console.log(" -------### getTokenTransferAmount receipt" , receipt.logs)
+
       const transferEventABI = ERC20ABI.abi.find(
         (item) => item.name === "Transfer" && item.type === "event"
       );

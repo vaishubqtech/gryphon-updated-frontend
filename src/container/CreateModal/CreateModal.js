@@ -12,7 +12,7 @@ import Web3 from "web3";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { createAgent, getAllAgents } from "../../services/APIManager";
-import { amountOutValue, approveFactory, LaunchAgent } from "../../services/gryphon-web3";
+import { amountOutValue, approveFactory, getTokenBalance, LaunchAgent } from "../../services/gryphon-web3";
 import { useActiveAccount } from "thirdweb/react";
 import Cookies from "js-cookie";
 
@@ -42,7 +42,11 @@ const CreateModal = ({ isOpen, onClose }) => {
     const [uploading, setUploading] = useState(false);
     const [image, setImage] = useState(null);
     const [modalStatus, setModalStatus] = useState(0);
+    const [gryphonMaxBalance, setGryphonMaxBalance] = useState()
 
+    useEffect(()=>{
+        getGryphonBalance()
+    },[])
 
     const handleFileChange = (event) => {
         const selectedFile = event.target.files[0];
@@ -90,7 +94,19 @@ const CreateModal = ({ isOpen, onClose }) => {
         }
     };
 
+    const getGryphonBalance = async () => {
+        try {
+            const GBalance_res = await getTokenBalance(walletAddress);
+            // console.log("GBalance_res", GBalance_res);
 
+            let balanceInEth = parseFloat(Web3.utils.fromWei(GBalance_res, "ether"));
+            let formattedBalance = balanceInEth % 1 === 0 ? balanceInEth.toString() : balanceInEth.toFixed(4).replace(/\.?0+$/, "");
+
+            setGryphonMaxBalance(formattedBalance);
+        } catch (e) {
+            console.log("error in gryphon balance", e)
+        }
+    }
     const approve_Factory = async () => {
         const toastId = toast.info("Approving your contract...", {
             position: "top-right",
@@ -100,6 +116,14 @@ const CreateModal = ({ isOpen, onClose }) => {
             if (!purchaseAmount) {
                 toast.dismiss(toastId);
                 toast.error("Please enter valid GRYPHON amount", {
+                    position: "top-right",
+                });
+                return;
+            }
+
+            if(Number(purchaseAmount)> Number(gryphonMaxBalance)){
+                toast.dismiss(toastId);
+                toast.error("Insufficient Gryphon Balance", {
                     position: "top-right",
                 });
                 return;
