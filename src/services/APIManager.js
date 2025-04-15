@@ -138,6 +138,34 @@ export async function getVolumeInfo (id) {
   }
 };
 
+export async function getMarketOverview () {
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "GET",
+    
+  };
+  try {
+    const url = `${ai_url}api/v1/market/overview`;
+    const response = await fetch(url, config);
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    let result = await response.json();
+    console.log("getMarketOverview result", result);
+    return {
+      data: result.data,
+      message: result.message
+    };
+  } catch (err) {
+    console.log(err, "error");
+    return { success: false, message: err.message };
+  }
+};
+
 
 
 export async function getProfile(token) {

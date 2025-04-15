@@ -11,12 +11,13 @@ import { Tooltip } from 'antd';
 import Avatar from "../../assets/images/Frame 1394.png";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { amountOutValue, buyApprove, buyTrade, getAgentTokenBalance, getTokenBalance, sellApprove, sellTrade, tokenInfo } from '../../services/gryphon-web3';
+import { amountOutValue, buyApprove, buyTrade, getAgentTokenBalance, getTokenBalance, getTokenTransferAmount, sellApprove, sellTrade, tokenInfo } from '../../services/gryphon-web3';
 import config from '../../config';
 import Web3 from 'web3';
 import { getAgentById, getVolumeInfo, updateTokenInfo } from '../../services/APIManager';
 import { useActiveAccount } from "thirdweb/react";
 import Cookies from "js-cookie";
+import BN from 'bn.js';
 
 const capabilitesFeed = ["Post Twitter", "Search Internet", "Search Twitters", "Community Engagement"]
 
@@ -88,7 +89,7 @@ const SingleAgent = () => {
             console.log("fetchAgent", response)
             if (response.success) {
                 setAgent(response.data);
-          await  volumeInfo(response?.data?.agentId)
+                await volumeInfo(response?.data?.agentId)
 
             } else {
                 setError(response.message);
@@ -176,14 +177,16 @@ const SingleAgent = () => {
             console.log("----buyTradeResult----", buyTradeResult);
             if (buyTradeResult?.status) {
                 setBuyHashValue(buyTradeResult?.transactionHash)
+                if (buyTradeResult?.transactionHash) {
+                    await fetchTokenAmount(buyTradeResult?.transactionHash);
+
+                }
                 toast.update(loadingToast, {
                     render: "Bought the desired Token!",
                     type: "success",
                     isLoading: false,
                     autoClose: 3000,
                 });
-                let tokenInfoRes = await getTokenInfo();
-                await tokenInfoAPI(tokenInfoRes?.data?.volume, buyTradeResult?.transactionHash)
                 await fetchAgent();
                 await volumeInfo(agent?.agentId)
             } else {
@@ -256,8 +259,8 @@ const SingleAgent = () => {
                 let tokenInfoRes = await getTokenInfo();
                 await tokenInfoAPI(tokenInfoRes?.data?.volume, sellTradeResult?.transactionHash)
                 await fetchAgent();
-                await  volumeInfo(agent?.agentId)
-         
+                await volumeInfo(agent?.agentId)
+
             } else {
                 toast.update(loadingToast, {
                     render: "Error in Selling the token!",
@@ -362,7 +365,7 @@ const SingleAgent = () => {
 
     const tokenInfoAPI = async (volume, transactionHash) => {
         try {
-            const infoRes = await updateTokenInfo(agent?.erc20Address, activeTradeTab === "buy" ? "BUY" : "SELL", Web3.utils.fromWei(volume, "ether"), transactionHash);
+            const infoRes = await updateTokenInfo(agent?.erc20Address, activeTradeTab === "buy" ? "BUY" : "SELL",volume, transactionHash);
             console.log("tokenInfoAPI", infoRes)
             // setTokenInfoRes(infoRes)
 
@@ -383,6 +386,26 @@ const SingleAgent = () => {
             return;
         }
     }
+
+    //   useEffect(()=>{          fetchTokenAmount();     },[]) 
+    const fetchTokenAmount = async (txHash) => {
+        const targetAddress = walletAddress;
+        try {
+            const amount = await getTokenTransferAmount(txHash, targetAddress);
+            console.log(`##############  Amount received by ${targetAddress}: ${amount}`);
+            await tokenInfoAPI(amount.toString(), txHash)
+
+        } catch (error) {
+            console.error("############# Error while fetching token transfer amount:", error);
+        }
+    };
+
+
+
+
+
+
+
 
     return (
         <>
@@ -546,12 +569,10 @@ const SingleAgent = () => {
                             </div>
 
                             <div className="stats-container-agent">
-                                {/* <div className="price">${agent?.price || 0}</div> */}
                                 <div className="price">${agent?.stats?.price || 0}</div>
                                 <div className="metrics">
                                     <div className="metric">
                                         <span>Market Cap</span>
-                                        {/* <span>${agent?.marketCap? parseFloat(Web3.utils.fromWei(agent?.marketCap, "ether"))   :  0}k</span> */}
                                         <span>${agent?.stats?.marketCap ? formatNumberStr(Web3.utils.fromWei(agent?.stats?.marketCap, "ether")).toLocaleString() : 0}</span>
                                     </div>
                                     <div className="metric">
@@ -562,7 +583,7 @@ const SingleAgent = () => {
                                 <div className="metrics">
                                     <div className="metric">
                                         <span>Holders</span>
-                                        <span>{agent?.stats ? agent?.stats?.top10HolderPercentage : 0}</span>
+                                        <span>{agent?.stats ? agent?.stats?.holderCount : 0}</span>
                                     </div>
                                     <div className="metric">
                                         <span>24h Volume</span>
@@ -571,7 +592,7 @@ const SingleAgent = () => {
                                 </div>
                                 <div className="top-10">
                                     <span>Supply</span>
-                                    <span>{agent?.stats?.supply ? formatNumberStr(Web3.utils.fromWei(agent?.stats?.supply, "ether")) : 0}</span>
+                                    <span>{agent?.stats?.supply ? formatNumberStr(Web3.utils.fromWei(agent?.stats?.supply, "ether")).toLocaleString() : 0}</span>
                                 </div>
                                 <div className="time-frames">
                                     <div className="time-frame">
@@ -620,7 +641,7 @@ const SingleAgent = () => {
                                 </div>
                                 <div className="bio">
                                     <h3>Biography</h3>
-                                    <p>Gryphon User Bio; Will update soon...</p>
+                                    <p>{agent?.bio}</p>
                                 </div>
                             </div>
                         </div>

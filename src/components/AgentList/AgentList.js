@@ -185,7 +185,7 @@ const AgentList = () => {
                   </td>
                   <td>${item?.stats?.marketCap ? formatNumberStr(item?.stats?.marketCap).toLocaleString() : 0}</td>
                   <td>${item?.stats?.liquidity ? formatNumberStr(Web3.utils.fromWei(Math.floor(Number(item?.stats?.liquidity)), "ether")).toLocaleString() : 0}</td>
-                  <td>${item?.stats?.volume24h ? formatNumberStr(Web3.utils.fromWei(Math.floor(Number(item?.stats?.volume24h)), "ether")).toLocaleString() : 0}</td>
+                  <td>${item?.stats?.volume24h ? formatNumberStr((Math.floor(Number(item?.stats?.volume24h)))).toLocaleString() : 0}</td>
                   <td
                     className={`change ${(item?.stats?.priceChange24h) > 0
                       ? 'text-green-500'
@@ -198,7 +198,7 @@ const AgentList = () => {
                       ? Number.isInteger((item.stats.priceChange24h))
                         ? parseInt(item.stats.priceChange24h)
                         : (item.stats.priceChange24h)
-                      : 0}
+                      : 0}%
                   </td>
               
                   <td>

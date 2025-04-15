@@ -226,3 +226,52 @@ export const bondingInitialSupply = async (walletAddress ) => {
     }
 }
 
+export const getTokenTransferAmount = async (txHash, targetAddress) => {
+    try {
+        const web3 = new Web3(window.ethereum);
+
+      const receipt = await web3.eth.getTransactionReceipt(txHash);
+  
+      const transferEventABI = ERC20ABI.abi.find(
+        (item) => item.name === "Transfer" && item.type === "event"
+      );
+  
+      if (!transferEventABI) {
+        throw new Error("Transfer event ABI not found");
+      }
+  
+      for (let log of receipt.logs) {
+        const isTransferEvent =
+          log.topics[0].toLowerCase() ===
+          web3.eth.abi.encodeEventSignature(transferEventABI).toLowerCase();
+  
+        if (isTransferEvent) {
+          const decodedLog = web3.eth.abi.decodeLog(
+            transferEventABI.inputs,
+            log.data,
+            log.topics.slice(1)
+          );
+  
+          if (
+            decodedLog?.to?.toLowerCase() === targetAddress.toLowerCase()
+          ) {
+            const rawValue = decodedLog.value?.toString();
+            if (!rawValue) {
+              throw new Error("Decoded value is undefined or invalid");
+            }
+  
+            const amount = web3.utils.fromWei(rawValue, "ether");
+            console.log(`Token received: ${amount}`);
+            return amount;
+          }
+        }
+      }
+  
+      return "No matching transfer found.";
+    } catch (error) {
+      console.error("Error fetching transaction:", error);
+      return null;
+    }
+  };
+  
+  
