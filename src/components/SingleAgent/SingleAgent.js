@@ -143,15 +143,9 @@ const SingleAgent = () => {
                 return;
             }
 
-            let maxBalance;
-            if (activeTradeTab === "buy") {
-                maxBalance = gryphonMaxBalance;
-            } else {
-                maxBalance = agentMaxBalance;
-
-            }
-            if (amountToTrade > maxBalance) {
-                console.log("amountToTrade > estimatedAmount", amountToTrade, maxBalance)
+            if (Number(amountToTrade) > Number(gryphonMaxBalance)) {
+                console.log(Number(amountToTrade) > Number(gryphonMaxBalance))
+                console.log("amountToTrade > estimatedAmount", amountToTrade, gryphonMaxBalance)
                 toast.dismiss(toastId);
                 toast.error("Amount exceeds balance. Try again!", {
                     position: "top-right",
@@ -216,14 +210,8 @@ const SingleAgent = () => {
                 });
                 return;
             }
-            let maxBalance;
-            if (activeTradeTab === "buy") {
-                maxBalance = gryphonMaxBalance;
-            } else {
-                maxBalance = agentMaxBalance;
-
-            }
-            if (amountToTrade > maxBalance) {
+   
+            if (Number(amountToTrade) > Number(agentMaxBalance)) {
                 toast.dismiss(toastId);
                 toast.error("Amount exceeds balance. Try again!", {
                     position: "top-right",
@@ -250,6 +238,10 @@ const SingleAgent = () => {
             console.log("----sellTradeResult----", sellTradeResult);
             if (sellTradeResult?.status) {
                 setSellHashValue(sellTradeResult?.transactionHash)
+                if (sellTradeResult?.transactionHash) {
+                    await fetchTokenAmount(sellTradeResult?.transactionHash);
+
+                }
                 toast.update(loadingToast, {
                     render: "SOLD the desired Token!",
                     type: "success",
@@ -289,7 +281,7 @@ const SingleAgent = () => {
             console.log("error in gryphon balance", e)
         }
     }
-    
+
     const getAgentBalance = async () => {
         try {
             console.log("--agent?.erc20Address--", agent?.erc20Address)
@@ -394,18 +386,13 @@ const SingleAgent = () => {
         try {
             const amount = await getTokenTransferAmount(txHash, targetAddress);
             console.log(`##############  Amount received by ${targetAddress}: ${amount}`);
-            await tokenInfoAPI(amount.toString(), txHash)
+            let toFixedAmount = Number(amount).toFixed(4)
+            await tokenInfoAPI(toFixedAmount.toString(), txHash)
 
         } catch (error) {
             console.error("############# Error while fetching token transfer amount:", error);
         }
     };
-
-
-
-
-
-
 
 
     return (
@@ -587,8 +574,8 @@ const SingleAgent = () => {
                                         <span>{agent?.stats ? agent?.stats?.holderCount : 0}</span>
                                     </div>
                                     <div className="metric">
-                                        <span>24h Volume</span>
-                                        <span>${agent?.stats?.volume24h ? formatNumberStr(agent?.stats?.volume24h).toLocaleString() : 0}</span>
+                                        <span>24h Change</span>
+                                        <span>{agent?.stats?.priceChange24h ? Number(agent?.stats?.priceChange24h).toFixed(2) : 0}%</span>
                                     </div>
                                 </div>
                                 <div className="top-10">
@@ -598,7 +585,7 @@ const SingleAgent = () => {
                                 <div className="time-frames">
                                     <div className="time-frame">
                                         <span>1h</span>
-                                        <span>${volume1Hour ? formatNumberStr(volume1Hour).toLocaleString() : '0'}</span>
+                                        <span>${volume1Hour ? formatNumberStr((volume1Hour)).toLocaleString() : '0'}</span>
                                     </div>
                                     <div className="time-frame">
                                         <span>24h</span>

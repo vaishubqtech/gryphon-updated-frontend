@@ -183,9 +183,9 @@ const AgentList = () => {
                       <span className="copied-popup">Copied!</span>
                     )}
                   </td>
-                  <td>${item?.stats?.marketCap ? formatNumberStr(item?.stats?.marketCap).toLocaleString() : 0}</td>
+                  <td>${item?.stats?.marketCap ? formatNumberStr(Web3.utils.fromWei(Math.floor(Number(item?.stats?.marketCap)), "ether")).toLocaleString() : 0}</td>
                   <td>${item?.stats?.liquidity ? formatNumberStr(Web3.utils.fromWei(Math.floor(Number(item?.stats?.liquidity)), "ether")).toLocaleString() : 0}</td>
-                  <td>${item?.stats?.volume24h ? formatNumberStr((Math.floor(Number(item?.stats?.volume24h)))).toLocaleString() : 0}</td>
+                  <td>${item?.stats?.volume24h ? formatNumberStr(Web3.utils.fromWei(Math.floor(Number(item?.stats?.volume24h)), 'ether')).toLocaleString() : 0}</td>
                   <td
                     className={`change ${(item?.stats?.priceChange24h) > 0
                       ? 'text-green-500'

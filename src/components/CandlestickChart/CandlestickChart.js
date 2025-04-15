@@ -144,7 +144,7 @@ const CandlestickChart = (agentID) => {
     // Set data for candlestick chart
     candlestickSeries.setData(transformedData);
 
-    // chart.timeScale().fitContent();
+    chart.timeScale().fitContent();
 
     // Resize handler for responsiveness
     const handleResize = () => {
