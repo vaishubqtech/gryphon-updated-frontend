@@ -14,7 +14,7 @@ import { bondingAssetRate } from "../../services/gryphon-web3";
 
 const AgentList = () => {
   const navigate = useNavigate();
-  const [activeSortTab, setActiveSortTab] = useState("performance");
+  const [activeSortTab, setActiveSortTab] = useState("new");
   const [activeListTab, setActiveListTab] = useState("prototype");
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [agents, setAgents] = useState([]);
@@ -110,6 +110,8 @@ const AgentList = () => {
           </div>
         </div>
       </div>
+
+      {activeListTab === "prototype" ?  
       <div className="table-container">
         <table className="custom-table">
           <thead>
@@ -216,6 +218,64 @@ const AgentList = () => {
           </tbody>
         </table>
       </div>
+      
+      : 
+      <div className="table-container">
+      <table className="custom-table">
+        <thead>
+          <tr>
+            <th>AI Agent</th>
+            <th>Address</th>
+            <th><div style={{ display: 'flex', alignItems: 'center',justifyContent:'center' }}> <div>Market Cap</div> <div> {activeSortTab === "performance" && <IconContext.Provider
+              value={{
+                size: "0.8em",
+                color: "#fff",
+                className: "global-class-name",
+              }}
+            >
+              <div style={{ marginLeft: 5 }}>
+                <FaSortDown />
+              </div>
+            </IconContext.Provider>} </div></div></th>
+            <th><div style={{ display: 'flex', alignItems: 'center',justifyContent:'center' }}> <div>TVL</div> <div> {activeSortTab === "popular" && <IconContext.Provider
+              value={{
+                size: "0.8em",
+                color: "#fff",
+                className: "global-class-name",
+              }}
+            >
+              <div style={{ marginLeft: 5 }}>
+                <FaSortDown />
+              </div>
+            </IconContext.Provider>} </div></div></th>
+            <th>24h Volume</th>
+            <th>24h Change</th>
+            <th><div style={{ display: 'flex', alignItems: 'center',justifyContent:'center' }}> <div>Created At</div> <div> {activeSortTab === "new" && <IconContext.Provider
+              value={{
+                size: "0.8em",
+                color: "#fff",
+                className: "global-class-name",
+              }}
+            >
+              <div style={{ marginLeft: 5 }}>
+                <FaSortDown />
+              </div>
+            </IconContext.Provider>} </div></div></th>
+          </tr>
+        </thead>
+        <tbody>
+     
+            <tr>
+              <td colSpan="7" style={{ textAlign: "center", padding: "30px" }}>
+                No agents found
+              </td>
+            </tr>
+        
+        </tbody>
+      </table>
+    </div>
+      
+      }
     </div>
   );
 };

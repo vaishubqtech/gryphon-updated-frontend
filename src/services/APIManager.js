@@ -127,7 +127,7 @@ export async function getVolumeInfo (id) {
     }
 
     let result = await response.json();
-    console.log("getVolumeInfo result", result);
+    console.log("get Volume 1h 24h 7d ", result);
     return {
       data: result.data,
       message: result.message
@@ -215,7 +215,7 @@ export async function getAllAgents(sortType,token) {
     }
 
     const result = await response.json();
-    console.log('All Agent data:', result);
+    // console.log('All Agent data:', result);
 
     return {
       data: result.data,

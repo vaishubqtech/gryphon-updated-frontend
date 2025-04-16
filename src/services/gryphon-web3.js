@@ -138,7 +138,7 @@ export const getTokenBalance = async (
         const web3 = new Web3(window.ethereum);
         const contract = new web3.eth.Contract(ERC20ABI.abi, config.gryphon_token_address);
         let result = await contract.methods.balanceOf(walletAddress).call();
-        console.log("getBalance", result);
+        // console.log("getBalance", result);
         return result;
 
     } catch (error) {
@@ -155,7 +155,7 @@ export const getAgentTokenBalance = async (
         const web3 = new Web3(window.ethereum);
         const contract = new web3.eth.Contract(ERC20ABI.abi,agentERC20Addr);
         let result = await contract.methods.balanceOf(walletAddress).call();
-        console.log("getBalance", result);
+        // console.log("getBalance", result);
         return result;
 
     } catch (error) {
@@ -169,7 +169,7 @@ export const tokenInfo = async (erc20Addr ) => {
         const web3 = new Web3(window.ethereum);
         const contract = new web3.eth.Contract(BondingV2ABI.abi, config.bonding_contract_address);
         let result = await contract.methods.tokenInfo(erc20Addr).call();
-        console.log("tokenInfo", result);
+        console.log("smart contract tokenInfo", result);
         return result;
     } catch (e) {
         console.log("error in tokenInfo", e)

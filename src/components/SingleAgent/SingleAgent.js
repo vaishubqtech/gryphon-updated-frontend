@@ -18,6 +18,7 @@ import { getAgentById, getVolumeInfo, updateTokenInfo } from '../../services/API
 import { useActiveAccount } from "thirdweb/react";
 import Cookies from "js-cookie";
 import BN from 'bn.js';
+import { amountOutPancake, getPairPancake } from '../../services/pancake-swap';
 
 const capabilitesFeed = ["Post Twitter", "Search Internet", "Search Twitters", "Community Engagement"]
 
@@ -44,6 +45,9 @@ const SingleAgent = () => {
     const [volume1Hour, setVolume1Hour] = useState();
     const [volume24Hour, setVolume24Hour] = useState();
     const [volume7Days, setVolume7Days] = useState();
+    const [swapAgentData, setSwapAgentData] = useState();
+    const [swapGryphonData, setSwapGryphonData] = useState();
+
 
     useEffect(() => {
         if (id) {
@@ -86,7 +90,7 @@ const SingleAgent = () => {
         try {
             const token = Cookies.get("authToken");
             const response = await getAgentById(id, token);
-            console.log("fetchAgent", response)
+            console.log("Backend fetchAgent", response)
             if (response.success) {
                 setAgent(response.data);
                 await volumeInfo(response?.data?.agentId)
@@ -210,7 +214,7 @@ const SingleAgent = () => {
                 });
                 return;
             }
-   
+
             if (Number(amountToTrade) > Number(agentMaxBalance)) {
                 toast.dismiss(toastId);
                 toast.error("Amount exceeds balance. Try again!", {
@@ -301,7 +305,6 @@ const SingleAgent = () => {
     const getTokenInfo = async () => {
         try {
             const infoRes = await tokenInfo(agent?.erc20Address)
-            // console.log("infoRes", infoRes)
             setTokenInfoRes(infoRes)
             return infoRes;
         } catch (e) {
@@ -358,7 +361,7 @@ const SingleAgent = () => {
 
     const tokenInfoAPI = async (volume, transactionHash) => {
         try {
-            const infoRes = await updateTokenInfo(agent?.erc20Address, activeTradeTab === "buy" ? "BUY" : "SELL",volume, transactionHash);
+            const infoRes = await updateTokenInfo(agent?.erc20Address, activeTradeTab === "buy" ? "BUY" : "SELL", volume, transactionHash);
             console.log("tokenInfoAPI", infoRes)
             // setTokenInfoRes(infoRes)
 
@@ -393,6 +396,29 @@ const SingleAgent = () => {
             console.error("############# Error while fetching token transfer amount:", error);
         }
     };
+    useEffect(() => {
+        if (!tokenInfoRes?.trading && tokenInfoRes?.tradingOnUniswap) {
+            pancakeGetPairAddress()
+        }
+    }, [tokenInfoRes?.trading, tokenInfoRes?.tradingOnUniswap])
+
+    const pancakeGetPairAddress = async () => {
+        try {
+            const pairRes = await getPairPancake(agent?.erc20Address, config.gryphon_token_address);
+            console.log("pairRes", pairRes)
+        } catch (e) {
+            console.log("error in pancakeGetPairAddress", e)
+        }
+    }
+    const pancakeGetAmtOut = async () => {
+        try {
+            const amtOutRes = await amountOutPancake();
+            console.log("pairRes", amtOutRes)
+        } catch (e) {
+            console.log("error in pancakeGetAmtOut", e)
+        }
+    }
+
 
 
     return (
@@ -512,49 +538,98 @@ const SingleAgent = () => {
                             </div>
                         </div>
                         <div className='flex-column-right'>
-                            <div className="right-section">
-                                <div className="swap-buttons">
-                                    <button className={activeTradeTab === "buy" ? "active-button" : "tab-button"} onClick={() => setActiveTradeTab("buy")}>Buy</button>
-                                    <button className={activeTradeTab === "sell" ? "active-button" : "tab-button"} onClick={() => setActiveTradeTab("sell")}>Sell</button>
-                                </div>
+                            {tokenInfoRes?.trading && !tokenInfoRes?.tradingOnUniswap ?
 
-                                <div className="input-section">
-                                    <p className="balance-text">{activeTradeTab === "buy" ? `${gryphonMaxBalance ? gryphonMaxBalance : '0'} GRYPHON` : `${agentMaxBalance ? agentMaxBalance : "0"} ${agent?.ticker} `}</p>
-                                    <input
-                                        type="number"
-                                        className="input-box"
-                                        placeholder={activeTradeTab === "buy" ? "Enter the amount of GRYPHON" : "Enter the amount of AGENT"}
-                                        value={amountToTrade}
-                                        onChange={(e) => { setAmountToTrade(e.target.value); setBuyHashValue(); setSellHashValue() }}
-                                    />
-                                </div>
+                                <div className="right-section">
+                                    <div className="swap-buttons">
+                                        <button className={activeTradeTab === "buy" ? "active-button" : "tab-button"} onClick={() => setActiveTradeTab("buy")}>Buy</button>
+                                        <button className={activeTradeTab === "sell" ? "active-button" : "tab-button"} onClick={() => setActiveTradeTab("sell")}>Sell</button>
+                                    </div>
 
-                                {activeTradeTab === "buy" && buyHashValue ? <div style={{ display: 'flex', alignItems: 'center', paddingTop: 10 }}>🔗<div className='tx-route' onClick={transactionRoutingBuy}> View Transaction </div></div> : <></>}
-                                {activeTradeTab === "sell" && sellHashValue ? <div style={{ display: 'flex', alignItems: 'center', paddingTop: 10 }}>🔗<div className='tx-route' onClick={transactionRoutingSell}> View Transaction </div> </div> : <></>}
+                                    <div className="input-section">
+                                        <p className="balance-text">{activeTradeTab === "buy" ? `${gryphonMaxBalance ? gryphonMaxBalance : '0'} GRYPHON` : `${agentMaxBalance ? agentMaxBalance : "0"} ${agent?.ticker} `}</p>
+                                        <input
+                                            type="number"
+                                            className="input-box"
+                                            placeholder={activeTradeTab === "buy" ? "Enter the amount of GRYPHON" : "Enter the amount of AGENT"}
+                                            value={amountToTrade}
+                                            onChange={(e) => { setAmountToTrade(e.target.value); setBuyHashValue(); setSellHashValue() }}
+                                        />
+                                    </div>
 
-                                {amountToTrade && !buyHashValue && <p className='est-amt'>You will receive approx.<span style={{ color: '#f85d4f' }}> {estimatedAmount ? parseFloat(Web3.utils.fromWei(estimatedAmount, "ether")).toFixed(3) : '0'} {activeTradeTab === "buy" ? agent?.ticker : "GRYPHON"}</span>   </p>}
-                                <div className="amount-buttons">
-                                    <button className="amount-button" onClick={percentage25}><div>25%</div> </button>
-                                    <button className="amount-button" onClick={percentage50}><div>50%</div> </button>
-                                    <button className="amount-button" onClick={percentage100}><div>100%</div> </button>
-                                </div>
+                                    {activeTradeTab === "buy" && buyHashValue ? <div style={{ display: 'flex', alignItems: 'center', paddingTop: 10 }}>🔗<div className='tx-route' onClick={transactionRoutingBuy}> View Transaction </div></div> : <></>}
+                                    {activeTradeTab === "sell" && sellHashValue ? <div style={{ display: 'flex', alignItems: 'center', paddingTop: 10 }}>🔗<div className='tx-route' onClick={transactionRoutingSell}> View Transaction </div> </div> : <></>}
 
-                                <div className="trading-fee"><p> Trading Fee</p>
-                                    <IconContext.Provider value={{ size: '1.2em', color: "#6B7897" }} >
-                                        <div style={{ marginLeft: 4, cursor: "pointer", marginBottom: -4 }}>
-                                            <Tooltip placement="right" color='#666' title="Trading fees earned will be used to cover inference charges. Once the fees are fully utilized, inferences will fail until more fees are accrued.">
-                                                <TiInfoOutline />
-                                            </Tooltip>
-                                        </div>
-                                    </IconContext.Provider>
+                                    {amountToTrade && !buyHashValue && <p className='est-amt'>You will receive approx.<span style={{ color: '#f85d4f' }}> {estimatedAmount ? parseFloat(Web3.utils.fromWei(estimatedAmount, "ether")).toFixed(3) : '0'} {activeTradeTab === "buy" ? agent?.ticker : "GRYPHON"}</span>   </p>}
+                                    <div className="amount-buttons">
+                                        <button className="amount-button" onClick={percentage25}><div>25%</div> </button>
+                                        <button className="amount-button" onClick={percentage50}><div>50%</div> </button>
+                                        <button className="amount-button" onClick={percentage100}><div>100%</div> </button>
+                                    </div>
+
+                                    <div className="trading-fee"><p> Trading Fee</p>
+                                        <IconContext.Provider value={{ size: '1.2em', color: "#6B7897" }} >
+                                            <div style={{ marginLeft: 4, cursor: "pointer", marginBottom: -4 }}>
+                                                <Tooltip placement="right" color='#666' title="Trading fees earned will be used to cover inference charges. Once the fees are fully utilized, inferences will fail until more fees are accrued.">
+                                                    <TiInfoOutline />
+                                                </Tooltip>
+                                            </div>
+                                        </IconContext.Provider>
+                                    </div>
+                                    {activeTradeTab === "buy" ?
+                                        <button className="place-trade-button" onClick={buy_approve} >
+                                            BUY
+                                        </button> : <button className="place-trade-button" onClick={sell_approve}>
+                                            SELL
+                                        </button>}
                                 </div>
-                                {activeTradeTab === "buy" ?
-                                    <button className="place-trade-button" onClick={buy_approve} >
-                                        BUY
-                                    </button> : <button className="place-trade-button" onClick={sell_approve}>
-                                        SELL
-                                    </button>}
-                            </div>
+                                :
+                                <div className="right-section">
+                                    <div className='r-s-swap-heading'> Swap </div>
+
+                                    <div className="input-section">
+                                        <input
+                                            type="number"
+                                            className="input-box"
+                                            placeholder="Enter the amount of GRYPHON"
+                                            value={swapGryphonData}
+                                            onChange={(e) => { setSwapGryphonData(e.target.value) }}
+                                        />
+                                        <p className="balance-text" style={{ marginTop: 10, cursor: 'pointer' }} onClick={() => setSwapGryphonData(gryphonMaxBalance)}>Max GRYPHON</p>
+                                        {/*{` ${gryphonMaxBalance ? Number(gryphonMaxBalance).toFixed(0) : '0'}`} */}
+
+                                    </div>
+
+                                    <div className="">
+                                        <input
+                                            type="number"
+                                            className="input-box"
+                                            placeholder="Enter the amount of AGENT"
+                                            value={swapAgentData}
+                                            onChange={(e) => { setSwapAgentData(e.target.value) }}
+                                        />
+                                        <p className="balance-text" style={{ marginTop: 10, cursor: 'pointer' }} onClick={() => setSwapAgentData(agentMaxBalance)} >Max {agent?.ticker} </p>
+                                        {/* { `${agentMaxBalance ? Number(agentMaxBalance).toFixed(0) : "0"} ${agent?.ticker} `} */}
+
+                                    </div>
+
+                                
+
+                                    <div className="trading-fee" style={{ marginTop: 20 }}><p> Trading Fee</p>
+                                        <IconContext.Provider value={{ size: '1.2em', color: "#6B7897" }} >
+                                            <div style={{ marginLeft: 4, cursor: "pointer", marginBottom: -4 }}>
+                                                <Tooltip placement="right" color='#666' title="Trading fees earned will be used to cover inference charges. Once the fees are fully utilized, inferences will fail until more fees are accrued.">
+                                                    <TiInfoOutline />
+                                                </Tooltip>
+                                            </div>
+                                        </IconContext.Provider>
+                                    </div>
+
+                                    <button className="place-trade-button" >
+                                        SWAP
+                                    </button>
+                                </div>
+                            }
 
                             <div className="stats-container-agent">
                                 <div className="price">${agent?.stats?.price || 0}</div>
@@ -598,7 +673,7 @@ const SingleAgent = () => {
                                 </div>
                                 <div className="volume">
                                     <span>Volume</span>
-                                    <span>${tokenInfoRes?.data?.volume ? formatNumberStr(Web3.utils.fromWei(tokenInfoRes?.data?.volume, "ether")).toLocaleString() : 0}</span>
+                                    <span>${tokenInfoRes?.data?.volume ? (Web3.utils.fromWei(tokenInfoRes?.data?.volume, "ether")).toLocaleString() : 0}</span>
                                 </div>
                             </div>
                             <div className="profile-card-ds">
