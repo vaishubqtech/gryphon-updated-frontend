@@ -585,15 +585,15 @@ const SingleAgent = () => {
                                 <div className="time-frames">
                                     <div className="time-frame">
                                         <span>1h</span>
-                                        <span>${volume1Hour ? formatNumberStr((volume1Hour)).toLocaleString() : '0'}</span>
+                                        <span>{volume1Hour ? formatNumberStr((volume1Hour)).toLocaleString() : '0'}</span>
                                     </div>
                                     <div className="time-frame">
                                         <span>24h</span>
-                                        <span>${volume24Hour ? formatNumberStr(volume24Hour).toLocaleString() : '0'}</span>
+                                        <span>{volume24Hour ? formatNumberStr(volume24Hour).toLocaleString() : '0'}</span>
                                     </div>
                                     <div className="time-frame">
                                         <span>7d</span>
-                                        <span>${volume7Days ? formatNumberStr(volume7Days).toLocaleString() : '0'}</span>
+                                        <span>{volume7Days ? formatNumberStr(volume7Days).toLocaleString() : '0'}</span>
                                     </div>
                                 </div>
                                 <div className="volume">
