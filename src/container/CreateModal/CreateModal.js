@@ -15,15 +15,19 @@ import { createAgent, getAllAgents } from "../../services/APIManager";
 import { amountOutValue, approveFactory, getTokenBalance, LaunchAgent } from "../../services/gryphon-web3";
 import { useActiveAccount } from "thirdweb/react";
 import Cookies from "js-cookie";
+import { useBondingEstimation } from "../../hooks/useBondingEstimation";
+import config from '../../config';
+
 
 const CreateModal = ({ isOpen, onClose }) => {
     const navigate = useNavigate()
     const account = useActiveAccount();
     // const walletAddress = account?.address
     const walletAddress = localStorage.getItem("publicAddress")
+    const web3 = new Web3(window.ethereum);
+
 
     const [name, setName] = useState("");
-    const [profileImage, setProfileImage] = useState("");
     const [erc20Address, setErc20Address] = useState(" ");
     const [ticker, setTicker] = useState("");
     const [bio, setBio] = useState("");
@@ -31,8 +35,7 @@ const CreateModal = ({ isOpen, onClose }) => {
     const [goal, setGoal] = useState("");
     const [personality, setPersonality] = useState("personality");
     const [niche, setNiche] = useState("");
-    const [purchaseAmount, setPurchaseAmt] = useState()
-    const [loading, setLoading] = useState(false);
+    const [purchaseAmount, setPurchaseAmt] = useState("")
     const [message, setMessage] = useState("");
     const [telegram, setTelegram] = useState("https://t.me/gryphon");
     const [twitter, setTwitter] = useState("https://twitter.com/gryphon");
@@ -43,6 +46,16 @@ const CreateModal = ({ isOpen, onClose }) => {
     const [image, setImage] = useState(null);
     const [modalStatus, setModalStatus] = useState(0);
     const [gryphonMaxBalance, setGryphonMaxBalance] = useState()
+    // const[estimatesAmoutOutOnLaunch, setEstimatesAmoutOutOnLaunch] = useState()
+    let estimatesAmoutOutOnLaunch = 0;
+    const rawAmountInWei = purchaseAmount
+    ? web3.utils.toWei(purchaseAmount.toString(), "ether")
+    : null;
+
+    const estimate = useBondingEstimation("0x66cdd203413970855a5AEe51a7ADD4519F27aC35", "0xc5fd4915762c796616C684f7D8B7c12365956b71",rawAmountInWei);
+    console.log("estimatesAmoutOutOnLaunch" ,estimate )
+    estimatesAmoutOutOnLaunch = (estimate?.estimatedOut)
+
 
     useEffect(()=>{
         getGryphonBalance()
@@ -211,16 +224,22 @@ const CreateModal = ({ isOpen, onClose }) => {
         setImage("")
 
     };
-
+    function formatNumberStr(numStr) {
+        const num = parseFloat(numStr);
+        return Number.isInteger(num) ? num : Number(num.toFixed(0));
+      }
     const moveModal1 = () => {
-        if (name && ticker && bio && agentType && image && niche && goal) {
+        if (name && ticker && bio && agentType && image && niche && goal) {  
             setModalStatus(1)
-        } else {
+         } else {
             toast.warning("Please fill the required fields", {
                 position: "top-right",
             });
         }
+           
+     
     }
+
     if (!isOpen) return null;
 
     return (
@@ -351,7 +370,7 @@ const CreateModal = ({ isOpen, onClose }) => {
                                             <input placeholder='200' className='' type='number' onChange={(e) => setPurchaseAmt(e.target.value)} />
                                             <img src={LogoImage} alt="" className='buy-modal-img' />
                                         </div>
-                                        <div className='buy-desc' style={{ padding: "5px 0 0" }}><span>You will receive {purchaseAmount ? purchaseAmount : "0"}</span>   <img src={image ? image : 'https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg'} alt="" className='buy-span-img' /> <span>(0%)</span></div>
+                                        <div className='buy-desc' style={{ padding: "5px 0 0" }}>You will receive <span style={{color:'#fff', marginLeft:5}}> {estimatesAmoutOutOnLaunch ? formatNumberStr(Web3.utils.fromWei(estimatesAmoutOutOnLaunch,"ether")) : "0"}</span>   <img src={image ? image : 'https://t3.ftcdn.net/jpg/06/71/33/46/360_F_671334604_ZBV26w9fERX8FCLUyDrCrLrZG6bq7h0Q.jpg'} alt="" className='buy-span-img' /> <span> ${ticker}</span></div>
                                         <div style={{ display: 'flex', alignItems: 'center' }}>
                                             <div className='buy-desc' style={{ padding: "5px 0 0" }}>Trading Fee</div>
                                             <div style={{ marginLeft: 4, cursor: "pointer", marginBottom: -10 }}>

@@ -189,42 +189,7 @@ export const userTokenList = async (walletAddress ) => {
     }
 }
 
-export const bondingAssetRate = async (walletAddress ) => {
-    try {
-        const web3 = new Web3(window.ethereum);
-        const contract = new web3.eth.Contract(BondingV2ABI.abi, config.bonding_contract_address);
-        let result = await contract.methods.assetRate().call();
-        console.log("assetRate", result);
-        return result;
-    } catch (e) {
-        console.log("error in assetRate", e)
-        return;
-    }
-}
-export const bondingKvalue = async (walletAddress ) => {
-    try {
-        const web3 = new Web3(window.ethereum);
-        const contract = new web3.eth.Contract(BondingV2ABI.abi, config.bonding_contract_address);
-        let result = await contract.methods.K().call();
-        console.log("bondingKvalue", result);
-        return result;
-    } catch (e) {
-        console.log("error in bondingKvalue", e)
-        return;
-    }
-}
-export const bondingInitialSupply = async (walletAddress ) => {
-    try {
-        const web3 = new Web3(window.ethereum);
-        const contract = new web3.eth.Contract(BondingV2ABI.abi, config.bonding_contract_address);
-        let result = await contract.methods.initialSupply().call();
-        console.log("initialSupply", result);
-        return result;
-    } catch (e) {
-        console.log("error in initialSupply", e)
-        return;
-    }
-}
+
 
 export const getTokenTransferAmount = async (txHash, targetAddress) => {
     try {

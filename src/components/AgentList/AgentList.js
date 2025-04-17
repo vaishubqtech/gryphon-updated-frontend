@@ -9,7 +9,6 @@ import Cookies from "js-cookie";
 import moment from "moment";
 import { getEllipsisTxt, truncateString } from '../../utils/formatter';
 import Web3 from 'web3';
-import { bondingAssetRate } from "../../services/gryphon-web3";
 
 
 const AgentList = () => {
@@ -52,16 +51,7 @@ const AgentList = () => {
     } finally {
     }
   };
-  const fetchAssetRate = async () => {
-    try {
-      const response = await bondingAssetRate();
-      console.log("fetchAssetRate", Web3.utils.fromWei(response, "ether"))
 
-    } catch (err) {
-      console.log("error in fetchAssetRate", err)
-      return
-    } 
-  };
 
 
 
@@ -79,13 +69,13 @@ const AgentList = () => {
             className={activeListTab === "prototype" ? "sort-tab-active" : "sort-tab"}
             onClick={() => setActiveListTab("prototype")}
           >
-            Prototype
+            Pre-bonded
           </div>
           <div
             className={activeListTab === "sentient" ? "sort-tab-active" : "sort-tab"}
             onClick={() => setActiveListTab("sentient")}
           >
-            Sentient
+            Bonded
           </div>
 
         </div>
