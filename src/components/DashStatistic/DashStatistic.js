@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react'
 import "./stats.css"
 import { LineChart, Line, ResponsiveContainer } from "recharts";
 import { getMarketOverview } from '../../services/APIManager';
-import Web3 from 'web3';
 
 const DashStatistic = () => {
     const [marketValue, setMarketValue] = useState()
+    useEffect(() => {
+        marketOverViewStats()
+    }, [])
 
     const data = [
         { value: 10 },
@@ -16,9 +18,6 @@ const DashStatistic = () => {
         { value: 18 },
     ];
 
-    useEffect(() => {
-        marketOverViewStats()
-    }, [])
 
     const marketOverViewStats = async () => {
         try {
@@ -45,7 +44,7 @@ const DashStatistic = () => {
                         <div className='cont-left-text'>Total Value Locked</div>
                         {/* <div className='cont-right-value'>0%</div> */}
                     </div>
-                    <div className='stats-main-data'>{formatNumberStr(marketValue?.tvl ).toLocaleString()|| 0}</div>
+                    <div className='stats-main-data'>{ marketValue?.tvl ? formatNumberStr(marketValue?.tvl ).toLocaleString(): 0}</div>
                 </div>
                 <div className='stats-container'>
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
