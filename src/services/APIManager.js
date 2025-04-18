@@ -227,6 +227,40 @@ export async function getAllAgents(sortType,token) {
     return { success: false, message: err.message };
   }
 }
+//search api
+export async function getAgentsBySearch(searchText,token) {
+  try {
+    const response = await fetch(`${ai_url}/api/v1/agents/search?search=${searchText}`, {
+      method: 'GET',
+      
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const result = await response.json();
+    // console.log('All Agent data:', result);
+
+    return {
+      data: result.data,
+      message: result.message,
+      success: result.success
+    };
+  } catch (err) {
+    console.log(err, "error");
+    return { success: false, message: err.message };
+  }
+}
+
+
+
+
+
 
 export async function getAgentById(agentId,token) {
   try {

@@ -671,10 +671,10 @@ const SingleAgent = () => {
                                         <span>{volume7Days ? formatNumberStr(volume7Days).toLocaleString() : '0'}</span>
                                     </div>
                                 </div>
-                                <div className="volume">
+                                {/* <div className="volume">
                                     <span>Volume</span>
                                     <span>${tokenInfoRes?.data?.volume ? (Web3.utils.fromWei(tokenInfoRes?.data?.volume, "ether")).toLocaleString() : 0}</span>
-                                </div>
+                                </div> */}
                             </div>
                             <div className="profile-card-ds">
                                 <div className="header">

@@ -10,7 +10,7 @@ import { createThirdwebClient } from "thirdweb";
 import { ConnectButton } from "thirdweb/react";
 import { useActiveAccount } from "thirdweb/react";
 import Web3 from "web3";
-import { getNonce, verifyUser } from "../../services/APIManager";
+import { getAgentsBySearch, getNonce, verifyUser } from "../../services/APIManager";
 import CreateModal from "../../container/CreateModal/CreateModal";
 import SettingsModal from "../../container/CreateModal/SettingsModal";
 import config from "../../config";
@@ -18,7 +18,7 @@ import Cookies from "js-cookie";
 var decimalChainId;
 var publicAddress;
 
-const Navbar = () => {
+const Navbar = ({ onSearch }) => {
   const account = useActiveAccount();
 
   const navigate = useNavigate();
@@ -27,7 +27,12 @@ const Navbar = () => {
   const [authToken, setAuthToken] = useState();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalOpenSetting, setModalOpenSetting] = useState(false);
+  const [globalSearch,setGlobalSearch]=useState("")
   const inputRef = useRef(null);
+
+    const handleChange = (e) => {
+    onSearch(e.target.value);
+  };
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -46,6 +51,7 @@ const Navbar = () => {
       getAccount()
     
   }, [account]);
+
 
   async function getAccount() {
     const web3 = new Web3();
@@ -162,7 +168,7 @@ const Navbar = () => {
           <div className='logo-text'>GRYPHON</div>
         </div>
         <div className='nav-search'>
-          <input ref={inputRef} className='nav-search-input' placeholder='Find AI Agents...' />
+          <input ref={inputRef} className='nav-search-input' placeholder='Find AI Agents...' onChange={handleChange}/>
           <IconContext.Provider value={{ size: "1.2em", color: "#8e9099", className: "global-class-name" }}>
             <div>
               <FiSearch />

@@ -5,11 +5,11 @@ import DashStatistic from '../../components/DashStatistic/DashStatistic'
 import AgentList from '../../components/AgentList/AgentList'
 import Footer from '../../components/Footer/Footer'
 
-const Dashboard = () => {
+const Dashboard = ({ searchQuery }) => {
   return (
     <div className='dash-section'>
       <DashStatistic/>
-      <AgentList/>
+      <AgentList searchQuery={searchQuery}/>
     </div>
   )
 }
