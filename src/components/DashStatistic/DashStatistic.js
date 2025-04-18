@@ -44,14 +44,14 @@ const DashStatistic = () => {
                         <div className='cont-left-text'>Total Value Locked</div>
                         {/* <div className='cont-right-value'>0%</div> */}
                     </div>
-                    <div className='stats-main-data'>{ marketValue?.tvl ? formatNumberStr(marketValue?.tvl ).toLocaleString(): 0}</div>
+                    <div className='stats-main-data'>${ marketValue?.tvl ? formatNumberStr(marketValue?.tvl ).toLocaleString(): 0}</div>
                 </div>
                 <div className='stats-container'>
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <div className='cont-left-text'>Market Cap</div>
                         {/* <div className='cont-right-value'>0%</div> */}
                     </div>
-                    <div className='stats-main-data'>{marketValue?.marketCap || "0"}</div>
+                    <div className='stats-main-data'>${marketValue?.marketCap ? formatNumberStr(marketValue?.marketCap ).toLocaleString()  :  "0"}</div>
                 </div>
                 <div className='stats-container' style={{padding:'18px 15px'}}>
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
