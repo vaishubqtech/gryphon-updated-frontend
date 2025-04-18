@@ -8,7 +8,7 @@ import Footer from '../../components/Footer/Footer'
 const Dashboard = ({ searchQuery }) => {
   return (
     <div className='dash-section'>
-      <DashStatistic/>
+      {/* <DashStatistic/> */}
       <AgentList searchQuery={searchQuery}/>
     </div>
   )
