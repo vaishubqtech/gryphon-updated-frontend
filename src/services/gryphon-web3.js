@@ -10,6 +10,8 @@ import RouterABI from "../contract-abi/gryphon-router.abi.json"
 import ERC20ABI from "../abi-v2/fun/FERC20.json";
 import BondingV2ABI from "../abi-v2/fun/Bonding.json"
 import RouterV2ABI from "../abi-v2/fun/FRouter.json"
+import PairV2ABI from "../abi-v2/fun/FPair.json"
+import FactoryV2ABI from "../abi-v2/fun/FFactory.json"
 
 
 export const requiredGryphonAmount = async () => {
@@ -241,4 +243,38 @@ export const getTokenTransferAmount = async (txHash, targetAddress) => {
     }
   };
   
-  
+  export const getPairFunction = async(tokenA,tokenB) =>{
+    try{
+        const web3 = new Web3(window.ethereum);
+        const contract = new web3.eth.Contract(FactoryV2ABI.abi, config.factory_contract_address);
+        let result = await contract.methods.getPair(tokenA,tokenB).call();
+        console.log("getPairFunction result", result);
+        return result;
+    }catch(e){
+        console.log("error in getPairFunction" ,  e)
+    }
+  }
+
+  export const getReserveFunction = async(contract_address) =>{
+    try{
+        const web3 = new Web3(window.ethereum);
+        const contract = new web3.eth.Contract(PairV2ABI.abi, contract_address);
+        let result = await contract.methods.getReserves().call();
+        console.log("---getReserveFunction result", result);
+        return result;
+    }catch(e){
+        console.log("error in getReserveFunction" ,  e)
+    }
+  }
+
+  export const getGradThreshold = async() =>{
+    try{
+        const web3 = new Web3(window.ethereum);
+        const contract = new web3.eth.Contract(BondingV2ABI.abi, config.bonding_contract_address);
+        let result = await contract.methods.gradThreshold().call();
+        console.log("getGradThreshold result", result);
+        return result;
+    }catch(e){
+        console.log("error in getGradThreshold" ,  e)
+    }
+  }

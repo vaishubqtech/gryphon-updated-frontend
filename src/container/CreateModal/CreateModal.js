@@ -53,7 +53,6 @@ const CreateModal = ({ isOpen, onClose }) => {
     : null;
 
     const estimate = useBondingEstimation("0x66cdd203413970855a5AEe51a7ADD4519F27aC35", "0xc5fd4915762c796616C684f7D8B7c12365956b71",rawAmountInWei);
-    console.log("estimatesAmoutOutOnLaunch" ,estimate )
     estimatesAmoutOutOnLaunch = (estimate?.estimatedOut)
 
 

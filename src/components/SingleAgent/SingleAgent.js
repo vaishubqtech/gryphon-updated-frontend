@@ -11,7 +11,7 @@ import { Tooltip } from 'antd';
 import Avatar from "../../assets/images/Frame 1394.png";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { amountOutValue, buyApprove, buyTrade, getAgentTokenBalance, getTokenBalance, getTokenTransferAmount, sellApprove, sellTrade, tokenInfo } from '../../services/gryphon-web3';
+import { amountOutValue, buyApprove, buyTrade, getAgentTokenBalance, getGradThreshold, getPairFunction, getReserveFunction, getTokenBalance, getTokenTransferAmount, sellApprove, sellTrade, tokenInfo } from '../../services/gryphon-web3';
 import config from '../../config';
 import Web3 from 'web3';
 import { getAgentById, getVolumeInfo, updateTokenInfo } from '../../services/APIManager';
@@ -47,6 +47,9 @@ const SingleAgent = () => {
     const [volume7Days, setVolume7Days] = useState();
     const [swapAgentData, setSwapAgentData] = useState();
     const [swapGryphonData, setSwapGryphonData] = useState();
+    const [reserve1Amt, setReserve1Amt] = useState();
+    const [progressBarData, setProgressBarData] = useState();
+    const [progressBarDataBonded, setProgressBarDataBonded] = useState(false);
 
 
     useEffect(() => {
@@ -60,16 +63,43 @@ const SingleAgent = () => {
 
     useEffect(() => {
         getTokenInfo()
+        gryphonPair()
         getGryphonBalance()
         getAgentBalance()
     }, [agent?.erc20Address])
 
-
-
-
     function formatNumberStr(numStr) {
         const num = parseFloat(numStr);
-        return Number.isInteger(num) ? num : Number(num.toFixed(0));
+        const rounded = Number.isInteger(num) ? num : Number(num.toFixed(0));
+
+        if (rounded >= 1_000_000_000) {
+            return `$${(rounded / 1_000_000_000).toFixed(1)}B`;
+        } else if (rounded >= 1_000_000) {
+            return `$${(rounded / 1_000_000).toFixed(1)}M`;
+        } else if (rounded >= 1_000) {
+            return `$${(rounded / 1_000).toFixed(0)}K`;
+        }
+
+        return `$${rounded}`;
+    }
+
+
+    function getFormattedValue(rawValueInWei) {
+        // Only convert if it's actually in Wei (big integer string)
+        if (!rawValueInWei || isNaN(rawValueInWei)) return "$0";
+
+        try {
+            // If it's already a small number (e.g. < 1e18), just use it directly
+            const value =
+                Number(rawValueInWei) > 1e18
+                    ? Web3.utils.fromWei(rawValueInWei.toString(), "ether")
+                    : rawValueInWei;
+
+            return formatNumberStr(value);
+        } catch (err) {
+            console.error("Error formatting value:", err);
+            return "$0";
+        }
     }
 
     const handleCopy = async (textToCopy) => {
@@ -410,16 +440,46 @@ const SingleAgent = () => {
             console.log("error in pancakeGetPairAddress", e)
         }
     }
-    const pancakeGetAmtOut = async () => {
+    const gryphonPair = async () => {
         try {
-            const amtOutRes = await amountOutPancake();
-            console.log("pairRes", amtOutRes)
+            const gryphonPairRes = await getPairFunction(config.gryphon_token_address, agent?.erc20Address);
+            console.log("gryphonPairRes", gryphonPairRes)
+            await gryphonReserve(gryphonPairRes)
         } catch (e) {
-            console.log("error in pancakeGetAmtOut", e)
+            console.log("error in gryphonPairRes", e)
         }
     }
+    const gryphonReserve = async (contract_address) => {
+        try {
+            const gryphonReserveRes = await getReserveFunction(contract_address);
+            console.log("gryphonReserveRes", Web3.utils.fromWei(gryphonReserveRes[0], "ether"))
+            setReserve1Amt(Web3.utils.fromWei(gryphonReserveRes[0], "ether"))
+            await gradThresholdFunction(Web3.utils.fromWei(gryphonReserveRes[0], "ether"));
 
+        } catch (e) {
+            console.log("error in gryphonReserveRes", e)
+        }
+    }
+    const gradThresholdFunction = async (reserve1) => {
+        try {
+            const gradThresholdFunctionRes = await getGradThreshold();
+            console.log("gradThresholdFunctionRes", Web3.utils.fromWei(gradThresholdFunctionRes, "ether"))
+            let gradThresValue = (Web3.utils.fromWei(gradThresholdFunctionRes, "ether"))
+            let remaining_progress = ((Number(gradThresValue) - Number(reserve1)) / Number(gradThresValue)) * 100
+            console.log("colored_value", (100 - Number(remaining_progress)) / 100)
+            let colored_value = (100 - Number(remaining_progress)) / 100
+            console.log("---remaining value" , 100 - Number(colored_value))
+            setProgressBarData(colored_value)
+            if (colored_value >= 1) {
+                setProgressBarDataBonded(false)
 
+            } else {
+                setProgressBarDataBonded(true)
+            }
+        } catch (e) {
+            console.log("error in gradThresholdFunctionRes", e)
+        }
+    }
 
     return (
         <>
@@ -452,7 +512,6 @@ const SingleAgent = () => {
                                         </div>
                                     </div>
                                 </div>
-                                {/* <TradingViewChart /> */}
                                 {agent?.agentId &&
                                     <CandlestickChart agentID={agent?.agentId} />}
                             </div>
@@ -460,17 +519,27 @@ const SingleAgent = () => {
                                 <div className='statistic-values'>
                                     <div className="agentic-container">
                                         <div className="agentic-header">
-                                            <span className="agentic-title">Agentic Level</span>
-                                            {/* <FaInfoCircle className="info-icon" /> */}
+                                            <span className="agentic-title">Progress Bar</span>
                                         </div>
-                                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                                            <span className="agentic-level">Level 1</span>
-                                            <div className="progress-bar">
-                                                <div className="progress-fill"></div>
-                                            </div>
+                                        <div className='progress-bar-flex'>
+                                            {progressBarDataBonded ? <div className="progress-bar">
+                                                <div
+                                                    className="progress-fill"
+                                                    style={{ width: `${100}%` }}
+                                                ></div>
+                                                <span className="progress-text">{100}%</span>
+                                            </div> :
+                                                <div className="progress-bar">
+                                                    <div
+                                                        className="progress-fill"
+                                                        style={{ width: `${progressBarData}%` }}
+                                                    ></div>
+                                                    <span className="progress-text">{parseFloat(progressBarData).toFixed(2)}%</span>
+                                                </div>}
+                                            <div className='prgs-txt'>Graduate this coin at ${(6075.90).toLocaleString()} market cap.There is 1 BNB in the bonding curve.</div>
                                         </div>
                                     </div>
-                                    <div className="metric-statistic">
+                                    {/* <div className="metric-statistic">
                                         <span>Mindshare</span>
                                         <span>-</span>
                                     </div>
@@ -485,7 +554,7 @@ const SingleAgent = () => {
                                     <div className="metric-statistic">
                                         <span>Followers</span>
                                         <span>-</span>
-                                    </div>
+                                    </div> */}
 
                                 </div>
                                 <div className="agent-tab">
@@ -613,7 +682,7 @@ const SingleAgent = () => {
 
                                     </div>
 
-                                
+
 
                                     <div className="trading-fee" style={{ marginTop: 20 }}><p> Trading Fee</p>
                                         <IconContext.Provider value={{ size: '1.2em', color: "#6B7897" }} >
@@ -636,11 +705,11 @@ const SingleAgent = () => {
                                 <div className="metrics">
                                     <div className="metric">
                                         <span>Market Cap</span>
-                                        <span>${agent?.stats?.marketCap ? formatNumberStr(Web3.utils.fromWei(agent?.stats?.marketCap, "ether")).toLocaleString() : 0}</span>
+                                        <span>{getFormattedValue(agent?.stats?.marketCap)}</span>
                                     </div>
                                     <div className="metric">
                                         <span>Liquidity</span>
-                                        <span>${agent?.stats?.liquidity ? formatNumberStr(Web3.utils.fromWei(agent?.stats?.liquidity, "ether")).toLocaleString() : 0}</span>
+                                        <span>{getFormattedValue(agent?.stats?.liquidity)}</span>
                                     </div>
                                 </div>
                                 <div className="metrics">
@@ -660,15 +729,15 @@ const SingleAgent = () => {
                                 <div className="time-frames">
                                     <div className="time-frame">
                                         <span>1h</span>
-                                        <span>{volume1Hour ? formatNumberStr((volume1Hour)).toLocaleString() : '0'}</span>
+                                        <span>{getFormattedValue((volume1Hour))}</span>
                                     </div>
                                     <div className="time-frame">
                                         <span>24h</span>
-                                        <span>{volume24Hour ? formatNumberStr(volume24Hour).toLocaleString() : '0'}</span>
+                                        <span>{getFormattedValue(volume24Hour)}</span>
                                     </div>
                                     <div className="time-frame">
                                         <span>7d</span>
-                                        <span>{volume7Days ? formatNumberStr(volume7Days).toLocaleString() : '0'}</span>
+                                        <span>{getFormattedValue(volume7Days)}</span>
                                     </div>
                                 </div>
                                 {/* <div className="volume">

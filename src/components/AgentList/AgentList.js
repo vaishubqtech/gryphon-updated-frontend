@@ -34,8 +34,39 @@ const AgentList = ({ searchQuery }) => {
 
   function formatNumberStr(numStr) {
     const num = parseFloat(numStr);
-    return Number.isInteger(num) ? num : Number(num.toFixed(0));
+    const rounded = Number.isInteger(num) ? num : Number(num.toFixed(0));
+
+    if (rounded >= 1_000_000_000) {
+      return `$${(rounded / 1_000_000_000).toFixed(1)}B`;
+    } else if (rounded >= 1_000_000) {
+      return `$${(rounded / 1_000_000).toFixed(1)}M`;
+    } else if (rounded >= 1_000) {
+      return `$${(rounded / 1_000).toFixed(0)}K`;
+    }
+
+    return `$${rounded}`;
   }
+
+
+  function getFormattedValue(rawValueInWei) {
+    // Only convert if it's actually in Wei (big integer string)
+    if (!rawValueInWei || isNaN(rawValueInWei)) return "$0";
+
+    try {
+      // If it's already a small number (e.g. < 1e18), just use it directly
+      const value =
+        Number(rawValueInWei) > 1e18
+          ? Web3.utils.fromWei(rawValueInWei.toString(), "ether")
+          : rawValueInWei;
+
+      return formatNumberStr(value);
+    } catch (err) {
+      console.error("Error formatting value:", err);
+      return "$0";
+    }
+  }
+
+
 
   const fetchAgents = async () => {
     try {
@@ -191,9 +222,13 @@ const AgentList = ({ searchQuery }) => {
                         <span className="copied-popup">Copied!</span>
                       )}
                     </td>
-                    <td>${item?.stats?.marketCap ? formatNumberStr(Web3.utils.fromWei(Math.floor(Number(item?.stats?.marketCap)), "ether")).toLocaleString() : 0}</td>
-                    <td>${item?.stats?.liquidity ? formatNumberStr(Web3.utils.fromWei(Math.floor(Number(item?.stats?.liquidity)), "ether")).toLocaleString() : 0}</td>
-                    <td>${item?.stats?.volume24h ? formatNumberStr(Web3.utils.fromWei(Math.floor(Number(item?.stats?.volume24h)), 'ether')).toLocaleString() : 0}</td>
+
+                    <td>{getFormattedValue(item?.stats?.marketCap)}</td>
+                    <td>{getFormattedValue(item?.stats?.liquidity)}</td>
+                    <td>{getFormattedValue(item?.stats?.volume24h)}</td>
+
+
+
                     <td
                       className={`change ${(item?.stats?.priceChange24h) > 0
                         ? 'text-green-500'
