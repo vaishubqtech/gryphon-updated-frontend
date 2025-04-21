@@ -217,6 +217,7 @@ const SingleAgent = () => {
                 });
                 await fetchAgent();
                 await volumeInfo(agent?.agentId)
+                await gryphonPair()
             } else {
                 toast.update(loadingToast, {
                     render: "Error in placing BUY Trade",
@@ -286,6 +287,7 @@ const SingleAgent = () => {
                 await tokenInfoAPI(tokenInfoRes?.data?.volume, sellTradeResult?.transactionHash)
                 await fetchAgent();
                 await volumeInfo(agent?.agentId)
+                await gryphonPair()
 
             } else {
                 toast.update(loadingToast, {
@@ -469,7 +471,7 @@ const SingleAgent = () => {
             console.log("colored_value", (100 - Number(remaining_progress)) / 100)
             let colored_value = (100 - Number(remaining_progress)) / 100
             console.log("---remaining value" , 100 - Number(colored_value))
-            setProgressBarData(colored_value)
+            setProgressBarData(100 - Number(colored_value))
             if (colored_value >= 1) {
                 setProgressBarDataBonded(false)
 
