@@ -454,9 +454,10 @@ const SingleAgent = () => {
     const gryphonReserve = async (contract_address) => {
         try {
             const gryphonReserveRes = await getReserveFunction(contract_address);
-            console.log("gryphonReserveRes", Web3.utils.fromWei(gryphonReserveRes[0], "ether"))
-            setReserve1Amt(Web3.utils.fromWei(gryphonReserveRes[0], "ether"))
-            await gradThresholdFunction(Web3.utils.fromWei(gryphonReserveRes[0], "ether"));
+            console.log("gryphonReserve Response ",gryphonReserveRes)
+            console.log("gryphonReserveRes", Web3.utils.fromWei(gryphonReserveRes[1], "ether"))
+            setReserve1Amt(Web3.utils.fromWei(gryphonReserveRes[1], "ether"))
+            await gradThresholdFunction(Web3.utils.fromWei(gryphonReserveRes[1], "ether"));
 
         } catch (e) {
             console.log("error in gryphonReserveRes", e)
@@ -468,10 +469,10 @@ const SingleAgent = () => {
             console.log("gradThresholdFunctionRes", Web3.utils.fromWei(gradThresholdFunctionRes, "ether"))
             let gradThresValue = (Web3.utils.fromWei(gradThresholdFunctionRes, "ether"))
             let remaining_progress = ((Number(gradThresValue) - Number(reserve1)) / Number(gradThresValue)) * 100
-            console.log("colored_value", (100 - Number(remaining_progress)) / 100)
-            let colored_value = (100 - Number(remaining_progress)) / 100
-            console.log("---remaining value" , 100 - Number(colored_value))
-            setProgressBarData(100 - Number(colored_value))
+            console.log("colored_value", (Number(remaining_progress)) )
+            let colored_value = (100 - Number(remaining_progress)) 
+            console.log("---remaining value" , Number(colored_value))
+            setProgressBarData(Number(colored_value))
             if (colored_value >= 1) {
                 setProgressBarDataBonded(false)
 
